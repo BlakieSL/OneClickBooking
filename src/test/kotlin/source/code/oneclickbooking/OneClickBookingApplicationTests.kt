@@ -1,4 +1,4 @@
-package com.example.oneclickbooking
+package source.code.oneclickbooking
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
