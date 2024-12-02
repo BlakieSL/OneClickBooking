@@ -1,4 +1,4 @@
-package com.example.oneclickbooking
+package source.code.oneclickbooking
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
