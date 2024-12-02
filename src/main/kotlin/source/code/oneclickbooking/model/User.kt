@@ -43,5 +43,7 @@ data class User (
         const val SURNAME_MAX_LENGTH = 50
         const val EMAIL_MAX_LENGTH = 70
         const val BCRYPT_HASHED_PASSWORD_LENGTH = 60
+        const val PASSWORD_MIN_LENGTH = 8
+        const val PASSWORD_MAX_LENGTH = 50
     }
 }
