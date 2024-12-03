@@ -1,10 +1,13 @@
 package source.code.oneclickbooking.mapper
 
+import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mapstruct.factory.Mappers
 import source.code.oneclickbooking.dto.request.UserCreateDto
 import source.code.oneclickbooking.dto.request.UserUpdateDto
+import source.code.oneclickbooking.model.Role
+import source.code.oneclickbooking.model.RoleName
 import source.code.oneclickbooking.model.User
 
 class UserMapperTest {
@@ -50,5 +53,20 @@ class UserMapperTest {
         assertEquals("UpdatedSurname", user.surname)
         assertEquals("updated.email@example.com", user.email)
         assertEquals("hashed_password", user.password)
+    }
+
+    @Test
+    fun `should map User to UserCredentialsDto`() {
+        val role1 = Role(name = RoleName.USER)
+        val role2 = Role(name = RoleName.ADMIN)
+        val user = User.createDefault().apply {
+            roles.addAll(setOf(role1, role2))
+        }
+
+        val credentialsDto = userMapper.toCredentialsDto(user)
+
+        assertEquals(user.email, credentialsDto.email)
+        assertEquals(user.password, credentialsDto.password)
+        assertArrayEquals(arrayOf("USER", "ADMIN"), credentialsDto.roles)
     }
 }
