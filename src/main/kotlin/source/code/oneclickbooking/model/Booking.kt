@@ -8,9 +8,8 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToOne
-import jakarta.validation.constraints.Future
 import jakarta.validation.constraints.FutureOrPresent
-import jakarta.validation.constraints.Past
+import org.hibernate.proxy.HibernateProxy
 import org.jetbrains.annotations.NotNull
 import java.time.LocalDateTime
 
@@ -35,14 +34,12 @@ data class Booking (
     @JoinColumn(name = "service_point_id", nullable = false)
     var servicePoint: ServicePoint,
 
-    @field:NotNull
     @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false)
+    @JoinColumn(name = "employee_id", nullable = true)
     var employee: Employee,
 
-    @field:NotNull
     @ManyToOne
-    @JoinColumn(name = "treatment_id", nullable = false)
+    @JoinColumn(name = "treatment_id", nullable = true)
     var treatment: Treatment,
 
     @OneToOne

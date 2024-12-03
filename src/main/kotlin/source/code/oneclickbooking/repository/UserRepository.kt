@@ -7,4 +7,5 @@ import source.code.oneclickbooking.model.User
 interface UserRepository : JpaRepository<User, Int> {
     @EntityGraph(attributePaths = ["roles"])
     fun findUserByEmail(email: String): User ?
+
 }

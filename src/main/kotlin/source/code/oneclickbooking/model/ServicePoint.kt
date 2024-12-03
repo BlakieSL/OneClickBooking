@@ -1,11 +1,6 @@
 package source.code.oneclickbooking.model
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.OneToMany
+import jakarta.persistence.*
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import lombok.NoArgsConstructor
@@ -33,10 +28,10 @@ data class ServicePoint (
     @Column(nullable = false)
     var phone: String,
 
-    @OneToMany(mappedBy = "servicePoint")
+    @OneToMany(mappedBy = "servicePoint", cascade = [CascadeType.REMOVE])
     val bookings: MutableSet<Booking> = mutableSetOf(),
 
-    @OneToMany(mappedBy = "servicePoint")
+    @OneToMany(mappedBy = "servicePoint", cascade = [CascadeType.REMOVE])
     val employeeAssociations: MutableSet<ServicePointEmployee> = mutableSetOf()
 ) {
     companion object {

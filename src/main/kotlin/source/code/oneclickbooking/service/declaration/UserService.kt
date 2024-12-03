@@ -10,4 +10,5 @@ interface UserService {
     fun deleteUser(id: Int)
     fun updateUser(id: Int, patch: JsonMergePatch) : UserResponseDto
     fun getUser(id: Int) : UserResponseDto
+    fun getUserId(email: String) : Int
 }
