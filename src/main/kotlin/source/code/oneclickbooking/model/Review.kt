@@ -22,4 +22,20 @@ data class Review (
 
     @OneToOne(mappedBy = "review")
     var booking: Booking,
-)
+) {
+    companion object {
+        fun createDefault(
+            id: Int? = null,
+            rating: Int = 5,
+            text: String? = "Default Review Text",
+            booking: Booking = Booking.createDefault()
+        ): Review {
+            return Review(
+                id = id,
+                rating = rating,
+                text = text,
+                booking = booking
+            )
+        }
+    }
+}

@@ -34,4 +34,20 @@ data class UserCreateDto(
     @field:PasswordUppercaseDomain
     @field:PasswordSpecialDomain
     val password: String
-)
+) {
+    companion object {
+        fun createDefault(
+            name: String = "John",
+            surname: String = "Doe",
+            email: String = "email@gmail.com",
+            password: String = "Dimas@123"
+        ) : UserCreateDto {
+            return UserCreateDto(
+                name = name,
+                surname = surname,
+                email = email,
+                password = password
+            )
+        }
+    }
+}

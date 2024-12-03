@@ -8,6 +8,8 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToOne
+import jakarta.validation.constraints.Future
+import jakarta.validation.constraints.FutureOrPresent
 import jakarta.validation.constraints.Past
 import org.jetbrains.annotations.NotNull
 import java.time.LocalDateTime
@@ -19,7 +21,7 @@ data class Booking (
     var id: Int? = null,
 
     @field:NotNull
-    @field:Past
+    @field:FutureOrPresent
     @Column(nullable = false)
     var date: LocalDateTime,
 
@@ -46,4 +48,26 @@ data class Booking (
     @OneToOne
     @JoinColumn(name = "review_id")
     var review: Review? = null,
-)
+) {
+    companion object {
+        fun createDefault(
+            id: Int? = null,
+            date: LocalDateTime = LocalDateTime.now().plusSeconds(1),
+            user: User = User.createDefault(),
+            servicePoint: ServicePoint = ServicePoint.createDefault(),
+            employee: Employee = Employee.createDefault(),
+            treatment: Treatment = Treatment.createDefault(),
+            review: Review? = null
+        ): Booking {
+            return Booking(
+                id = id,
+                date = date,
+                user = user,
+                servicePoint = servicePoint,
+                employee = employee,
+                treatment = treatment,
+                review = review
+            )
+        }
+    }
+}

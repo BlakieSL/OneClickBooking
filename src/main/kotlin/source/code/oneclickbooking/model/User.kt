@@ -45,5 +45,25 @@ data class User (
         const val BCRYPT_HASHED_PASSWORD_LENGTH = 60
         const val PASSWORD_MIN_LENGTH = 8
         const val PASSWORD_MAX_LENGTH = 50
+
+        fun createDefault(
+            id: Int? = null,
+            name: String = "John",
+            surname: String = "Doe",
+            email: String = "john.doe@example.com",
+            password: String = "hashed_password",
+            roles: MutableSet<Role> = mutableSetOf(),
+            bookings: MutableSet<Booking> = mutableSetOf()
+        ): User {
+            return User(
+                id = id,
+                name = name,
+                surname = surname,
+                email = email,
+                password = password,
+                roles = roles,
+                bookings = bookings
+            )
+        }
     }
 }
