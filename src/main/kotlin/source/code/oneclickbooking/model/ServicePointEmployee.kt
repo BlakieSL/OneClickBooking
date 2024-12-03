@@ -20,4 +20,18 @@ data class ServicePointEmployee (
     @ManyToOne
     @JoinColumn(name = "employee_id")
     var employee: Employee,
-)
+) {
+    companion object {
+        fun createDefault(
+            id: Int? = null,
+            servicePoint: ServicePoint = ServicePoint.createDefault(),
+            employee: Employee = Employee.createDefault()
+        ): ServicePointEmployee {
+            return ServicePointEmployee(
+                id = id,
+                servicePoint = servicePoint,
+                employee = employee
+            )
+        }
+    }
+}

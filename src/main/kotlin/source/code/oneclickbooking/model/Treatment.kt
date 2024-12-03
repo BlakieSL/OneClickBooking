@@ -3,6 +3,7 @@ package source.code.oneclickbooking.model
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Positive
+import lombok.NoArgsConstructor
 import org.jetbrains.annotations.NotNull
 
 @Entity
@@ -34,4 +35,22 @@ data class Treatment (
 
     @ManyToMany
     val employees: MutableSet<Employee> = mutableSetOf(),
-)
+) {
+    companion object {
+        fun createDefault(
+            id: Int? = null,
+            name: String = "Default Treatment",
+            description: String = "Default Description",
+            price: Double = 100.0,
+            duration: Int = 60
+        ): Treatment {
+            return Treatment(
+                id = id,
+                name = name,
+                description = description,
+                price = price,
+                duration = duration
+            )
+        }
+    }
+}
