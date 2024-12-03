@@ -2,12 +2,16 @@ package source.code.oneclickbooking.service.implementation
 
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
 import jakarta.transaction.Transactional
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import source.code.oneclickbooking.dto.other.UserCredentialsDto
 import source.code.oneclickbooking.dto.request.UserCreateDto
 import source.code.oneclickbooking.dto.request.UserUpdateDto
 import source.code.oneclickbooking.dto.response.UserResponseDto
 import source.code.oneclickbooking.exception.RecordNotFoundException
+import source.code.oneclickbooking.helper.UserDetailsBuilder
 import source.code.oneclickbooking.mapper.UserMapper
 import source.code.oneclickbooking.model.RoleName
 import source.code.oneclickbooking.model.User
@@ -25,7 +29,16 @@ class UserServiceImpl(
     private val mapper: UserMapper,
     private val repository: UserRepository,
     private val roleRepository: RoleRepository,
-): UserService{
+): UserService, UserDetailsService{
+    override fun loadUserByUsername(username: String?): UserDetails {
+        val userCredentials = findUserCredentials(
+            username
+            ?: throw IllegalArgumentException("Username can't be null")
+        )
+        println(userCredentials)
+        return UserDetailsBuilder.build(userCredentials)
+    }
+
     @Transactional
     override fun createUser(request: UserCreateDto): UserResponseDto {
         val user = mapper.toEntity(request, hash(request.password))
@@ -34,12 +47,12 @@ class UserServiceImpl(
 
         return mapper.toResponseDto(savedUser)
     }
-
     @Transactional
     override fun deleteUser(id: Int) {
         val user = find(id)
         repository.delete(user)
     }
+
     @Transactional
     override fun updateUser(id: Int, patch: JsonMergePatch): UserResponseDto {
         val user = find(id)
@@ -77,5 +90,11 @@ class UserServiceImpl(
         val role = roleRepository.findByName(RoleName.USER)
             ?: throw RecordNotFoundException(RoleName::class, RoleName.USER)
         user.roles.add(role)
+    }
+
+    private fun findUserCredentials(email: String) : UserCredentialsDto {
+        val user = repository.findUserByEmail(email)
+            ?: throw RecordNotFoundException(User::class, email)
+        return mapper.toCredentialsDto(user)
     }
 }

@@ -1,16 +1,17 @@
 package source.code.oneclickbooking.service
 
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.assertThrows
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.kotlin.*
 import org.springframework.security.crypto.password.PasswordEncoder
+import source.code.oneclickbooking.dto.other.UserCredentialsDto
 import source.code.oneclickbooking.dto.request.UserCreateDto
 import source.code.oneclickbooking.dto.request.UserUpdateDto
 import source.code.oneclickbooking.dto.response.UserResponseDto
@@ -207,6 +208,44 @@ class UserServiceTest {
 
         assertThrows<RecordNotFoundException> {
             userService.getUser(1)
+        }
+    }
+
+    @Test
+    fun `should load user by username successfully`() {
+        val userCredentials = UserCredentialsDto(
+            user.email,
+            user.password,
+            arrayOf(RoleName.USER.name)
+        )
+
+        whenever(userRepository.findUserByEmail(user.email)).thenReturn(user)
+        whenever(userMapper.toCredentialsDto(user)).thenReturn(userCredentials)
+
+        val result = userService.loadUserByUsername(user.email)
+
+        assertNotNull(result)
+        assertEquals(user.email, result.username)
+        assertEquals(user.password, result.password)
+        assertArrayEquals(arrayOf("ROLE_USER"), result.authorities.map { it.authority }.toTypedArray())
+        verify(userRepository).findUserByEmail(user.email)
+    }
+
+    @Test
+    fun `should throw exception when user is not found`() {
+        whenever(userRepository.findUserByEmail(user.email)).thenReturn(null)
+
+        assertThrows<RecordNotFoundException> {
+            userService.loadUserByUsername(user.email)
+        }
+
+        verify(userRepository).findUserByEmail(user.email)
+    }
+
+    @Test
+    fun `should throw exception when username is null`() {
+        assertThrows<IllegalArgumentException> {
+            userService.loadUserByUsername(null)
         }
     }
 }

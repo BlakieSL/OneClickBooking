@@ -35,7 +35,7 @@ data class User (
     @ManyToMany
     val roles: MutableSet<Role> = mutableSetOf(),
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.REMOVE], orphanRemoval = true)
     val bookings: MutableSet<Booking> = mutableSetOf(),
 ) {
     companion object{
