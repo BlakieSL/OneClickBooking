@@ -9,7 +9,9 @@ import source.code.oneclickbooking.dto.request.UserUpdateDto
 import source.code.oneclickbooking.dto.response.UserResponseDto
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.mapper.UserMapper
+import source.code.oneclickbooking.model.RoleName
 import source.code.oneclickbooking.model.User
+import source.code.oneclickbooking.repository.RoleRepository
 import source.code.oneclickbooking.repository.UserRepository
 import source.code.oneclickbooking.service.declaration.JsonPatchService
 import source.code.oneclickbooking.service.declaration.UserService
@@ -22,10 +24,12 @@ class UserServiceImpl(
     private val jsonPatchService: JsonPatchService,
     private val mapper: UserMapper,
     private val repository: UserRepository,
+    private val roleRepository: RoleRepository,
 ): UserService{
     @Transactional
     override fun createUser(request: UserCreateDto): UserResponseDto {
         val user = mapper.toEntity(request, hash(request.password))
+        setDefaultRole(user)
         val savedUser = repository.save(user)
 
         return mapper.toResponseDto(savedUser)
@@ -67,5 +71,11 @@ class UserServiceImpl(
 
     private fun hash(password: String) : String {
         return passwordEncoder.encode(password)
+    }
+
+    private fun setDefaultRole(user: User) {
+        val role = roleRepository.findByName(RoleName.USER)
+            ?: throw RecordNotFoundException(RoleName::class, RoleName.USER)
+        user.roles.add(role)
     }
 }

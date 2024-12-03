@@ -11,9 +11,15 @@ data class Role (
     var id: Int? = null,
 
     @field:NotBlank
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var role: String,
+    var name: RoleName,
 
     @ManyToMany(mappedBy = "roles")
     val users: MutableSet<User> = mutableSetOf()
 )
+
+enum class RoleName {
+    USER,
+    ADMIN
+}

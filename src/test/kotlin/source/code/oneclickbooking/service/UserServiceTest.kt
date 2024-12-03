@@ -16,7 +16,10 @@ import source.code.oneclickbooking.dto.request.UserUpdateDto
 import source.code.oneclickbooking.dto.response.UserResponseDto
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.mapper.UserMapper
+import source.code.oneclickbooking.model.Role
+import source.code.oneclickbooking.model.RoleName
 import source.code.oneclickbooking.model.User
+import source.code.oneclickbooking.repository.RoleRepository
 import source.code.oneclickbooking.repository.UserRepository
 import source.code.oneclickbooking.service.declaration.JsonPatchService
 import source.code.oneclickbooking.service.declaration.ValidationService
@@ -35,6 +38,8 @@ class UserServiceTest {
     private lateinit var userMapper: UserMapper
     @Mock
     private lateinit var userRepository: UserRepository
+    @Mock
+    private lateinit var roleRepository: RoleRepository
     @InjectMocks
     private lateinit var userService: UserServiceImpl
 
@@ -58,8 +63,9 @@ class UserServiceTest {
     @Test
     fun `should create user`() {
         val savedUser = user.copy(id = 1)
-
+        val role = Role(name = RoleName.USER)
         whenever(userMapper.toEntity(userCreateDto, hashedPassword)).thenReturn(user)
+        whenever(roleRepository.findByName(RoleName.USER)).thenReturn(role)
         whenever(userRepository.save(user)).thenReturn(savedUser)
         whenever(userMapper.toResponseDto(savedUser)).thenReturn(userResponseDto)
         whenever(passwordEncoder.encode(userCreateDto.password)).thenReturn(hashedPassword)
@@ -68,8 +74,26 @@ class UserServiceTest {
 
         assertEquals(userResponseDto, result)
         verify(userMapper).toEntity(userCreateDto, hashedPassword)
+        verify(roleRepository).findByName(RoleName.USER)
         verify(userRepository).save(user)
         verify(userMapper).toResponseDto(savedUser)
+        assertEquals(1, user.roles.size)
+        assertEquals(role, user.roles.first())
+    }
+
+    @Test
+    fun `should throw exception when default role is not found`() {
+        whenever(userMapper.toEntity(userCreateDto, hashedPassword)).thenReturn(user)
+        whenever(passwordEncoder.encode(userCreateDto.password)).thenReturn(hashedPassword)
+        whenever(roleRepository.findByName(RoleName.USER)).thenReturn(null)
+
+        assertThrows<RecordNotFoundException> {
+            userService.createUser(userCreateDto)
+        }
+
+        verify(userMapper).toEntity(userCreateDto, hashedPassword)
+        verify(roleRepository).findByName(RoleName.USER)
+        verifyNoInteractions(userRepository)
     }
 
     @Test
