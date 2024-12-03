@@ -73,6 +73,11 @@ class UserServiceImpl(
         return mapper.toResponseDto(user)
     }
 
+    override fun getUserId(email: String): Int {
+        return repository.findUserByEmail(email)?.id
+            ?: throw RecordNotFoundException(User::class, email)
+    }
+
     private fun applyPatch(user: User, patch: JsonMergePatch) : UserUpdateDto {
         val userDto = mapper.toResponseDto(user);
         return jsonPatchService.applyPatch(patch, userDto, UserUpdateDto::class)

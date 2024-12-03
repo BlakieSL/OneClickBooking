@@ -16,13 +16,13 @@ data class Employee (
 
     var description: String? = null,
 
-    @OneToMany(mappedBy = "employee")
+    @OneToMany(mappedBy = "employee", cascade = [CascadeType.REMOVE], orphanRemoval = true)
     val availabilities: MutableSet<EmployeeAvailability> = mutableSetOf(),
 
     @OneToMany(mappedBy = "employee")
     val bookings: MutableSet<Booking> = mutableSetOf(),
 
-    @OneToMany(mappedBy = "employee")
+    @OneToMany(mappedBy = "employee", cascade = [CascadeType.REMOVE])
     val servicePointAssociations: MutableSet<ServicePointEmployee> = mutableSetOf(),
 
     @ManyToMany(mappedBy = "employees")
