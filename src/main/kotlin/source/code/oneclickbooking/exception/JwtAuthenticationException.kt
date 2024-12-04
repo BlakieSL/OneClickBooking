@@ -1,6 +1,7 @@
 package source.code.oneclickbooking.exception
 
-import org.apache.tomcat.websocket.AuthenticationException
+import org.springframework.security.core.AuthenticationException
+
 
 class JwtAuthenticationException(
     msg: String
