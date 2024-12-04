@@ -58,7 +58,6 @@ class UserCreateDtoTest {
     fun `should fail validation when password violates 3 constrains at once`() {
         val dto = UserCreateDto.createDefault(password = "password")
         val violations = validator.validate(dto)
-
         assertTrue(violations.size == 3)
         assertTrue(violations.all { it.propertyPath.toString() == "password" })
     }

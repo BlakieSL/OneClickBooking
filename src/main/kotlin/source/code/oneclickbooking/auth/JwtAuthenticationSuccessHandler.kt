@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import source.code.oneclickbooking.service.declaration.UserService
+import source.code.oneclickbooking.service.implementation.JwtService
 
 class JwtAuthenticationSuccessHandler(
     private val jwtService: JwtService,
