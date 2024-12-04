@@ -248,4 +248,28 @@ class UserServiceTest {
             userService.loadUserByUsername(null)
         }
     }
+
+    @Test
+    fun `should get user id successfully`() {
+        val email = "test@example.com"
+        val userId = 1
+        whenever(userRepository.findUserByEmail(email)).thenReturn(user.copy(id = userId))
+
+        val result = userService.getUserId(email)
+
+        assertEquals(userId, result)
+        verify(userRepository).findUserByEmail(email)
+    }
+
+    @Test
+    fun `should throw exception when user is not found by email`() {
+        val email = "test@example.com"
+        whenever(userRepository.findUserByEmail(email)).thenReturn(null)
+
+        assertThrows<RecordNotFoundException> {
+            userService.getUserId(email)
+        }
+
+        verify(userRepository).findUserByEmail(email)
+    }
 }

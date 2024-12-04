@@ -79,7 +79,7 @@ class UserServiceImpl(
     }
 
     private fun applyPatch(user: User, patch: JsonMergePatch) : UserUpdateDto {
-        val userDto = mapper.toResponseDto(user);
+        val userDto = mapper.toResponseDto(user)
         return jsonPatchService.applyPatch(patch, userDto, UserUpdateDto::class)
     }
 

@@ -8,4 +8,5 @@ interface UserRepository : JpaRepository<User, Int> {
     @EntityGraph(attributePaths = ["roles"])
     fun findUserByEmail(email: String): User ?
 
+    fun existsUserByEmail(email: String) : Boolean
 }

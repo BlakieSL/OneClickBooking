@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.auth
+package source.code.oneclickbooking.service.implementation
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner
@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
+import source.code.oneclickbooking.auth.CustomAuthenticationToken
 import source.code.oneclickbooking.exception.JwtAuthenticationException
 import java.text.ParseException
 import java.time.Instant
