@@ -5,8 +5,8 @@ spring:
     name: OneClickBooking
   datasource:
     url: jdbc:mysql://localhost:3306/oneclickbooking
-    username: root
-    password: Artem2005
+    username: ${DB_USERNAME}
+    password: ${DB_USERNAME}
   jpa:
     hibernate:
       naming:
