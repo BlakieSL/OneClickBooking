@@ -2,7 +2,6 @@ package source.code.oneclickbooking.service.declaration
 
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
 import source.code.oneclickbooking.dto.request.UserCreateDto
-import source.code.oneclickbooking.dto.request.UserUpdateDto
 import source.code.oneclickbooking.dto.response.UserResponseDto
 
 interface UserService {
