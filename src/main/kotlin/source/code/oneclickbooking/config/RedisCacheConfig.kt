@@ -30,11 +30,6 @@ class RedisCachingConfig {
             disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
         }
 
-        val userResponseSerializer = Jackson2JsonRedisSerializer(
-            objectMapper,
-            UserResponseDto::class.java
-        )
-
         val defaultSerializer = Jackson2JsonRedisSerializer(
             objectMapper,
             Object::class.java
@@ -49,20 +44,8 @@ class RedisCachingConfig {
                 RedisSerializationContext.SerializationPair.fromSerializer(defaultSerializer)
             )
 
-        val userCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
-            .entryTtl(Duration.ofMinutes(60))
-            .serializeKeysWith(
-                RedisSerializationContext.SerializationPair.fromSerializer(StringRedisSerializer())
-            )
-            .serializeValuesWith(
-                RedisSerializationContext.SerializationPair.fromSerializer(userResponseSerializer)
-            )
-
-        val cacheConfigurations = mapOf("userById" to userCacheConfig)
-
         return RedisCacheManager.builder(redisConnectionFactory)
             .cacheDefaults(defaultCacheConfig)
-            .withInitialCacheConfigurations(cacheConfigurations)
             .build()
     }
 }

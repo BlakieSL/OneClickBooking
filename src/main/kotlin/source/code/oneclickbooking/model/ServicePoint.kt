@@ -36,12 +36,14 @@ data class ServicePoint (
 ) {
     companion object {
         fun createDefault(
+            id: Int? = null,
             name: String = "Default Name",
             location: String = "Default Location",
             email: String = "default@example.com",
             phone: String = "123456789"
         ): ServicePoint {
             return ServicePoint(
+                id = id,
                 name = name,
                 location = location,
                 email = email,
