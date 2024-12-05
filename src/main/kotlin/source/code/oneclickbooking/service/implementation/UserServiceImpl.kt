@@ -35,7 +35,6 @@ class UserServiceImpl(
             username
             ?: throw IllegalArgumentException("Username can't be null")
         )
-        println(userCredentials)
         return UserDetailsBuilder.build(userCredentials)
     }
 
@@ -69,8 +68,7 @@ class UserServiceImpl(
     }
 
     override fun getUser(id: Int): UserResponseDto {
-        val user = find(id)
-        return mapper.toResponseDto(user)
+        return find(id).let { mapper.toResponseDto(it) }
     }
 
     override fun getUserId(email: String): Int {

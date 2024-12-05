@@ -16,7 +16,7 @@ class ServicePointServiceImpl(
     override fun get(id: Int): ServicePointResponseDto {
         return repository.findById(id)
             .map { mapper.toResponseDto(it) }
-            .orElseThrow { throw RecordNotFoundException(ServicePoint::class, id) }
+            .orElseThrow { RecordNotFoundException(ServicePoint::class, id) }
     }
 
     override fun getAll(): List<ServicePointResponseDto> {

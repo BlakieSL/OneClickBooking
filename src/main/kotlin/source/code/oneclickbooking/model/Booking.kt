@@ -35,12 +35,12 @@ data class Booking (
     var servicePoint: ServicePoint,
 
     @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = true)
-    var employee: Employee,
+    @JoinColumn(name = "employee_id")
+    var employee: Employee? = null,
 
     @ManyToOne
-    @JoinColumn(name = "treatment_id", nullable = true)
-    var treatment: Treatment,
+    @JoinColumn(name = "treatment_id")
+    var treatment: Treatment? = null,
 
     @OneToOne
     @JoinColumn(name = "review_id")
