@@ -12,11 +12,11 @@ import org.mockito.kotlin.whenever
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.model.*
 import source.code.oneclickbooking.repository.*
-import source.code.oneclickbooking.service.implementation.booking.BookingMappingResolver
+import source.code.oneclickbooking.service.implementation.booking.BookingMappingResolverServiceImpl
 import java.util.*
 
 @ExtendWith(MockitoExtension::class)
-class BookingMappingResolverTest {
+class BookingMappingResolverServiceImplTest {
     @Mock
     private lateinit var userRepository: UserRepository
     @Mock
@@ -26,7 +26,7 @@ class BookingMappingResolverTest {
     @Mock
     private lateinit var treatmentRepository: TreatmentRepository
     @InjectMocks
-    private lateinit var resolver: BookingMappingResolver
+    private lateinit var resolver: BookingMappingResolverServiceImpl
 
     private lateinit var user: User
     private lateinit var servicePoint: ServicePoint

@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -22,7 +21,7 @@ import source.code.oneclickbooking.model.*
 import source.code.oneclickbooking.repository.*
 import source.code.oneclickbooking.service.declaration.JsonPatchService
 import source.code.oneclickbooking.service.declaration.ValidationService
-import source.code.oneclickbooking.service.implementation.booking.BookingMappingResolver
+import source.code.oneclickbooking.service.implementation.booking.BookingMappingResolverServiceImpl
 import source.code.oneclickbooking.service.implementation.booking.BookingServiceImpl
 import java.time.LocalDateTime
 import java.util.*
@@ -40,22 +39,13 @@ class BookingServiceTest {
     private lateinit var mapper: BookingMapper
 
     @Mock
-    private lateinit var mappingResolver: BookingMappingResolver
+    private lateinit var mappingResolver: BookingMappingResolverServiceImpl
 
     @Mock
     private lateinit var repository: BookingRepository
 
     @Mock
     private lateinit var userRepository: UserRepository
-
-    @Mock
-    private lateinit var servicePointRepository: ServicePointRepository
-
-    @Mock
-    private lateinit var employeeRepository: EmployeeRepository
-
-    @Mock
-    private lateinit var treatmentRepository: TreatmentRepository
 
     @InjectMocks
     private lateinit var bookingService: BookingServiceImpl
@@ -64,13 +54,18 @@ class BookingServiceTest {
     private lateinit var bookingCreateDto: BookingCreateDto
     private lateinit var bookingUpdateDto: BookingUpdateDto
     private lateinit var bookingResponseDto: BookingResponseDto
+    private lateinit var user: User
+    private lateinit var servicePoint: ServicePoint
+    private lateinit var employee: Employee
+    private lateinit var treatment: Treatment
+
 
     @BeforeEach
     fun setUp() {
-        val user = User.createDefault(id = 1)
-        val servicePoint = ServicePoint.createDefault(id = 1)
-        val employee = Employee.createDefault(id = 1)
-        val treatment = Treatment.createDefault(id = 1)
+        user = User.createDefault(id = 1)
+        servicePoint = ServicePoint.createDefault(id = 1)
+        employee = Employee.createDefault(id = 1)
+        treatment = Treatment.createDefault(id = 1)
 
         booking = Booking(
             id = 1,
@@ -82,11 +77,11 @@ class BookingServiceTest {
         )
 
         bookingCreateDto = BookingCreateDto(
-            servicePointId = 1,
-            userId = 1,
             date = LocalDateTime.of(2023, 10, 10, 10, 0),
-            employeeId = 1,
-            treatmentId = 1
+            userId = user.id!!,
+            servicePointId = servicePoint.id!!,
+            employeeId = employee.id!!,
+            treatmentId = treatment.id!!
         )
 
         bookingUpdateDto = BookingUpdateDto(
@@ -109,12 +104,16 @@ class BookingServiceTest {
     }
 
     @Test
-    fun `should throw exception when creating booking with non-existent user`() {
-        whenever(userRepository.findById(1)).thenReturn(Optional.empty())
+    fun `should create booking`() {
+        val savedBooking = booking.copy(id = 1)
+        whenever(mapper.toEntity(bookingCreateDto, mappingResolver)).thenReturn(booking)
+        whenever(repository.save(booking)).thenReturn(savedBooking)
+        whenever(mapper.toResponseDto(savedBooking)).thenReturn(bookingResponseDto)
 
-        assertThrows<RecordNotFoundException> {
-            bookingService.create(bookingCreateDto)
-        }
+        val result = bookingService.create(bookingCreateDto)
+
+        assertEquals(bookingResponseDto, result)
+        verify(mapper).toResponseDto(savedBooking)
     }
 
     @Test

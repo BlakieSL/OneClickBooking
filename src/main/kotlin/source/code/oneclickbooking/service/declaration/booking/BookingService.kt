@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.service.declaration
+package source.code.oneclickbooking.service.declaration.booking
 
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
 import source.code.oneclickbooking.dto.request.BookingCreateDto

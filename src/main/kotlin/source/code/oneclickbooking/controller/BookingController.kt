@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.response.BookingResponseDto
-import source.code.oneclickbooking.service.declaration.BookingService
+import source.code.oneclickbooking.service.declaration.booking.BookingService
 
 @RestController
 @RequestMapping("/api/bookings")

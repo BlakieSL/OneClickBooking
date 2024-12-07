@@ -5,7 +5,7 @@ import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.request.BookingUpdateDto
 import source.code.oneclickbooking.dto.response.BookingResponseDto
 import source.code.oneclickbooking.model.*
-import source.code.oneclickbooking.service.implementation.booking.BookingMappingResolver
+import source.code.oneclickbooking.service.declaration.booking.BookingMappingResolverService
 
 @Mapper(componentModel = "spring")
 abstract class BookingMapper {
@@ -18,12 +18,13 @@ abstract class BookingMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "review", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "servicePoint", ignore = true)
+    @Mapping(target = "employee", ignore = true)
+    @Mapping(target = "treatment", ignore = true)
     abstract fun toEntity(
         dto: BookingCreateDto,
-        user: User,
-        servicePoint: ServicePoint,
-        employee: Employee,
-        treatment: Treatment,
+        @Context mappingResolver: BookingMappingResolverService
     ) : Booking
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
@@ -36,14 +37,26 @@ abstract class BookingMapper {
     abstract fun update(
         @MappingTarget booking: Booking,
         dto: BookingUpdateDto,
-        @Context mappingResolver: BookingMappingResolver
+        @Context mappingResolver: BookingMappingResolverService
     )
 
     @AfterMapping
-    protected fun resolve(
+    protected fun resolveCreate(
+        @MappingTarget booking: Booking,
+        dto: BookingCreateDto,
+        @Context resolver: BookingMappingResolverService
+    ) {
+        booking.user = resolver.resolveUser(dto.userId)!!
+        booking.servicePoint = resolver.resolveServicePoint(dto.servicePointId)!!
+        booking.employee = resolver.resolveEmployee(dto.employeeId)!!
+        booking.treatment = resolver.resolveTreatment(dto.treatmentId)!!
+    }
+
+    @AfterMapping
+    protected fun resolveUpdate(
         @MappingTarget booking: Booking,
         dto: BookingUpdateDto,
-        @Context resolver: BookingMappingResolver
+        @Context resolver: BookingMappingResolverService
     ) {
         dto.userId?.let { booking.user = resolver.resolveUser(it)!! }
         dto.servicePointId?.let { booking.servicePoint = resolver.resolveServicePoint(it)!! }

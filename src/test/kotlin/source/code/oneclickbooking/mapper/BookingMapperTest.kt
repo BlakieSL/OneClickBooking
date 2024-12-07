@@ -14,7 +14,8 @@ import source.code.oneclickbooking.dto.request.BookingUpdateDto
 import source.code.oneclickbooking.dto.response.BookingResponseDto
 import source.code.oneclickbooking.model.*
 import source.code.oneclickbooking.repository.*
-import source.code.oneclickbooking.service.implementation.booking.BookingMappingResolver
+import source.code.oneclickbooking.service.declaration.booking.BookingMappingResolverService
+import source.code.oneclickbooking.service.implementation.booking.BookingMappingResolverServiceImpl
 import java.time.LocalDateTime
 import java.util.*
 
@@ -31,7 +32,7 @@ class BookingMapperTest {
     @Mock
     private lateinit var treatmentRepository: TreatmentRepository
     @InjectMocks
-    private lateinit var bookingMappingResolver: BookingMappingResolver
+    private lateinit var bookingMappingResolverServiceImpl: BookingMappingResolverServiceImpl
 
     private lateinit var user: User
     private lateinit var servicePoint: ServicePoint
@@ -83,13 +84,13 @@ class BookingMapperTest {
 
     @Test
     fun `should map BookingCreateDto to Booking`() {
-        val result = bookingMapper.toEntity(
-            bookingCreateDto,
-            user,
-            servicePoint,
-            employee,
-            treatment
-        )
+        whenever(userRepository.findById(1)).thenReturn(Optional.of(user))
+        whenever(servicePointRepository.findById(1)).thenReturn(Optional.of(servicePoint))
+        whenever(employeeRepository.findById(1)).thenReturn(Optional.of(employee))
+        whenever(treatmentRepository.findById(1)).thenReturn(Optional.of(treatment))
+
+
+        val result = bookingMapper.toEntity(bookingCreateDto, bookingMappingResolverServiceImpl)
 
         assertEquals(1, result.user.id)
         assertEquals(1, result.servicePoint.id)
@@ -114,7 +115,7 @@ class BookingMapperTest {
         whenever(employeeRepository.findById(1)).thenReturn(Optional.of(employee))
         whenever(treatmentRepository.findById(1)).thenReturn(Optional.of(newTreatment))
 
-        bookingMapper.update(booking, bookingUpdateDto, bookingMappingResolver)
+        bookingMapper.update(booking, bookingUpdateDto, bookingMappingResolverServiceImpl)
 
         assertEquals(LocalDateTime.of(2023, 11, 11, 11, 0), booking.date)
         assertEquals(newTreatment.id, booking.treatment?.id)
@@ -131,7 +132,7 @@ class BookingMapperTest {
             treatmentId = null
         )
 
-        bookingMapper.update(booking, partialUpdateDto, bookingMappingResolver)
+        bookingMapper.update(booking, partialUpdateDto, bookingMappingResolverServiceImpl)
 
         assertEquals(LocalDateTime.of(2023, 10, 10, 10, 59), booking.date)
         assertEquals(1, booking.user.id)

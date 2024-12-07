@@ -9,36 +9,21 @@ import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.mapper.BookingMapper
 import source.code.oneclickbooking.model.*
 import source.code.oneclickbooking.repository.*
-import source.code.oneclickbooking.service.declaration.BookingService
+import source.code.oneclickbooking.service.declaration.booking.BookingService
 import source.code.oneclickbooking.service.declaration.JsonPatchService
 import source.code.oneclickbooking.service.declaration.ValidationService
+import source.code.oneclickbooking.service.declaration.booking.BookingMappingResolverService
 
 @Service
 class BookingServiceImpl(
     private val validationService: ValidationService,
     private val jsonPatchService: JsonPatchService,
     private val mapper: BookingMapper,
-    private val mappingResolver: BookingMappingResolver,
+    private val mappingResolver: BookingMappingResolverService,
     private val repository: BookingRepository,
-    private val userRepository: UserRepository,
-    private val servicePointRepository: ServicePointRepository,
-    private val employeeRepository: EmployeeRepository,
-    private val treatmentRepository: TreatmentRepository
-) : BookingService{
+) : BookingService {
     override fun create(bookingDto: BookingCreateDto): BookingResponseDto {
-        val user = findUser(bookingDto.userId)
-        val servicePoint = findServicePoint(bookingDto.servicePointId)
-        val employee = findEmployee(bookingDto.employeeId)
-        val treatment = findTreatment(bookingDto.treatmentId)
-
-        val booking = mapper.toEntity(
-            bookingDto,
-            user,
-            servicePoint,
-            employee,
-            treatment
-        )
-
+        val booking = mapper.toEntity(bookingDto, mappingResolver)
         val savedBooking = repository.save(booking)
         return mapper.toResponseDto(savedBooking)
     }
@@ -72,29 +57,9 @@ class BookingServiceImpl(
         return jsonPatchService.applyPatch(patch, responseDto, BookingUpdateDto::class)
     }
 
+
     private fun find(id: Int) : Booking {
         return repository.findById(id)
-            .orElseThrow{ RecordNotFoundException(Booking::class, id)}
+            .orElseThrow{ RecordNotFoundException(Booking::class, id) }
     }
-
-    private fun findUser(id: Int) : User {
-        return userRepository.findById(id)
-            .orElseThrow{ RecordNotFoundException(User::class, id)}
-    }
-
-    private fun findServicePoint(id: Int) : ServicePoint {
-        return servicePointRepository.findById(id)
-            .orElseThrow{ RecordNotFoundException(ServicePoint::class, id)}
-    }
-
-    private fun findEmployee(id: Int) : Employee {
-        return employeeRepository.findById(id)
-            .orElseThrow{ RecordNotFoundException(Employee::class, id)}
-    }
-
-    private fun findTreatment(id: Int) : Treatment {
-        return treatmentRepository.findById(id)
-            .orElseThrow{ RecordNotFoundException(Treatment::class, id)}
-    }
-
 }
