@@ -17,9 +17,9 @@ import source.code.oneclickbooking.model.RoleName
 import source.code.oneclickbooking.model.User
 import source.code.oneclickbooking.repository.RoleRepository
 import source.code.oneclickbooking.repository.UserRepository
-import source.code.oneclickbooking.service.declaration.JsonPatchService
+import source.code.oneclickbooking.service.declaration.util.JsonPatchService
 import source.code.oneclickbooking.service.declaration.UserService
-import source.code.oneclickbooking.service.declaration.ValidationService
+import source.code.oneclickbooking.service.declaration.util.ValidationService
 
 @Service
 class UserServiceImpl(

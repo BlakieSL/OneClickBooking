@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.service.declaration
+package source.code.oneclickbooking.service.declaration.util
 
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
 import kotlin.reflect.KClass

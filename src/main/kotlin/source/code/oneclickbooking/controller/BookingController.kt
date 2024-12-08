@@ -13,26 +13,26 @@ import source.code.oneclickbooking.service.declaration.booking.BookingService
 class BookingController(
     private val bookingService: BookingService
 ) {
-    @GetMapping("/id")
-    fun get(@PathVariable id: Int) : ResponseEntity<BookingResponseDto> =
+    @GetMapping("/{id}")
+    fun get(@PathVariable id: Int): ResponseEntity<BookingResponseDto> =
         ResponseEntity.ok(bookingService.get(id))
 
     @GetMapping
-    fun getAll() : ResponseEntity<List<BookingResponseDto>> =
+    fun getAll(): ResponseEntity<List<BookingResponseDto>> =
         ResponseEntity.ok(bookingService.getAll())
 
     @PostMapping
-    fun create(@Valid @RequestBody request: BookingCreateDto) : ResponseEntity<BookingResponseDto> =
+    fun create(@Valid @RequestBody request: BookingCreateDto): ResponseEntity<BookingResponseDto> =
         ResponseEntity.status(201).body(bookingService.create(request))
 
     @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: Int) : ResponseEntity<Unit> =
+    fun delete(@PathVariable id: Int): ResponseEntity<Unit> =
         bookingService.delete(id).let { ResponseEntity.noContent().build() }
 
     @PatchMapping("/{id}")
     fun update(
         @PathVariable id: Int,
         @RequestBody patch: JsonMergePatch
-    ) : ResponseEntity<BookingResponseDto> =
+    ): ResponseEntity<BookingResponseDto> =
         ResponseEntity.ok(bookingService.update(id, patch))
 }

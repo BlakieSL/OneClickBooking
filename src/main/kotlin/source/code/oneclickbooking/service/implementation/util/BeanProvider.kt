@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.service.implementation
+package source.code.oneclickbooking.service.implementation.util
 
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service
 @Service
 class BeanProvider : ApplicationContextAware {
     override fun setApplicationContext(applicationContext: ApplicationContext) {
-        BeanProvider.applicationContext = applicationContext
+        Companion.applicationContext = applicationContext
     }
 
     companion object {

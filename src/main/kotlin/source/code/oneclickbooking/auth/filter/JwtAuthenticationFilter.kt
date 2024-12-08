@@ -15,7 +15,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.security.web.util.matcher.RequestMatcher
 import source.code.oneclickbooking.auth.JwtAuthenticationSuccessHandler
-import source.code.oneclickbooking.service.implementation.JwtService
+import source.code.oneclickbooking.service.implementation.util.JwtService
 import source.code.oneclickbooking.service.declaration.UserService
 
 class JwtAuthenticationFilter(

@@ -5,7 +5,7 @@ import source.code.oneclickbooking.model.ServicePoint
 import source.code.oneclickbooking.model.Treatment
 import source.code.oneclickbooking.model.User
 
-interface BookingMappingResolverService {
+interface BookingMappingResolver {
     fun resolveUser(id: Int?): User?
     fun resolveServicePoint(id: Int?): ServicePoint?
     fun resolveEmployee(id: Int?): Employee?

@@ -1,12 +1,8 @@
 package source.code.oneclickbooking.model
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.OneToOne
-import org.jetbrains.annotations.NotNull
+import jakarta.persistence.*
+import jakarta.validation.constraints.NotNull
+
 
 @Entity
 data class Review (
@@ -20,7 +16,9 @@ data class Review (
 
     var text: String? = null,
 
+    @field:NotNull
     @OneToOne(mappedBy = "review")
+    @JoinColumn(name = "booking_id", nullable = false, unique = true)
     var booking: Booking,
 ) {
     companion object {

@@ -1,6 +1,7 @@
 package source.code.oneclickbooking.service.implementation.booking
 
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.request.BookingUpdateDto
@@ -10,9 +11,8 @@ import source.code.oneclickbooking.mapper.BookingMapper
 import source.code.oneclickbooking.model.*
 import source.code.oneclickbooking.repository.*
 import source.code.oneclickbooking.service.declaration.booking.BookingService
-import source.code.oneclickbooking.service.declaration.JsonPatchService
-import source.code.oneclickbooking.service.declaration.ValidationService
-import source.code.oneclickbooking.service.declaration.booking.BookingMappingResolverService
+import source.code.oneclickbooking.service.declaration.util.JsonPatchService
+import source.code.oneclickbooking.service.declaration.util.ValidationService
 
 @Service
 class BookingServiceImpl(
@@ -21,12 +21,14 @@ class BookingServiceImpl(
     private val mapper: BookingMapper,
     private val repository: BookingRepository,
 ) : BookingService {
+    @Transactional
     override fun create(bookingDto: BookingCreateDto): BookingResponseDto {
         val booking = mapper.toEntity(bookingDto)
         val savedBooking = repository.save(booking)
         return mapper.toResponseDto(savedBooking)
     }
 
+    @Transactional
     override fun update(id: Int, patch: JsonMergePatch): BookingResponseDto {
         val booking = find(id)
         val patched = applyPatch(booking, patch)
@@ -38,6 +40,7 @@ class BookingServiceImpl(
         return mapper.toResponseDto(savedBooking)
     }
 
+    @Transactional
     override fun delete(id: Int) {
         val booking = find(id)
         repository.delete(booking)
@@ -56,9 +59,9 @@ class BookingServiceImpl(
         return jsonPatchService.applyPatch(patch, responseDto, BookingUpdateDto::class)
     }
 
-
-    private fun find(id: Int) : Booking {
-        return repository.findById(id)
-            .orElseThrow{ RecordNotFoundException(Booking::class, id) }
+    private fun find(id: Int): Booking {
+        return repository.findById(id).orElseThrow {
+            RecordNotFoundException(Booking::class, id)
+        }
     }
 }

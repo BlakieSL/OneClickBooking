@@ -3,8 +3,7 @@ package source.code.oneclickbooking.model
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Positive
-import lombok.NoArgsConstructor
-import org.jetbrains.annotations.NotNull
+import jakarta.validation.constraints.NotNull
 
 @Entity
 data class Treatment (

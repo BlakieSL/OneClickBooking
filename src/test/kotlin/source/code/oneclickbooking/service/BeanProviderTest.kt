@@ -11,7 +11,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.NoSuchBeanDefinitionException
 import org.springframework.context.ApplicationContext
-import source.code.oneclickbooking.service.implementation.BeanProvider
+import source.code.oneclickbooking.service.implementation.util.BeanProvider
 
 @ExtendWith(MockitoExtension::class)
 class BeanProviderTest {

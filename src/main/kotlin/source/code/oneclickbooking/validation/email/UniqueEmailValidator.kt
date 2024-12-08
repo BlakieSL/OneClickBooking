@@ -5,7 +5,7 @@ import jakarta.persistence.FlushModeType
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
 import source.code.oneclickbooking.repository.UserRepository
-import source.code.oneclickbooking.service.implementation.BeanProvider
+import source.code.oneclickbooking.service.implementation.util.BeanProvider
 
 class UniqueEmailValidator: ConstraintValidator<UniqueEmailDomain, String> {
     private lateinit var userRepository: UserRepository

@@ -11,15 +11,15 @@ import source.code.oneclickbooking.repository.EmployeeRepository
 import source.code.oneclickbooking.repository.ServicePointRepository
 import source.code.oneclickbooking.repository.TreatmentRepository
 import source.code.oneclickbooking.repository.UserRepository
-import source.code.oneclickbooking.service.declaration.booking.BookingMappingResolverService
+import source.code.oneclickbooking.service.declaration.booking.BookingMappingResolver
 
-@Service
-class BookingMappingResolverServiceImpl(
+@Component
+class BookingMappingResolverImpl(
     private val userRepository: UserRepository,
     private val servicePointRepository: ServicePointRepository,
     private val employeeRepository: EmployeeRepository,
     private val treatmentRepository: TreatmentRepository
-) : BookingMappingResolverService{
+): BookingMappingResolver{
     override fun resolveUser(id: Int?): User? {
         return id?.let {
             userRepository.findById(it).orElseThrow {

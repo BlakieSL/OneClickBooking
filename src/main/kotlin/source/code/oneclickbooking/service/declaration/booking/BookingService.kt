@@ -6,8 +6,8 @@ import source.code.oneclickbooking.dto.response.BookingResponseDto
 
 interface BookingService {
     fun create(bookingDto: BookingCreateDto): BookingResponseDto
-    fun update(id: Int, patch: JsonMergePatch) : BookingResponseDto
+    fun update(id: Int, patch: JsonMergePatch): BookingResponseDto
     fun delete(id: Int)
-    fun get(id: Int) : BookingResponseDto
-    fun getAll() : List<BookingResponseDto>
+    fun get(id: Int): BookingResponseDto
+    fun getAll(): List<BookingResponseDto>
 }

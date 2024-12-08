@@ -1,9 +1,9 @@
-package source.code.oneclickbooking.service.implementation
+package source.code.oneclickbooking.service.implementation.util
 
 import jakarta.validation.ConstraintViolation
 import jakarta.validation.Validator
 import org.springframework.stereotype.Service
-import source.code.oneclickbooking.service.declaration.ValidationService
+import source.code.oneclickbooking.service.declaration.util.ValidationService
 
 @Service
 class ValidationServiceImpl(private val validator: Validator) : ValidationService {

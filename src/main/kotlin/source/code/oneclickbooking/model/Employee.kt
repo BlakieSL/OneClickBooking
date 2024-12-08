@@ -2,7 +2,6 @@ package source.code.oneclickbooking.model
 
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotBlank
-import lombok.NoArgsConstructor
 
 @Entity
 data class Employee (

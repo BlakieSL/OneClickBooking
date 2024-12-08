@@ -11,14 +11,14 @@ import org.mockito.kotlin.whenever
 import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.request.BookingUpdateDto
 import source.code.oneclickbooking.model.*
-import source.code.oneclickbooking.service.declaration.booking.BookingMappingResolverService
+import source.code.oneclickbooking.service.declaration.booking.BookingMappingResolver
 import java.time.LocalDateTime
 
 @ExtendWith(MockitoExtension::class)
 class BookingMapperTest {
 
     @Mock
-    private lateinit var resolver: BookingMappingResolverService
+    private lateinit var resolver: BookingMappingResolver
 
     @InjectMocks
     private lateinit var bookingMapper: BookingMapper

@@ -19,9 +19,9 @@ import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.mapper.BookingMapper
 import source.code.oneclickbooking.model.*
 import source.code.oneclickbooking.repository.*
-import source.code.oneclickbooking.service.declaration.JsonPatchService
-import source.code.oneclickbooking.service.declaration.ValidationService
-import source.code.oneclickbooking.service.implementation.booking.BookingMappingResolverServiceImpl
+import source.code.oneclickbooking.service.declaration.util.JsonPatchService
+import source.code.oneclickbooking.service.declaration.util.ValidationService
+import source.code.oneclickbooking.service.implementation.booking.BookingMappingResolverImpl
 import source.code.oneclickbooking.service.implementation.booking.BookingServiceImpl
 import java.time.LocalDateTime
 import java.util.*
@@ -39,7 +39,7 @@ class BookingServiceTest {
     private lateinit var mapper: BookingMapper
 
     @Mock
-    private lateinit var mappingResolver: BookingMappingResolverServiceImpl
+    private lateinit var mappingResolver: BookingMappingResolverImpl
 
     @Mock
     private lateinit var repository: BookingRepository

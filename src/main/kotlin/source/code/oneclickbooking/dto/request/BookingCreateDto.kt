@@ -1,7 +1,7 @@
 package source.code.oneclickbooking.dto.request
 
 import jakarta.validation.constraints.FutureOrPresent
-import org.jetbrains.annotations.NotNull
+import jakarta.validation.constraints.NotNull
 import java.time.LocalDateTime
 
 data class BookingCreateDto (

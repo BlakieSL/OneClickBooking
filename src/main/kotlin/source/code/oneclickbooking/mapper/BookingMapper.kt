@@ -5,11 +5,11 @@ import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.request.BookingUpdateDto
 import source.code.oneclickbooking.dto.response.BookingResponseDto
 import source.code.oneclickbooking.model.*
-import source.code.oneclickbooking.service.declaration.booking.BookingMappingResolverService
+import source.code.oneclickbooking.service.declaration.booking.BookingMappingResolver
 
 @Component
 class BookingMapper(
-    private val resolver: BookingMappingResolverService
+    private val resolver: BookingMappingResolver
 ) {
     fun toResponseDto(booking: Booking): BookingResponseDto {
         return BookingResponseDto(

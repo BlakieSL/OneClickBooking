@@ -1,7 +1,7 @@
 package source.code.oneclickbooking.model
 
 import jakarta.persistence.*
-import org.jetbrains.annotations.NotNull
+import jakarta.validation.constraints.NotNull
 import java.time.LocalTime
 
 @Entity

@@ -9,8 +9,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToOne
 import jakarta.validation.constraints.FutureOrPresent
-import org.hibernate.proxy.HibernateProxy
-import org.jetbrains.annotations.NotNull
+import jakarta.validation.constraints.NotNull
 import java.time.LocalDateTime
 
 @Entity
@@ -42,8 +41,7 @@ data class Booking (
     @JoinColumn(name = "treatment_id")
     var treatment: Treatment? = null,
 
-    @OneToOne
-    @JoinColumn(name = "review_id")
+    @OneToOne(mappedBy = "booking")
     var review: Review? = null,
 ) {
     companion object {

@@ -17,7 +17,7 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector
-import source.code.oneclickbooking.service.implementation.JwtService
+import source.code.oneclickbooking.service.implementation.util.JwtService
 import source.code.oneclickbooking.auth.filter.BearerTokenFilter
 import source.code.oneclickbooking.auth.filter.JwtAuthenticationFilter
 import source.code.oneclickbooking.service.declaration.UserService

@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.service.implementation
+package source.code.oneclickbooking.service.implementation.util
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner
