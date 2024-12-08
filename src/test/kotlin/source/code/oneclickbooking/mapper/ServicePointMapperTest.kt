@@ -2,17 +2,17 @@ package source.code.oneclickbooking.mapper
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.mapstruct.factory.Mappers
+import source.code.oneclickbooking.dto.response.ServicePointResponseDto
 import source.code.oneclickbooking.model.ServicePoint
 
 class ServicePointMapperTest {
-    private val servicePointMapper = Mappers.getMapper(ServicePointMapper::class.java)
+    private val servicePointMapper = ServicePointMapper()
 
     @Test
     fun `should map ServicePoint to ServicePointResponseDto`() {
-        val servicePoint = ServicePoint.createDefault(id = 1)
+        val servicePoint = ServicePoint.createDefault()
 
-        val responseDto = servicePointMapper.toResponseDto(servicePoint)
+        val responseDto: ServicePointResponseDto = servicePointMapper.toResponseDto(servicePoint)
 
         assertEquals(1, responseDto.id)
         assertEquals(servicePoint.name, responseDto.name)

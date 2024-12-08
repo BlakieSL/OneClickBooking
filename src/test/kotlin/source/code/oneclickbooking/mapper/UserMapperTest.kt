@@ -3,15 +3,17 @@ package source.code.oneclickbooking.mapper
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.mapstruct.factory.Mappers
+import source.code.oneclickbooking.dto.other.UserCredentialsDto
 import source.code.oneclickbooking.dto.request.UserCreateDto
 import source.code.oneclickbooking.dto.request.UserUpdateDto
+import source.code.oneclickbooking.dto.response.UserResponseDto
 import source.code.oneclickbooking.model.Role
 import source.code.oneclickbooking.model.RoleName
 import source.code.oneclickbooking.model.User
 
 class UserMapperTest {
-    private val userMapper = Mappers.getMapper(UserMapper::class.java)
+
+    private val userMapper = UserMapper()
 
     @Test
     fun `should map UserCreateDto to User with hashed password`() {
@@ -24,13 +26,15 @@ class UserMapperTest {
         assertEquals("Doe", user.surname)
         assertEquals("email@gmail.com", user.email)
         assertEquals(hashedPassword, user.password)
+        assertEquals(0, user.roles.size)
+        assertEquals(0, user.bookings.size)
     }
 
     @Test
     fun `should map User to UserResponseDto`() {
-        val user = User.createDefault(1)
+        val user = User.createDefault(id = 1)
 
-        val responseDto = userMapper.toResponseDto(user)
+        val responseDto: UserResponseDto = userMapper.toResponseDto(user)
 
         assertEquals(1, responseDto.id)
         assertEquals("John", responseDto.name)
@@ -40,11 +44,11 @@ class UserMapperTest {
 
     @Test
     fun `should update User fields from UserUpdateDto`() {
-        val user = User.createDefault(1)
+        val user = User.createDefault(id = 1)
         val updateDto = UserUpdateDto(
-            "UpdatedName",
-            "UpdatedSurname",
-            "updated.email@example.com"
+            name = "UpdatedName",
+            surname = "UpdatedSurname",
+            email = "updated.email@example.com"
         )
 
         userMapper.update(user, updateDto)
@@ -63,7 +67,7 @@ class UserMapperTest {
             roles.addAll(setOf(role1, role2))
         }
 
-        val credentialsDto = userMapper.toCredentialsDto(user)
+        val credentialsDto: UserCredentialsDto = userMapper.toCredentialsDto(user)
 
         assertEquals(user.email, credentialsDto.email)
         assertEquals(user.password, credentialsDto.password)

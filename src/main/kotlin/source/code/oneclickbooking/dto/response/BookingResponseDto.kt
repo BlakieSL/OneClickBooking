@@ -7,7 +7,7 @@ data class BookingResponseDto (
     val date: LocalDateTime,
     val userId: Int,
     val servicePointId: Int,
-    val employeeId: Int?,
-    val treatmentId: Int?,
-    val reviewId: Int?
+    val employeeId: Int? = null,
+    val treatmentId: Int? = null,
+    val reviewId: Int? = null
 )

@@ -1,66 +1,43 @@
 package source.code.oneclickbooking.mapper
 
-import org.mapstruct.*
+import org.springframework.stereotype.Component
 import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.request.BookingUpdateDto
 import source.code.oneclickbooking.dto.response.BookingResponseDto
 import source.code.oneclickbooking.model.*
 import source.code.oneclickbooking.service.declaration.booking.BookingMappingResolverService
 
-@Mapper(componentModel = "spring")
-abstract class BookingMapper {
-    @Mapping(target = "userId", source = "user.id")
-    @Mapping(target = "servicePointId", source = "servicePoint.id")
-    @Mapping(target = "employeeId", source = "employee.id")
-    @Mapping(target = "treatmentId", source = "treatment.id")
-    @Mapping(target = "reviewId", source = "review.id")
-    abstract fun toResponseDto(booking: Booking) : BookingResponseDto
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "review", ignore = true)
-    @Mapping(target = "user", ignore = true)
-    @Mapping(target = "servicePoint", ignore = true)
-    @Mapping(target = "employee", ignore = true)
-    @Mapping(target = "treatment", ignore = true)
-    abstract fun toEntity(
-        dto: BookingCreateDto,
-        @Context mappingResolver: BookingMappingResolverService
-    ) : Booking
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "review", ignore = true)
-    @Mapping(target = "user", ignore = true)
-    @Mapping(target = "servicePoint", ignore = true)
-    @Mapping(target = "employee", ignore = true)
-    @Mapping(target = "treatment", ignore = true)
-    abstract fun update(
-        @MappingTarget booking: Booking,
-        dto: BookingUpdateDto,
-        @Context mappingResolver: BookingMappingResolverService
-    )
-
-    @AfterMapping
-    protected fun resolveCreate(
-        @MappingTarget booking: Booking,
-        dto: BookingCreateDto,
-        @Context resolver: BookingMappingResolverService
-    ) {
-        booking.user = resolver.resolveUser(dto.userId)!!
-        booking.servicePoint = resolver.resolveServicePoint(dto.servicePointId)!!
-        booking.employee = resolver.resolveEmployee(dto.employeeId)!!
-        booking.treatment = resolver.resolveTreatment(dto.treatmentId)!!
+@Component
+class BookingMapper(
+    private val resolver: BookingMappingResolverService
+) {
+    fun toResponseDto(booking: Booking): BookingResponseDto {
+        return BookingResponseDto(
+            id = booking.id!!,
+            date = booking.date,
+            userId = booking.user.id!!,
+            servicePointId = booking.servicePoint.id!!,
+            employeeId = booking.employee?.id,
+            treatmentId = booking.treatment?.id,
+            reviewId = booking.review?.id
+        )
     }
 
-    @AfterMapping
-    protected fun resolveUpdate(
-        @MappingTarget booking: Booking,
-        dto: BookingUpdateDto,
-        @Context resolver: BookingMappingResolverService
-    ) {
+    fun toEntity(dto: BookingCreateDto): Booking {
+        return Booking(
+            date = dto.date,
+            user = resolver.resolveUser(dto.userId)!!,
+            servicePoint = resolver.resolveServicePoint(dto.servicePointId)!!,
+            employee = resolver.resolveEmployee(dto.employeeId)!!,
+            treatment = resolver.resolveTreatment(dto.treatmentId)!!,
+        )
+    }
+
+    fun update(booking: Booking, dto: BookingUpdateDto) {
+        dto.date?.let { booking.date = it }
         dto.userId?.let { booking.user = resolver.resolveUser(it)!! }
         dto.servicePointId?.let { booking.servicePoint = resolver.resolveServicePoint(it)!! }
-        dto.employeeId?.let { booking.employee = resolver.resolveEmployee(it) }
-        dto.treatmentId?.let { booking.treatment = resolver.resolveTreatment(it) }
+        dto.employeeId?.let { booking.employee = resolver.resolveEmployee(it)!! }
+        dto.treatmentId?.let { booking.treatment = resolver.resolveTreatment(it)!! }
     }
 }

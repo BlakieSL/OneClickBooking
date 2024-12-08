@@ -1,12 +1,18 @@
 package source.code.oneclickbooking.dto
 
-import jakarta.validation.Validation
+import jakarta.validation.Validator
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
 import source.code.oneclickbooking.dto.request.UserCreateDto
 import kotlin.test.assertTrue
 
+@SpringBootTest
 class UserCreateDtoTest {
-    private val validator = Validation.buildDefaultValidatorFactory().validator
+
+    @Autowired
+    private lateinit var validator: Validator
+
     @Test
     fun `should validate valid UserCreateDto`() {
         val dto = UserCreateDto.createDefault()

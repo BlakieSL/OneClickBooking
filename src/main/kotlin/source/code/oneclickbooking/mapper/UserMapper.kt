@@ -1,6 +1,6 @@
 package source.code.oneclickbooking.mapper
 
-import org.mapstruct.*
+import org.springframework.stereotype.Component
 import source.code.oneclickbooking.dto.other.UserCredentialsDto
 import source.code.oneclickbooking.dto.request.UserCreateDto
 import source.code.oneclickbooking.dto.request.UserUpdateDto
@@ -8,28 +8,43 @@ import source.code.oneclickbooking.dto.response.UserResponseDto
 import source.code.oneclickbooking.model.Role
 import source.code.oneclickbooking.model.User
 
-@Mapper(componentModel = "spring")
-abstract class UserMapper {
-    abstract fun toResponseDto(user: User) : UserResponseDto
+@Component
+class UserMapper {
+    fun toResponseDto(user: User): UserResponseDto {
+        return UserResponseDto(
+            id = user.id!!,
+            name = user.name,
+            surname = user.surname,
+            email = user.email
+        )
+    }
 
-    @Mapping(target = "password", expression = "java(hashedPassword)")
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "roles", ignore = true)
-    @Mapping(target = "bookings", ignore = true)
-    abstract fun toEntity(user: UserCreateDto, @Context hashedPassword: String) : User
+    fun toEntity(dto: UserCreateDto, hashedPassword: String): User {
+        return User(
+            name = dto.name,
+            surname = dto.surname,
+            email = dto.email,
+            password = hashedPassword,
+            roles = mutableSetOf(),
+            bookings = mutableSetOf()
+        )
+    }
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "roles", ignore = true)
-    @Mapping(target = "bookings", ignore = true)
-    @Mapping(target = "password", ignore = true)
-    abstract fun update(@MappingTarget user: User, request: UserUpdateDto)
+    fun update(user: User, dto: UserUpdateDto) {
+        dto.name?.let { user.name = it }
+        dto.surname?.let { user.surname = it }
+        dto.email?.let { user.email = it }
+    }
 
-    @Mapping(target = "roles", source = "roles", qualifiedByName = ["rolesToRolesNames"])
-    abstract fun toCredentialsDto(user: User) : UserCredentialsDto
+    fun toCredentialsDto(user: User): UserCredentialsDto {
+        return UserCredentialsDto(
+            email = user.email,
+            password = user.password,
+            roles = rolesToRolesNames(user.roles)
+        )
+    }
 
-    @Named("rolesToRolesNames")
-    fun rolesToRolesNames(roles: Set<Role>) : Array<String> {
+    private fun rolesToRolesNames(roles: Set<Role>): Array<String> {
         return roles.map { it.name.name }.toTypedArray()
     }
 }

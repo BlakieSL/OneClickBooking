@@ -106,7 +106,7 @@ class BookingServiceTest {
     @Test
     fun `should create booking`() {
         val savedBooking = booking.copy(id = 1)
-        whenever(mapper.toEntity(bookingCreateDto, mappingResolver)).thenReturn(booking)
+        whenever(mapper.toEntity(bookingCreateDto)).thenReturn(booking)
         whenever(repository.save(booking)).thenReturn(savedBooking)
         whenever(mapper.toResponseDto(savedBooking)).thenReturn(bookingResponseDto)
 

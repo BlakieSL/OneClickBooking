@@ -19,11 +19,10 @@ class BookingServiceImpl(
     private val validationService: ValidationService,
     private val jsonPatchService: JsonPatchService,
     private val mapper: BookingMapper,
-    private val mappingResolver: BookingMappingResolverService,
     private val repository: BookingRepository,
 ) : BookingService {
     override fun create(bookingDto: BookingCreateDto): BookingResponseDto {
-        val booking = mapper.toEntity(bookingDto, mappingResolver)
+        val booking = mapper.toEntity(bookingDto)
         val savedBooking = repository.save(booking)
         return mapper.toResponseDto(savedBooking)
     }
@@ -33,7 +32,7 @@ class BookingServiceImpl(
         val patched = applyPatch(booking, patch)
 
         validationService.validate(patched)
-        mapper.update(booking, patched, mappingResolver)
+        mapper.update(booking, patched)
 
         val savedBooking = repository.save(booking)
         return mapper.toResponseDto(savedBooking)

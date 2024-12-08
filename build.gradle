@@ -18,9 +18,14 @@ java {
 
 kotlin {
     compilerOptions {
-        freeCompilerArgs.addAll '-Xjsr305=strict'
+        freeCompilerArgs.addAll(
+                "-Xjsr305=strict",
+                "-language-version", "2.1",
+                "-api-version", "2.1",
+        )
     }
 }
+
 
 configurations {
     compileOnly {
@@ -57,6 +62,16 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     kapt "org.mapstruct:mapstruct-processor:1.5.5.Final"
 }
+
+kapt {
+    correctErrorTypes = true
+    includeCompileClasspath = false
+    javacOptions {
+        option("-Xjsr305", "strict")
+    }
+}
+
+
 
 
 allOpen {
