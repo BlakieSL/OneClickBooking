@@ -20,7 +20,7 @@ class BookingServiceImpl(
     private val jsonPatchService: JsonPatchService,
     private val mapper: BookingMapper,
     private val repository: BookingRepository,
-) : BookingService {
+): BookingService {
     @Transactional
     override fun create(bookingDto: BookingCreateDto): BookingResponseDto {
         val booking = mapper.toEntity(bookingDto)

@@ -16,7 +16,7 @@ import source.code.oneclickbooking.service.implementation.booking.BookingMapping
 import java.util.*
 
 @ExtendWith(MockitoExtension::class)
-class BookingMappingResolverImplTest {
+class BookingMappingResolverTest {
     @Mock
     private lateinit var userRepository: UserRepository
     @Mock
