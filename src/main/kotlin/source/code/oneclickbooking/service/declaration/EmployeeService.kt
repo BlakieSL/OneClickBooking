@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.service.declaration.employee
+package source.code.oneclickbooking.service.declaration
 
 import source.code.oneclickbooking.dto.response.EmployeeResponseDto
 

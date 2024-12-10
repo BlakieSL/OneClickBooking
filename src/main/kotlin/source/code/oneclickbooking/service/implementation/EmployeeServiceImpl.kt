@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.service.implementation.employee
+package source.code.oneclickbooking.service.implementation
 
 import org.springframework.stereotype.Service
 import source.code.oneclickbooking.dto.response.EmployeeResponseDto
@@ -6,7 +6,7 @@ import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.mapper.EmployeeMapper
 import source.code.oneclickbooking.model.Employee
 import source.code.oneclickbooking.repository.EmployeeRepository
-import source.code.oneclickbooking.service.declaration.employee.EmployeeService
+import source.code.oneclickbooking.service.declaration.EmployeeService
 
 @Service
 class EmployeeServiceImpl(

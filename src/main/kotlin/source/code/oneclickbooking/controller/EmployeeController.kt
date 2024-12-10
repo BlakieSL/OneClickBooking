@@ -3,7 +3,7 @@ package source.code.oneclickbooking.controller
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import source.code.oneclickbooking.dto.response.EmployeeResponseDto
-import source.code.oneclickbooking.service.declaration.employee.EmployeeService
+import source.code.oneclickbooking.service.declaration.EmployeeService
 
 @RestController
 @RequestMapping("/api/employees")
