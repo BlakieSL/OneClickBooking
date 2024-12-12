@@ -16,12 +16,7 @@ class Employee (
 
     var description: String? = null,
 ) {
-    @OneToMany(
-        mappedBy = "employee",
-        cascade = [CascadeType.REMOVE],
-        fetch = FetchType.EAGER,
-        orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "employee", cascade = [CascadeType.REMOVE], orphanRemoval = true)
     val availabilities: MutableSet<EmployeeAvailability> = mutableSetOf()
 
     @OneToMany(mappedBy = "employee")

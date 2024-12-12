@@ -170,13 +170,13 @@ class ScheduleServiceImpl(
     }
 
     private fun findEmployee(id: Int): Employee {
-        return employeeRepository.findById(id)
-            .orElseThrow { RecordNotFoundException(Employee::class, id) }
+        return employeeRepository.findByIdWithAssociations(id)
+            ?: throw RecordNotFoundException(Employee::class, id)
     }
 
     private fun findServicePoint(id: Int): ServicePoint {
-        return servicePointRepository.findById(id)
-            .orElseThrow { RecordNotFoundException(ServicePoint::class, id) }
+        return servicePointRepository.findByIdWithAssociations(id)
+            ?: throw RecordNotFoundException(ServicePoint::class, id)
     }
 
     private fun findTreatment(id: Int): Treatment {
@@ -193,9 +193,10 @@ class ScheduleServiceImpl(
             val employee = findEmployee(employeeId)
             listOf(employee)
         } else {
-            servicePoint.employeeAssociations
-                .map { it.employee }
-                .filter { it.treatments.contains(treatment) }
+            employeeRepository.findAllByServicePointIdAndTreatmentId(
+                servicePoint.id!!,
+                treatment.id!!
+            )
         }
     }
 
