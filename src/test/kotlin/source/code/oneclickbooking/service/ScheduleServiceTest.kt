@@ -120,8 +120,8 @@ class ScheduleServiceTest {
     @Test
     fun `should throw exception if date filter has invalid format`() {
         val filter = FilterDto(filterCriteria = listOf(
-            FilterCriteria("servicePoint", 1, FilterOperation.EQUAL),
-            FilterCriteria("date", "invalid-date", FilterOperation.EQUAL)
+            FilterCriteria("SERVICE_POINT", 1, FilterOperation.EQUAL),
+            FilterCriteria("DATE", "invalid-date", FilterOperation.EQUAL)
         ))
         val request = ScheduleRequestDto(filter = filter, treatmentId = 100)
 
@@ -133,8 +133,8 @@ class ScheduleServiceTest {
     @Test
     fun `should throw exception if service point not found`() {
         val filter = FilterDto(filterCriteria = listOf(
-            FilterCriteria("servicePoint", 999, FilterOperation.EQUAL),
-            FilterCriteria("date", "2024-12-15", FilterOperation.EQUAL)
+            FilterCriteria("SERVICE_POINT", 999, FilterOperation.EQUAL),
+            FilterCriteria("DATE", "2024-12-15", FilterOperation.EQUAL)
         ))
         val request = ScheduleRequestDto(filter = filter, treatmentId = 100)
 
@@ -150,8 +150,8 @@ class ScheduleServiceTest {
     @Test
     fun `should throw exception if treatment not found`() {
         val filter = FilterDto(filterCriteria = listOf(
-            FilterCriteria("servicePoint", 1, FilterOperation.EQUAL),
-            FilterCriteria("date", "2024-12-15", FilterOperation.EQUAL)
+            FilterCriteria("SERVICE_POINT", 1, FilterOperation.EQUAL),
+            FilterCriteria("DATE", "2024-12-15", FilterOperation.EQUAL)
         ))
         val request = ScheduleRequestDto(filter = filter, treatmentId = 999)
 
@@ -166,9 +166,9 @@ class ScheduleServiceTest {
     @Test
     fun `should return all free slots for single employee when no bookings`() {
         val filter = FilterDto(filterCriteria = listOf(
-            FilterCriteria("servicePoint", 1, FilterOperation.EQUAL),
-            FilterCriteria("date", date.toString(), FilterOperation.EQUAL),
-            FilterCriteria("employee", 10, FilterOperation.EQUAL)
+            FilterCriteria("SERVICE_POINT", 1, FilterOperation.EQUAL),
+            FilterCriteria("DATE", date.toString(), FilterOperation.EQUAL),
+            FilterCriteria("EMPLOYEE", 10, FilterOperation.EQUAL)
         ))
         val request = ScheduleRequestDto(filter = filter, treatmentId = 100)
 
@@ -196,9 +196,9 @@ class ScheduleServiceTest {
             treatment = treatment
         )
         val filter = FilterDto(filterCriteria = listOf(
-            FilterCriteria("servicePoint", 1, FilterOperation.EQUAL),
-            FilterCriteria("date", date.toString(), FilterOperation.EQUAL),
-            FilterCriteria("employee", 10, FilterOperation.EQUAL)
+            FilterCriteria("SERVICE_POINT", 1, FilterOperation.EQUAL),
+            FilterCriteria("DATE", date.toString(), FilterOperation.EQUAL),
+            FilterCriteria("EMPLOYEE", 10, FilterOperation.EQUAL)
         ))
         val request = ScheduleRequestDto(filter = filter, treatmentId = 100)
 
@@ -224,8 +224,8 @@ class ScheduleServiceTest {
     @Test
     fun `should return union of free slots from multiple employees`() {
         val filter = FilterDto(filterCriteria = listOf(
-            FilterCriteria("servicePoint", 1, FilterOperation.EQUAL),
-            FilterCriteria("date", date.toString(), FilterOperation.EQUAL)
+            FilterCriteria("SERVICE_POINT", 1, FilterOperation.EQUAL),
+            FilterCriteria("DATE", date.toString(), FilterOperation.EQUAL)
         ))
         val request = ScheduleRequestDto(filter = filter, treatmentId = 100)
 
@@ -242,8 +242,8 @@ class ScheduleServiceTest {
     @Test
     fun `should keep a slot if another employee is free in multiple employees scenario`() {
         val filter = FilterDto(filterCriteria = listOf(
-            FilterCriteria("servicePoint", 1, FilterOperation.EQUAL),
-            FilterCriteria("date", date.toString(), FilterOperation.EQUAL)
+            FilterCriteria("SERVICE_POINT", 1, FilterOperation.EQUAL),
+            FilterCriteria("DATE", date.toString(), FilterOperation.EQUAL)
         ))
         val request = ScheduleRequestDto(filter = filter, treatmentId = 100)
         val booking = Booking.createDefault(
@@ -260,7 +260,7 @@ class ScheduleServiceTest {
 
         val result = scheduleService.getSchedule(request)
 
+        println(result)
         assertTrue(result.freeSlots.contains(date.atTime(9,30)))
     }
-
 }

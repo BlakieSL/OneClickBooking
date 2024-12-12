@@ -8,11 +8,13 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToOne
+import jakarta.persistence.Table
 import jakarta.validation.constraints.FutureOrPresent
 import jakarta.validation.constraints.NotNull
 import java.time.LocalDateTime
 
 @Entity
+@Table(name = "booking")
 class Booking (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

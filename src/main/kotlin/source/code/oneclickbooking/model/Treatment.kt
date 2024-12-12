@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Positive
 import jakarta.validation.constraints.NotNull
 
 @Entity
+@Table(name = "treatment")
 class Treatment (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

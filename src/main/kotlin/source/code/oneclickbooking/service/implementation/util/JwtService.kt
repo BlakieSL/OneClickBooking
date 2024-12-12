@@ -17,7 +17,7 @@ import java.time.Instant
 import java.util.Date
 
 @Service
-class JwtService(@Value("\${jwt.sharedKey}") sharedKey: String) {
+class JwtService(@Value("\${spring.jws.sharedKey}") sharedKey: String) {
     companion object {
         private const val ACCESS_TOKEN_DURATION_MINUTES = 15
         private const val REFRESH_TOKEN_DURATION_MINUTES = 60 * 24 * 30
@@ -140,7 +140,7 @@ class JwtService(@Value("\${jwt.sharedKey}") sharedKey: String) {
 
     private fun getAuthorities(signedJWT: SignedJWT) : List<SimpleGrantedAuthority> {
         val claims = signedJWT.jwtClaimsSet
-        val roles = claims.getStringListClaim("roles")
+        val roles = claims.getStringListClaim("authorities")
         return roles.map { SimpleGrantedAuthority(it) }
     }
 

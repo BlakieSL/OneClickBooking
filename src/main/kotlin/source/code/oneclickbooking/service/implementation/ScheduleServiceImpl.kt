@@ -1,6 +1,7 @@
 package source.code.oneclickbooking.service.implementation
 
 import org.springframework.stereotype.Service
+import source.code.oneclickbooking.dto.other.BookingFilterKey
 import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.request.ScheduleRequestDto
 import source.code.oneclickbooking.dto.response.ScheduleResponseDto
@@ -144,7 +145,7 @@ class ScheduleServiceImpl(
 
     private fun extractEmployeeId(filter: FilterDto): Int? {
         return filter.filterCriteria
-            .find { it.filterKey.equals("employee", ignoreCase = true) }
+            .find { it.filterKey.equals(BookingFilterKey.EMPLOYEE.name, ignoreCase = true) }
             ?.value
             ?.toString()
             ?.toIntOrNull()
@@ -152,7 +153,7 @@ class ScheduleServiceImpl(
 
     private fun extractServicePointId(filter: FilterDto): Int {
         return filter.filterCriteria
-            .find { it.filterKey.equals("servicePoint", ignoreCase = true) }
+            .find { it.filterKey.equals(BookingFilterKey.SERVICE_POINT.name, ignoreCase = true) }
             ?.value
             ?.toString()
             ?.toIntOrNull()
@@ -161,7 +162,7 @@ class ScheduleServiceImpl(
 
     private fun extractDate(filter: FilterDto): LocalDate {
         return filter.filterCriteria
-            .find { it.filterKey.equals("date", ignoreCase = true) }
+            .find { it.filterKey.equals(BookingFilterKey.DATE.name , ignoreCase = true) }
             ?.value
             ?.toString()
             ?.let { LocalDate.parse(it) }

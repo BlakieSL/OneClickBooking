@@ -1,5 +1,7 @@
 package source.code.oneclickbooking.auth.filter
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpFilter
@@ -62,5 +64,8 @@ class JwtAuthenticationFilter(
         }
     }
 
-    private data class JwtAuthenticationToken(val username: String, val password: String)
+    private data class JwtAuthenticationToken @JsonCreator constructor(
+        @JsonProperty("username") val username: String,
+        @JsonProperty("password") val password: String
+    )
 }

@@ -24,9 +24,8 @@ class UserController (
     fun get(@PathVariable id: Int) : ResponseEntity<UserResponseDto> =
         ResponseEntity.ok(userService.getUser(id))
 
-    @PostMapping("/{id}")
+    @PostMapping("/register")
     fun create(
-        @PathVariable id: Int,
         @Valid @RequestBody request: UserCreateDto
     ) : ResponseEntity<UserResponseDto> =
         ResponseEntity.status(201).body(userService.createUser(request))

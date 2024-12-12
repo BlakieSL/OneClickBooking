@@ -2,10 +2,9 @@ package source.code.oneclickbooking.model
 
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotBlank
-import lombok.EqualsAndHashCode
 
 @Entity
-@EqualsAndHashCode
+@Table(name = "employee")
 class Employee (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +16,12 @@ class Employee (
 
     var description: String? = null,
 ) {
-    @OneToMany(mappedBy = "employee", cascade = [CascadeType.REMOVE], orphanRemoval = true)
+    @OneToMany(
+        mappedBy = "employee",
+        cascade = [CascadeType.REMOVE],
+        fetch = FetchType.EAGER,
+        orphanRemoval = true
+    )
     val availabilities: MutableSet<EmployeeAvailability> = mutableSetOf()
 
     @OneToMany(mappedBy = "employee")

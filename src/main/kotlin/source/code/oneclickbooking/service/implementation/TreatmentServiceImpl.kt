@@ -22,7 +22,7 @@ class TreatmentServiceImpl(
     }
 
     override fun getAll(servicePointId: Int): List<TreatmentResponseDto> {
-        TODO("Not yet implemented")
+        return repository.findAllByServicePointId(servicePointId).map { mapper.toResponseDto(it) }
     }
 
     private fun find(id: Int): Treatment {

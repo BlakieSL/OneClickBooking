@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull
 
 
 @Entity
+@Table(name = "review")
 class Review (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +18,7 @@ class Review (
     var text: String? = null,
 ) {
     @field:NotNull
-    @OneToOne(mappedBy = "review")
+    @OneToOne
     @JoinColumn(name = "booking_id", nullable = false, unique = true)
     lateinit var booking: Booking
 

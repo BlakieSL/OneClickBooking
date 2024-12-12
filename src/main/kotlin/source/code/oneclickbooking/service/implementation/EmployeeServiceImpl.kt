@@ -21,6 +21,11 @@ class EmployeeServiceImpl(
         return repository.findAll().map { mapper.toResponseDto(it) }
     }
 
+    override fun getAll(servicePointId: Int, treatmentId: Int): List<EmployeeResponseDto> {
+        return repository.findAllByServicePointIdAndTreatmentId(servicePointId, treatmentId)
+            .map { mapper.toResponseDto(it) }
+    }
+
     private fun find(id: Int): Employee {
         return repository.findById(id).orElseThrow {
             RecordNotFoundException(Employee::class, id)

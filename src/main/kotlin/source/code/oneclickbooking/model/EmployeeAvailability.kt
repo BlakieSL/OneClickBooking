@@ -6,6 +6,7 @@ import java.time.DayOfWeek
 import java.time.LocalTime
 
 @Entity
+@Table(name = "employee_availability")
 class EmployeeAvailability (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -20,4 +20,10 @@ class TreatmentController(
     @GetMapping
     fun getAll(): ResponseEntity<List<TreatmentResponseDto>> =
         ResponseEntity.ok(service.getAll())
+
+    @GetMapping("/service-point/{servicePointId}")
+    fun getAllByServicePoint(
+        @PathVariable servicePointId: Int
+    ): ResponseEntity<List<TreatmentResponseDto>> =
+        ResponseEntity.ok(service.getAll(servicePointId))
 }

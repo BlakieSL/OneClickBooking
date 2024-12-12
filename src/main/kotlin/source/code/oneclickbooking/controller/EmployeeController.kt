@@ -17,4 +17,11 @@ class EmployeeController(
     @GetMapping
     fun getAll(): ResponseEntity<List<EmployeeResponseDto>> =
         ResponseEntity.ok(employeeService.getAll())
+
+    @GetMapping("/service-point/{servicePointId}/treatment/{treatmentId}")
+    fun getAll(
+        @PathVariable servicePointId: Int,
+        @PathVariable treatmentId: Int
+    ): ResponseEntity<List<EmployeeResponseDto>> =
+        ResponseEntity.ok(employeeService.getAll(servicePointId, treatmentId))
 }
