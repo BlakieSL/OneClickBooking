@@ -2,6 +2,7 @@ package source.code.oneclickbooking.model
 
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotNull
+import java.time.DayOfWeek
 import java.time.LocalTime
 
 @Entity
@@ -27,12 +28,3 @@ data class EmployeeAvailability (
     @JoinColumn(name = "employee_id")
     var employee: Employee,
 )
-enum class DayOfWeek {
-    MONDAY,
-    TUESDAY,
-    WEDNESDAY,
-    THURSDAY,
-    FRIDAY,
-    SATURDAY,
-    SUNDAY
-}
