@@ -36,8 +36,7 @@ class ReviewMapperTest {
             id = 1,
             rating = 5,
             text = "Great service!",
-            booking = booking
-        )
+        ).apply { booking = booking}
         reviewCreateDto = ReviewCreateDto(
             rating = 5,
             text = "Great service!",

@@ -23,6 +23,7 @@ import source.code.oneclickbooking.service.declaration.util.JsonPatchService
 import source.code.oneclickbooking.service.declaration.util.ValidationService
 import source.code.oneclickbooking.service.implementation.booking.BookingMappingResolverImpl
 import source.code.oneclickbooking.service.implementation.booking.BookingServiceImpl
+import java.awt.print.Book
 import java.time.LocalDateTime
 import java.util.*
 
@@ -67,14 +68,15 @@ class BookingServiceTest {
         employee = Employee.createDefault(id = 1)
         treatment = Treatment.createDefault(id = 1)
 
-        booking = Booking(
+        booking = Booking.createDefault(
             id = 1,
+            date = LocalDateTime.of(2023, 10, 10, 10, 0),
             user = user,
             servicePoint = servicePoint,
             employee = employee,
-            treatment = treatment,
-            date = LocalDateTime.of(2023, 10, 10, 10, 0)
+            treatment = treatment
         )
+
 
         bookingCreateDto = BookingCreateDto(
             date = LocalDateTime.of(2023, 10, 10, 10, 0),
@@ -105,7 +107,15 @@ class BookingServiceTest {
 
     @Test
     fun `should create booking`() {
-        val savedBooking = booking.copy(id = 1)
+        val savedBooking = Booking.of(
+            id = 1,
+            date = booking.date,
+            user = booking.user,
+            servicePoint = booking.servicePoint,
+            employee = booking.employee,
+            treatment = booking.treatment,
+            review = booking.review
+        )
         whenever(mapper.toEntity(bookingCreateDto)).thenReturn(booking)
         whenever(repository.save(booking)).thenReturn(savedBooking)
         whenever(mapper.toResponseDto(savedBooking)).thenReturn(bookingResponseDto)

@@ -39,12 +39,13 @@ class BookingMapperTest {
         treatment = Treatment.createDefault(id = 1)
         booking = Booking(
             id = 1,
-            user = user,
-            servicePoint = servicePoint,
-            employee = employee,
-            treatment = treatment,
             date = LocalDateTime.of(2023, 10, 10, 10, 0)
-        )
+        ).apply {
+            user = user
+            servicePoint = servicePoint
+            employee = employee
+            treatment = treatment
+        }
         bookingCreateDto = BookingCreateDto(
             servicePointId = 1,
             userId = 1,

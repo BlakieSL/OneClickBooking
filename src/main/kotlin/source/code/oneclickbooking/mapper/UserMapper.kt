@@ -24,9 +24,7 @@ class UserMapper {
             name = dto.name,
             surname = dto.surname,
             email = dto.email,
-            password = hashedPassword,
-            roles = mutableSetOf(),
-            bookings = mutableSetOf()
+            password = hashedPassword
         )
     }
 

@@ -21,6 +21,10 @@ class TreatmentServiceImpl(
         return repository.findAll().map { mapper.toResponseDto(it) }
     }
 
+    override fun getAll(servicePointId: Int): List<TreatmentResponseDto> {
+        TODO("Not yet implemented")
+    }
+
     private fun find(id: Int): Treatment {
         return repository.findById(id).orElseThrow {
             RecordNotFoundException(Treatment::class, id)

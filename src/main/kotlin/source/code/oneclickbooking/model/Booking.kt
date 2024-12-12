@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotNull
 import java.time.LocalDateTime
 
 @Entity
-data class Booking (
+class Booking (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
@@ -22,28 +22,26 @@ data class Booking (
     @field:FutureOrPresent
     @Column(nullable = false)
     var date: LocalDateTime,
-
-    @field:NotNull
+) {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    var user: User,
+    lateinit var user: User
 
-    @field:NotNull
     @ManyToOne
     @JoinColumn(name = "service_point_id", nullable = false)
-    var servicePoint: ServicePoint,
+    lateinit var servicePoint: ServicePoint
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
-    var employee: Employee? = null,
+    var employee: Employee? = null
 
     @ManyToOne
     @JoinColumn(name = "treatment_id")
-    var treatment: Treatment? = null,
+    var treatment: Treatment? = null
 
     @OneToOne(mappedBy = "booking")
-    var review: Review? = null,
-) {
+    var review: Review? = null
+
     companion object {
         fun createDefault(
             id: Int? = null,
@@ -54,15 +52,45 @@ data class Booking (
             treatment: Treatment = Treatment.createDefault(),
             review: Review? = null
         ): Booking {
-            return Booking(
-                id = id,
-                date = date,
-                user = user,
-                servicePoint = servicePoint,
-                employee = employee,
-                treatment = treatment,
-                review = review
-            )
+            return Booking(id = id, date = date).apply {
+                this.user = user
+                this.servicePoint = servicePoint
+                this.employee = employee
+                this.treatment = treatment
+                this.review = review
+            }
         }
+
+        fun of(
+            id: Int? = null,
+            date: LocalDateTime,
+            user: User,
+            servicePoint: ServicePoint,
+            employee: Employee? = null,
+            treatment: Treatment? = null,
+            review: Review? = null
+        ): Booking {
+            return Booking(id = id, date = date).apply {
+                this.user = user
+                this.servicePoint = servicePoint
+                this.employee = employee
+                this.treatment = treatment
+                this.review = review
+            }
+        }
+    }
+
+    override fun hashCode(): Int {
+        return id?.hashCode() ?: 0
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Booking) return false
+        return id != null && id == other.id
+    }
+
+    override fun toString(): String {
+        return "Booking(id=$id, date=$date)"
     }
 }

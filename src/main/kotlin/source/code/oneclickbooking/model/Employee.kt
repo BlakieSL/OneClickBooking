@@ -2,9 +2,11 @@ package source.code.oneclickbooking.model
 
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotBlank
+import lombok.EqualsAndHashCode
 
 @Entity
-data class Employee (
+@EqualsAndHashCode
+class Employee (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
@@ -14,19 +16,19 @@ data class Employee (
     var username: String,
 
     var description: String? = null,
-
+) {
     @OneToMany(mappedBy = "employee", cascade = [CascadeType.REMOVE], orphanRemoval = true)
-    val availabilities: MutableSet<EmployeeAvailability> = mutableSetOf(),
+    val availabilities: MutableSet<EmployeeAvailability> = mutableSetOf()
 
     @OneToMany(mappedBy = "employee")
-    val bookings: MutableSet<Booking> = mutableSetOf(),
+    val bookings: MutableSet<Booking> = mutableSetOf()
 
     @OneToMany(mappedBy = "employee", cascade = [CascadeType.REMOVE])
-    val servicePointAssociations: MutableSet<ServicePointEmployee> = mutableSetOf(),
+    val servicePointAssociations: MutableSet<ServicePointEmployee> = mutableSetOf()
 
     @ManyToMany(mappedBy = "employees")
-    val treatments: MutableSet<Treatment> = mutableSetOf(),
-) {
+    val treatments: MutableSet<Treatment> = mutableSetOf()
+
     companion object {
         fun createDefault(
             id: Int? = null,
@@ -39,5 +41,19 @@ data class Employee (
                 description = description
             )
         }
+    }
+
+    override fun hashCode(): Int {
+        return id?.hashCode() ?: 0
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Employee) return false
+        return id != null && id == other.id
+    }
+
+    override fun toString(): String {
+        return "Employee(id=$id, username='$username')"
     }
 }

@@ -24,12 +24,12 @@ class BookingMapper(
     }
 
     fun toEntity(dto: BookingCreateDto): Booking {
-        return Booking(
+        return Booking.of(
             date = dto.date,
             user = resolver.resolveUser(dto.userId)!!,
             servicePoint = resolver.resolveServicePoint(dto.servicePointId)!!,
             employee = resolver.resolveEmployee(dto.employeeId)!!,
-            treatment = resolver.resolveTreatment(dto.treatmentId)!!,
+            treatment = resolver.resolveTreatment(dto.treatmentId)!!
         )
     }
 

@@ -53,7 +53,7 @@ class ReviewServiceTest {
     fun setUp() {
         booking = Booking.createDefault(id = 1)
 
-        review = Review(
+        review = Review.of(
             id = 1,
             rating = 5,
             text = "Great service!",
@@ -81,7 +81,12 @@ class ReviewServiceTest {
 
     @Test
     fun `should create review`() {
-        val savedReview = review.copy(id = 1)
+        val savedReview = Review.of(
+            id = 1,
+            rating = review.rating,
+            text = review.text,
+            booking = review.booking
+        )
         whenever(mapper.toEntity(reviewCreateDto)).thenReturn(review)
         whenever(repository.save(review)).thenReturn(savedReview)
         whenever(mapper.toResponseDto(savedReview)).thenReturn(reviewResponseDto)

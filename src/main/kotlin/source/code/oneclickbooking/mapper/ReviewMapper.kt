@@ -21,7 +21,7 @@ class ReviewMapper(
     }
 
     fun toEntity(dto: ReviewCreateDto): Review {
-        return Review(
+        return Review.of(
             rating = dto.rating,
             text = dto.text,
             booking = resolver.resolveBooking(dto.bookingId)

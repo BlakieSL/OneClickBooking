@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size
 import source.code.oneclickbooking.validation.email.UniqueEmailDomain
 
 @Entity
-data class User (
+class User (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Int? = null,
@@ -33,13 +33,13 @@ data class User (
     @field:Size(min = BCRYPT_HASHED_PASSWORD_LENGTH, max = BCRYPT_HASHED_PASSWORD_LENGTH)
     @Column(nullable = false, length = BCRYPT_HASHED_PASSWORD_LENGTH)
     var password: String,
-
+) {
     @ManyToMany
-    val roles: MutableSet<Role> = mutableSetOf(),
+    val roles: MutableSet<Role> = mutableSetOf()
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.REMOVE], orphanRemoval = true)
-    val bookings: MutableSet<Booking> = mutableSetOf(),
-) {
+    val bookings: MutableSet<Booking> = mutableSetOf()
+
     companion object{
         const val NAME_MAX_LENGTH = 50
         const val SURNAME_MAX_LENGTH = 50
@@ -63,9 +63,24 @@ data class User (
                 surname = surname,
                 email = email,
                 password = password,
-                roles = roles,
-                bookings = bookings
-            )
+            ).apply {
+                this.roles.addAll(roles)
+                this.bookings.addAll(bookings)
+            }
         }
+    }
+
+    override fun hashCode(): Int {
+        return id?.hashCode() ?: 0
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is User) return false
+        return id != null && id == other.id
+    }
+
+    override fun toString(): String {
+        return "User(id=$id, name='$name', surname='$surname', email='$email')"
     }
 }

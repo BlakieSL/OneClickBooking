@@ -1,3 +1,4 @@
+// UserServiceTest.kt
 package source.code.oneclickbooking.service
 
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
@@ -63,8 +64,17 @@ class UserServiceTest {
 
     @Test
     fun `should create user`() {
-        val savedUser = user.copy(id = 1)
+        val savedUser = User.createDefault(
+            id = 1,
+            name = user.name,
+            surname = user.surname,
+            email = user.email,
+            password = user.password,
+            roles = user.roles,
+            bookings = user.bookings
+        )
         val role = Role(name = RoleName.USER)
+
         whenever(userMapper.toEntity(userCreateDto, hashedPassword)).thenReturn(user)
         whenever(roleRepository.findByName(RoleName.USER)).thenReturn(role)
         whenever(userRepository.save(user)).thenReturn(savedUser)
@@ -117,7 +127,15 @@ class UserServiceTest {
 
     @Test
     fun `should update user`() {
-        val updatedUser = user.copy(name = "UpdatedName")
+        val updatedUser = User.createDefault(
+            id = user.id,
+            name = "UpdatedName",
+            surname = user.surname,
+            email = user.email,
+            password = user.password,
+            roles = user.roles,
+            bookings = user.bookings
+        )
         val responseDtoBeforePatch = UserResponseDto(1, user.name, user.surname, user.email)
         val responseDtoAfterUpdate = UserResponseDto(
             1,
@@ -216,7 +234,7 @@ class UserServiceTest {
         val userCredentials = UserCredentialsDto(
             user.email,
             user.password,
-            arrayOf(RoleName.USER.name)
+            arrayOf("ROLE_USER")
         )
 
         whenever(userRepository.findUserByEmail(user.email)).thenReturn(user)
@@ -253,7 +271,16 @@ class UserServiceTest {
     fun `should get user id successfully`() {
         val email = "test@example.com"
         val userId = 1
-        whenever(userRepository.findUserByEmail(email)).thenReturn(user.copy(id = userId))
+        val userWithId = User.createDefault(
+            id = userId,
+            name = user.name,
+            surname = user.surname,
+            email = user.email,
+            password = user.password,
+            roles = user.roles,
+            bookings = user.bookings
+        )
+        whenever(userRepository.findUserByEmail(email)).thenReturn(userWithId)
 
         val result = userService.getUserId(email)
 

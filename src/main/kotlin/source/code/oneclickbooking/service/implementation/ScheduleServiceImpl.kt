@@ -28,11 +28,11 @@ class ScheduleServiceImpl(
 
         val servicePointId = extractServicePointId(filter)
         val employeeId = extractEmployeeId(filter)
-
         val date = extractDate(filter)
+
         val treatment = findTreatment(request.treatmentId)
         val servicePoint = findServicePoint(servicePointId)
-        val employees = getLookedEmployees(employeeId, servicePoint)
+        val employees = getLookedEmployees(employeeId, servicePoint, treatment)
 
         val dayOfWeek = date.dayOfWeek
         val slotIncrementMinutes = 15
@@ -160,13 +160,12 @@ class ScheduleServiceImpl(
     }
 
     private fun extractDate(filter: FilterDto): LocalDate {
-        val dateStr = filter.filterCriteria
+        return filter.filterCriteria
             .find { it.filterKey.equals("date", ignoreCase = true) }
             ?.value
             ?.toString()
+            ?.let { LocalDate.parse(it) }
             ?: throw IllegalArgumentException("Date is required")
-
-        return LocalDate.parse(dateStr)
     }
 
     private fun findEmployee(id: Int): Employee {
@@ -184,12 +183,18 @@ class ScheduleServiceImpl(
             .orElseThrow { RecordNotFoundException(Treatment::class, id) }
     }
 
-    private fun getLookedEmployees(employeeId: Int?, servicePoint: ServicePoint): List<Employee> {
+    private fun getLookedEmployees(
+        employeeId: Int?,
+        servicePoint: ServicePoint,
+        treatment: Treatment
+    ): List<Employee> {
         return if (employeeId != null) {
             val employee = findEmployee(employeeId)
             listOf(employee)
         } else {
-            servicePoint.employeeAssociations.map { it.employee }.toList()
+            servicePoint.employeeAssociations
+                .map { it.employee }
+                .filter { it.treatments.contains(treatment) }
         }
     }
 
