@@ -1,14 +1,6 @@
 package source.code.oneclickbooking.model
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.OneToOne
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import jakarta.validation.constraints.FutureOrPresent
 import jakarta.validation.constraints.NotNull
 import java.time.LocalDateTime
@@ -41,7 +33,7 @@ class Booking (
     @JoinColumn(name = "treatment_id")
     var treatment: Treatment? = null
 
-    @OneToOne(mappedBy = "booking")
+    @OneToOne(mappedBy = "booking", cascade = [CascadeType.ALL])
     var review: Review? = null
 
     companion object {

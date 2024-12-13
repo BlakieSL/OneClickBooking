@@ -74,8 +74,6 @@ class BearerTokenFilter(
         SecurityContextHolder.getContextHolderStrategy().context.authentication = authentication
     }
 
-
-
     companion object {
         private const val AUTHORIZATION_HEADER = "Authorization"
         private const val BEARER_TOKEN_PREFIX = "Bearer "
