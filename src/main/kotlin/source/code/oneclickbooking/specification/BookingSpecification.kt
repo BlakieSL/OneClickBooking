@@ -57,9 +57,12 @@ class BookingSpecification(private val criteria: FilterCriteria): Specification<
         }
 
         return when (criteria.operation) {
-            FilterOperation.EQUAL -> builder.equal(builder.function("DATE", LocalDate::class.java, path), value)
-            FilterOperation.GREATER_THAN -> builder.greaterThan(builder.function("DATE", LocalDate::class.java, path), value)
-            else -> throw IllegalArgumentException("Unsupported operation for date: ${criteria.operation}")
+            FilterOperation.EQUAL ->
+                builder.equal(builder.function("DATE", LocalDate::class.java, path), value)
+
+            else -> throw IllegalArgumentException(
+                "Unsupported operation for date: ${criteria.operation}"
+            )
         }
     }
 

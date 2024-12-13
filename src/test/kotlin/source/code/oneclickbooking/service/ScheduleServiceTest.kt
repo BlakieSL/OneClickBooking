@@ -140,7 +140,7 @@ class ScheduleServiceTest {
 
         whenever(treatmentRepository.findById(100))
             .thenReturn(Optional.of(Treatment.createDefault(id = 100)))
-        whenever(servicePointRepository.findById(999)).thenReturn(Optional.empty())
+        whenever(servicePointRepository.findByIdWithAssociations(999)).thenReturn(null)
 
         assertThrows<RecordNotFoundException> {
             scheduleService.getSchedule(request)
@@ -172,8 +172,8 @@ class ScheduleServiceTest {
         ))
         val request = ScheduleRequestDto(filter = filter, treatmentId = 100)
 
-        whenever(servicePointRepository.findById(1)).thenReturn(Optional.of(servicePoint))
-        whenever(employeeRepository.findById(10)).thenReturn(Optional.of(employee1))
+        whenever(servicePointRepository.findByIdWithAssociations(1)).thenReturn(servicePoint)
+        whenever(employeeRepository.findByIdWithAssociations(10)).thenReturn(employee1)
         whenever(treatmentRepository.findById(100)).thenReturn(Optional.of(treatment))
         whenever(bookingRepository.findAll(any<Specification<Booking>>())).thenReturn(emptyList())
 
@@ -202,8 +202,8 @@ class ScheduleServiceTest {
         ))
         val request = ScheduleRequestDto(filter = filter, treatmentId = 100)
 
-        whenever(servicePointRepository.findById(1)).thenReturn(Optional.of(servicePoint))
-        whenever(employeeRepository.findById(10)).thenReturn(Optional.of(employee1))
+        whenever(servicePointRepository.findByIdWithAssociations(1)).thenReturn(servicePoint)
+        whenever(employeeRepository.findByIdWithAssociations(10)).thenReturn(employee1)
         whenever(treatmentRepository.findById(100)).thenReturn(Optional.of(treatment))
         whenever(bookingRepository.findAll(any<Specification<Booking>>())).thenReturn(listOf(booking))
 
@@ -229,10 +229,11 @@ class ScheduleServiceTest {
         ))
         val request = ScheduleRequestDto(filter = filter, treatmentId = 100)
 
-        whenever(servicePointRepository.findById(1)).thenReturn(Optional.of(servicePoint))
+        whenever(servicePointRepository.findByIdWithAssociations(1)).thenReturn(servicePoint)
         whenever(treatmentRepository.findById(100)).thenReturn(Optional.of(treatment))
         whenever(bookingRepository.findAll(any<Specification<Booking>>())).thenReturn(emptyList())
-
+        whenever(employeeRepository.findAllByServicePointIdAndTreatmentId(1, 100))
+            .thenReturn(listOf(employee1, employee2))
         val result = scheduleService.getSchedule(request)
 
         assertTrue(result.freeSlots.isNotEmpty())
@@ -254,9 +255,11 @@ class ScheduleServiceTest {
             treatment = treatment
         )
 
-        whenever(servicePointRepository.findById(1)).thenReturn(Optional.of(servicePoint))
+        whenever(servicePointRepository.findByIdWithAssociations(1)).thenReturn(servicePoint)
         whenever(treatmentRepository.findById(100)).thenReturn(Optional.of(treatment))
         whenever(bookingRepository.findAll(any<Specification<Booking>>())).thenReturn(listOf(booking))
+        whenever(employeeRepository.findAllByServicePointIdAndTreatmentId(1, 100))
+            .thenReturn(listOf(employee1, employee2))
 
         val result = scheduleService.getSchedule(request)
 

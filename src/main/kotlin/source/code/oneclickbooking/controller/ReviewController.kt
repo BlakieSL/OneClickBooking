@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.request.ReviewCreateDto
 import source.code.oneclickbooking.dto.response.ReviewResponseDto
 import source.code.oneclickbooking.service.declaration.review.ReviewService
@@ -28,6 +29,10 @@ class ReviewController(
     @GetMapping
     fun getAll(): ResponseEntity<List<ReviewResponseDto>> =
         ResponseEntity.ok(reviewService.getAll())
+
+    @PostMapping("/filtered")
+    fun getFiltered(@Valid @RequestBody filter: FilterDto): ResponseEntity<List<ReviewResponseDto>> =
+        ResponseEntity.ok(reviewService.getFiltered(filter))
 
     @PostMapping
     fun create(@Valid @RequestBody request: ReviewCreateDto): ResponseEntity<ReviewResponseDto> =
