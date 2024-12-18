@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.service.review
+package source.code.oneclickbooking.unit.service.review
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach

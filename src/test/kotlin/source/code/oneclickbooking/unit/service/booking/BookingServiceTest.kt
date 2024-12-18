@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.service.booking
+package source.code.oneclickbooking.unit.service.booking
 
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
 import org.junit.jupiter.api.Assertions.*
@@ -23,7 +23,6 @@ import source.code.oneclickbooking.service.declaration.util.JsonPatchService
 import source.code.oneclickbooking.service.declaration.util.ValidationService
 import source.code.oneclickbooking.service.implementation.booking.BookingMappingResolverImpl
 import source.code.oneclickbooking.service.implementation.booking.BookingServiceImpl
-import java.awt.print.Book
 import java.time.LocalDateTime
 import java.util.*
 

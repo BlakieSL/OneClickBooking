@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.dto
+package source.code.oneclickbooking.integration.dto
 
 import jakarta.validation.Validation
 import org.junit.jupiter.api.Assertions.assertTrue

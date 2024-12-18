@@ -1,8 +1,9 @@
-package source.code.oneclickbooking.mapper
+package source.code.oneclickbooking.unit.mapper
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import source.code.oneclickbooking.dto.response.ServicePointResponseDto
+import source.code.oneclickbooking.mapper.ServicePointMapper
 import source.code.oneclickbooking.model.ServicePoint
 
 class ServicePointMapperTest {

@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.mapper
+package source.code.oneclickbooking.unit.mapper
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -10,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.whenever
 import source.code.oneclickbooking.dto.request.ReviewCreateDto
 import source.code.oneclickbooking.dto.request.ReviewUpdateDto
-import source.code.oneclickbooking.dto.response.ReviewResponseDto
+import source.code.oneclickbooking.mapper.ReviewMapper
 import source.code.oneclickbooking.model.Booking
 import source.code.oneclickbooking.model.Review
 import source.code.oneclickbooking.service.declaration.review.ReviewMappingResolver

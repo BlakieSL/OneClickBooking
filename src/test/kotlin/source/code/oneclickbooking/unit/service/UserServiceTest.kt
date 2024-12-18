@@ -1,5 +1,5 @@
 // UserServiceTest.kt
-package source.code.oneclickbooking.service
+package source.code.oneclickbooking.unit.service
 
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
 import org.junit.jupiter.api.Assertions.*

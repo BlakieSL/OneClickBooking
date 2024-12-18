@@ -1,0 +1,24 @@
+ALTER TABLE employee_availability DROP FOREIGN KEY FKawpxqe7n22n3e3ikcwsehqmdx;
+ALTER TABLE service_point_employee DROP FOREIGN KEY FKcbcrfj9r1alufo83rbsptu75y;
+ALTER TABLE service_point_employee DROP FOREIGN KEY FKn9c6gaui7vt8s2ejwltsriaeu;
+ALTER TABLE treatment_employees DROP FOREIGN KEY FK4ce2uswrvum7e3ievndv7nyra;
+ALTER TABLE treatment_employees DROP FOREIGN KEY FKnw72c8u851xhlq9v0icc4uiku;
+ALTER TABLE booking DROP FOREIGN KEY FK1dnnhqt4wl3v6a72hxiarf7lg;
+ALTER TABLE booking DROP FOREIGN KEY FKkgseyy7t56x7lkjgu3wah5s3t;
+ALTER TABLE booking DROP FOREIGN KEY FKsjasmdiqd01d8tyqypnjihayt;
+ALTER TABLE booking DROP FOREIGN KEY FKsrfiysh4owvdg92206d3dwnom;
+ALTER TABLE review DROP FOREIGN KEY FKk4xawqohtguy5yx5nnpba6yf3;
+ALTER TABLE user_roles DROP FOREIGN KEY FK7ecyobaa59vxkxckg6t355l86;
+ALTER TABLE user_roles DROP FOREIGN KEY FKj9553ass9uctjrmh0gkqsmv0d;
+
+DROP TABLE IF EXISTS user_roles;
+DROP TABLE IF EXISTS review;
+DROP TABLE IF EXISTS booking;
+DROP TABLE IF EXISTS treatment_employees;
+DROP TABLE IF EXISTS treatment;
+DROP TABLE IF EXISTS service_point_employee;
+DROP TABLE IF EXISTS service_point;
+DROP TABLE IF EXISTS role;
+DROP TABLE IF EXISTS employee_availability;
+DROP TABLE IF EXISTS employee;
+DROP TABLE IF EXISTS user;

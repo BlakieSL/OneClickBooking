@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.service
+package source.code.oneclickbooking.unit.service
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

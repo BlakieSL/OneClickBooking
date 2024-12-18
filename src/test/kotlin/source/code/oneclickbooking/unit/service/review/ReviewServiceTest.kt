@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.service.review
+package source.code.oneclickbooking.unit.service.review
 
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
 import org.junit.jupiter.api.Assertions.*

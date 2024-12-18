@@ -1,8 +1,9 @@
-package source.code.oneclickbooking.model
+package source.code.oneclickbooking.unit.model
 
 import jakarta.validation.Validation
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import source.code.oneclickbooking.model.Booking
 import java.time.LocalDateTime
 
 class BookingTest {

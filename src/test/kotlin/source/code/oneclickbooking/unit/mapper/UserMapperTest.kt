@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.mapper
+package source.code.oneclickbooking.unit.mapper
 
 import org.junit.jupiter.api.Assertions.assertArrayEquals
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -7,6 +7,7 @@ import source.code.oneclickbooking.dto.other.UserCredentialsDto
 import source.code.oneclickbooking.dto.request.UserCreateDto
 import source.code.oneclickbooking.dto.request.UserUpdateDto
 import source.code.oneclickbooking.dto.response.UserResponseDto
+import source.code.oneclickbooking.mapper.UserMapper
 import source.code.oneclickbooking.model.Role
 import source.code.oneclickbooking.model.RoleName
 import source.code.oneclickbooking.model.User
