@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import source.code.oneclickbooking.annotation.AccountOwnerOrAdmin
 import source.code.oneclickbooking.dto.request.UserCreateDto
 import source.code.oneclickbooking.dto.response.UserResponseDto
 import source.code.oneclickbooking.service.declaration.UserService
@@ -30,10 +31,12 @@ class UserController (
     ) : ResponseEntity<UserResponseDto> =
         ResponseEntity.status(201).body(userService.createUser(request))
 
+    @AccountOwnerOrAdmin
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Int) : ResponseEntity<Unit> =
         userService.deleteUser(id).let { ResponseEntity.noContent().build() }
 
+    @AccountOwnerOrAdmin
     @PatchMapping("/{id}")
     fun update(
         @PathVariable id: Int,
