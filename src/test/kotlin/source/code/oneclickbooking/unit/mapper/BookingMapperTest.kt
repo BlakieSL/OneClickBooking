@@ -29,8 +29,8 @@ class BookingMapperTest {
     private lateinit var employee: Employee
     private lateinit var treatment: Treatment
     private lateinit var booking: Booking
-    private lateinit var bookingCreateDto: BookingCreateDto
-    private lateinit var bookingUpdateDto: BookingUpdateDto
+    private lateinit var createDto: BookingCreateDto
+    private lateinit var updateDto: BookingUpdateDto
 
     @BeforeEach
     fun setUp() {
@@ -38,82 +38,81 @@ class BookingMapperTest {
         servicePoint = ServicePoint.createDefault(id = 1)
         employee = Employee.createDefault(id = 1)
         treatment = Treatment.createDefault(id = 1)
-        booking = Booking(
+        booking = Booking.of(
             id = 1,
-            date = LocalDateTime.of(2023, 10, 10, 10, 0)
-        ).apply {
-            user = user
-            servicePoint = servicePoint
-            employee = employee
+            date = LocalDateTime.of(2023, 10, 10, 10, 0),
+            user = user,
+            servicePoint = servicePoint,
+            employee = employee,
             treatment = treatment
-        }
-        bookingCreateDto = BookingCreateDto(
+        )
+        createDto = BookingCreateDto(
             servicePointId = 1,
             userId = 1,
             date = LocalDateTime.of(2023, 10, 10, 10, 0),
             employeeId = 1,
             treatmentId = 1
         )
-        bookingUpdateDto = BookingUpdateDto(
+        updateDto = BookingUpdateDto(
             date = LocalDateTime.of(2023, 11, 11, 11, 0),
             userId = 1,
             servicePointId = 1,
             employeeId = 1,
-            treatmentId = 1
+            treatmentId = 2
         )
     }
 
     @Test
     fun `should map BookingCreateDto to Booking`() {
-        whenever(resolver.resolveUser(1)).thenReturn(user)
-        whenever(resolver.resolveServicePoint(1)).thenReturn(servicePoint)
-        whenever(resolver.resolveEmployee(1)).thenReturn(employee)
-        whenever(resolver.resolveTreatment(1)).thenReturn(treatment)
+        whenever(resolver.resolveUser(createDto.userId)).thenReturn(user)
+        whenever(resolver.resolveServicePoint(createDto.servicePointId)).thenReturn(servicePoint)
+        whenever(resolver.resolveEmployee(createDto.employeeId)).thenReturn(employee)
+        whenever(resolver.resolveTreatment(createDto.treatmentId)).thenReturn(treatment)
 
-        val result = bookingMapper.toEntity(bookingCreateDto)
+        val result = bookingMapper.toEntity(createDto)
 
-        assertEquals(1, result.user.id)
-        assertEquals(1, result.servicePoint.id)
-        assertEquals(LocalDateTime.of(2023, 10, 10, 10, 0), result.date)
+        assertEquals(createDto.userId, result.user.id)
+        assertEquals(createDto.servicePointId, result.servicePoint.id)
+        assertEquals(createDto.employeeId, result.employee?.id)
+        assertEquals(createDto.treatmentId, result.treatment?.id)
+        assertEquals(createDto.date, result.date)
     }
 
     @Test
     fun `should map Booking to BookingResponseDto`() {
         val result = bookingMapper.toResponseDto(booking)
 
-        assertEquals(1, result.id)
-        assertEquals(1, result.userId)
-        assertEquals(1, result.servicePointId)
-        assertEquals(LocalDateTime.of(2023, 10, 10, 10, 0), result.date)
+        assertEquals(booking.id, result.id)
+        assertEquals(booking.user.id, result.userId)
+        assertEquals(booking.servicePoint.id, result.servicePointId)
+        assertEquals(booking.employee?.id, result.employeeId)
+        assertEquals(booking.treatment?.id, result.treatmentId)
+        assertEquals(booking.date, result.date)
     }
 
     @Test
     fun `should update Booking fields from BookingUpdateDto`() {
         val newTreatment = Treatment.createDefault(id = 2)
-        whenever(resolver.resolveUser(1)).thenReturn(user)
-        whenever(resolver.resolveServicePoint(1)).thenReturn(servicePoint)
-        whenever(resolver.resolveEmployee(1)).thenReturn(employee)
-        whenever(resolver.resolveTreatment(1)).thenReturn(newTreatment)
+        whenever(resolver.resolveUser(updateDto.userId)).thenReturn(user)
+        whenever(resolver.resolveServicePoint(updateDto.servicePointId)).thenReturn(servicePoint)
+        whenever(resolver.resolveEmployee(updateDto.employeeId)).thenReturn(employee)
+        whenever(resolver.resolveTreatment(updateDto.treatmentId)).thenReturn(newTreatment)
 
-        bookingMapper.update(booking, bookingUpdateDto)
+        bookingMapper.update(booking, updateDto)
 
-        assertEquals(LocalDateTime.of(2023, 11, 11, 11, 0), booking.date)
+        assertEquals(updateDto.date, booking.date)
         assertEquals(newTreatment.id, booking.treatment?.id)
     }
 
     @Test
     fun `should update Booking date only`() {
         val partialUpdateDto = BookingUpdateDto(
-            date = LocalDateTime.of(2023, 10, 10, 10, 59),
-            userId = null,
-            servicePointId = null,
-            employeeId = null,
-            treatmentId = null
+            date = LocalDateTime.of(2023, 10, 10, 10, 59)
         )
 
         bookingMapper.update(booking, partialUpdateDto)
 
-        assertEquals(LocalDateTime.of(2023, 10, 10, 10, 59), booking.date)
+        assertEquals(partialUpdateDto.date, booking.date)
         assertEquals(1, booking.user.id)
         assertEquals(1, booking.servicePoint.id)
         assertEquals(1, booking.employee?.id)

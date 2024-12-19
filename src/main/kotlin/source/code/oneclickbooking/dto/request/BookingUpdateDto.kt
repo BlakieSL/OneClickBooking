@@ -5,9 +5,9 @@ import java.time.LocalDateTime
 
 data class BookingUpdateDto (
     @field:FutureOrPresent
-    var date: LocalDateTime? = null,
-    var userId: Int? = null,
-    var servicePointId: Int? = null,
-    var employeeId: Int? = null,
-    var treatmentId: Int? = null
+    val date: LocalDateTime? = null,
+    val userId: Int? = null,
+    val servicePointId: Int? = null,
+    val employeeId: Int? = null,
+    val treatmentId: Int? = null
 )

@@ -7,17 +7,17 @@ import java.time.LocalDateTime
 data class BookingCreateDto (
     @field:NotNull
     @field:FutureOrPresent
-    var date: LocalDateTime,
+    val date: LocalDateTime,
 
     @field:NotNull
-    var userId: Int,
+    val userId: Int,
 
     @field:NotNull
-    var servicePointId: Int,
+    val servicePointId: Int,
 
     @field:NotNull
-    var employeeId: Int,
+    val employeeId: Int,
 
     @field:NotNull
-    var treatmentId: Int
+    val treatmentId: Int
 )

@@ -37,22 +37,4 @@ data class UserUpdateDto(
     val password: String? = null,
 
     val oldPassword: String? = null,
-) {
-    companion object {
-        fun createDefault(
-            name: String? = null,
-            surname: String? = null,
-            email: String? = null,
-            password: String? = null,
-            oldPassword: String? = null
-        ): UserUpdateDto {
-            return UserUpdateDto(
-                name = name,
-                surname = surname,
-                email = email,
-                password = password,
-                oldPassword = oldPassword
-            )
-        }
-    }
-}
+)

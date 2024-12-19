@@ -26,66 +26,53 @@ class ReviewMapperTest {
 
     private lateinit var booking: Booking
     private lateinit var review: Review
-    private lateinit var reviewCreateDto: ReviewCreateDto
-    private lateinit var reviewUpdateDto: ReviewUpdateDto
+    private lateinit var createDto: ReviewCreateDto
+    private lateinit var updateDto: ReviewUpdateDto
 
     @BeforeEach
     fun setUp() {
         booking = Booking.createDefault(id = 1)
-        review = Review(
-            id = 1,
-            rating = 5,
-            text = "Great service!",
-        ).apply { booking = booking}
-        reviewCreateDto = ReviewCreateDto(
-            rating = 5,
-            text = "Great service!",
-            bookingId = 1
-        )
-        reviewUpdateDto = ReviewUpdateDto(
-            rating = 4,
-            text = "Updated review"
-        )
+        review = Review.of(id = 1, rating = 5, text = "Great service!", booking = booking)
+        createDto = ReviewCreateDto(rating = 5, text = "Great service!", bookingId = 1)
+        updateDto = ReviewUpdateDto(rating = 4, text = "Updated review")
     }
 
     @Test
     fun `should map ReviewCreateDto to Review`() {
         whenever(resolver.resolveBooking(1)).thenReturn(booking)
 
-        val result = reviewMapper.toEntity(reviewCreateDto)
+        val result = reviewMapper.toEntity(createDto)
 
-        assertEquals(5, result.rating)
-        assertEquals("Great service!", result.text)
-        assertEquals(1, result.booking.id)
+        assertEquals(createDto.rating, result.rating)
+        assertEquals(createDto.text, result.text)
+        assertEquals(createDto.bookingId, result.booking.id)
     }
 
     @Test
     fun `should map Review to ReviewResponseDto`() {
         val result = reviewMapper.toResponseDto(review)
 
-        assertEquals(1, result.id)
-        assertEquals(5, result.rating)
-        assertEquals("Great service!", result.text)
-        assertEquals(1, result.bookingId)
+        assertEquals(review.id, result.id)
+        assertEquals(review.rating, result.rating)
+        assertEquals(review.text, result.text)
+        assertEquals(review.booking.id, result.bookingId)
     }
 
     @Test
     fun `should update Review fields from ReviewUpdateDto`() {
-        reviewMapper.update(review, reviewUpdateDto)
+        reviewMapper.update(review, updateDto)
 
-        assertEquals(4, review.rating)
-        assertEquals("Updated review", review.text)
+        assertEquals(updateDto.rating, review.rating)
+        assertEquals(updateDto.text, review.text)
     }
 
     @Test
     fun `should update Review text only`() {
-        val partialUpdateDto = ReviewUpdateDto(
-            text = "Partial update"
-        )
+        val partialUpdateDto = ReviewUpdateDto(text = "Partial update")
 
         reviewMapper.update(review, partialUpdateDto)
 
         assertEquals(5, review.rating)
-        assertEquals("Partial update", review.text)
+        assertEquals(partialUpdateDto, review.text)
     }
 }

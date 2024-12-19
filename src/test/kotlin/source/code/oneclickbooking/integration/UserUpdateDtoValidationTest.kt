@@ -40,7 +40,7 @@ class UserUpdateDtoValidationTest {
     fun testValidPartialUserUpdateDto() {
         LOGGER.info("Running testValidPartialUserUpdateDto...")
 
-        val validDto = UserUpdateDto.createDefault(name = "John", surname = "Doe")
+        val validDto = UserUpdateDto(name = "John", surname = "Doe")
         val violations = validator.validate(validDto)
 
         assertThat(violations.isEmpty()).isTrue
@@ -53,10 +53,7 @@ class UserUpdateDtoValidationTest {
     fun testValidUserUpdateDtoWithPasswordChange() {
         LOGGER.info("Running testValidUserUpdateDtoWithPasswordChange...")
 
-        val validDto = UserUpdateDto.createDefault(
-            password = "Dimas@123",
-            oldPassword = "Dimas@123"
-        )
+        val validDto = UserUpdateDto(password = "Dimas@123", oldPassword = "Dimas@123")
 
         val violations = validator.validate(validDto)
 
@@ -80,10 +77,7 @@ class UserUpdateDtoValidationTest {
     fun testValidUserUpdateDtoWithEmailChange() {
         LOGGER.info("Running testValidUserUpdateDtoWithEmailChange...")
 
-        val validDto = UserUpdateDto.createDefault(
-            email = "email@gmail.com",
-            oldPassword = "Dimas@123"
-        )
+        val validDto = UserUpdateDto(email = "email@gmail.com", oldPassword = "Dimas@123")
 
         val violations = validator.validate(validDto)
 
@@ -109,10 +103,7 @@ class UserUpdateDtoValidationTest {
 
         val alreadyTakenEmail = "test_email1@gmail.com"
 
-        val invalidDto = UserUpdateDto.createDefault(
-            email = alreadyTakenEmail,
-            oldPassword = "Dimas@123"
-        )
+        val invalidDto = UserUpdateDto(email = alreadyTakenEmail, oldPassword = "Dimas@123")
 
         val violations = validator.validate(invalidDto)
 
@@ -137,7 +128,7 @@ class UserUpdateDtoValidationTest {
     fun testValidEmailButNoOldPasswordForUserUpdateDto() {
         LOGGER.info("Running testValidEmailButNoOldPasswordForUserUpdateDto...")
 
-        val invalidDto = UserUpdateDto.createDefault(email = "email@gmail.com")
+        val invalidDto = UserUpdateDto(email = "email@gmail.com")
 
         val violations = validator.validate(invalidDto)
 
@@ -164,7 +155,7 @@ class UserUpdateDtoValidationTest {
     fun testValidPasswordButNoOldPasswordForUserUpdateDto() {
         LOGGER.info("Running testValidPasswordButNoOldPasswordForUserUpdateDto...")
 
-        val invalidDto = UserUpdateDto.createDefault(password = "Dimas@123")
+        val invalidDto = UserUpdateDto(password = "Dimas@123")
 
         val violations = validator.validate(invalidDto)
 

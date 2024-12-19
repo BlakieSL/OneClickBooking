@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotNull
 
 data class ReviewCreateDto (
     @field:NotNull
-    var rating: Int,
+    val rating: Int,
 
-    var text: String? = null,
+    val text: String? = null,
 
     @field:NotNull
-    var bookingId: Int
+    val bookingId: Int
 )

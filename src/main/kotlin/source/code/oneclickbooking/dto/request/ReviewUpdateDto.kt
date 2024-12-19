@@ -2,7 +2,7 @@ package source.code.oneclickbooking.dto.request
 
 
 data class ReviewUpdateDto (
-    var rating: Int? = null,
+    val rating: Int? = null,
 
-    var text: String? = null,
+    val text: String? = null,
 )
