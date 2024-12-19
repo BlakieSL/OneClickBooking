@@ -11,11 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
-import org.springframework.test.context.jdbc.SqlConfig
 import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.context.jdbc.SqlMergeMode
 import org.testcontainers.junit.jupiter.Testcontainers
-import source.code.oneclickbooking.OneClickBookingApplication
 import source.code.oneclickbooking.dto.request.UserCreateDto
 import source.code.oneclickbooking.repository.UserRepository
 
@@ -28,7 +26,7 @@ import source.code.oneclickbooking.repository.UserRepository
         "classpath:testcontainers/create-schema.sql"
     ]
 )
-@SpringBootTest(classes = [OneClickBookingApplication::class])
+@SpringBootTest
 class UserCreateDtoValidationTest {
 
     private lateinit var userRepository: UserRepository
@@ -54,7 +52,6 @@ class UserCreateDtoValidationTest {
         ),
         Sql(
             value = ["classpath:testcontainers/remove-chuck.sql"],
-            config = SqlConfig(commentPrefix = "#"),
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
         )
     )
@@ -78,22 +75,53 @@ class UserCreateDtoValidationTest {
         ),
         Sql(
             value = ["classpath:testcontainers/remove-chuck.sql"],
-            config = SqlConfig(commentPrefix = "#"),
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
         )
     )
-    fun testInvalidCreateDto() {
+    fun testInvalidEmailForUserCreateDto() {
         LOGGER.info("Running testInvalidCreateDto...")
 
         val alreadyTakenEmail = "test_email1@gmail.com"
         val invalidDto = UserCreateDto.createDefault(email = alreadyTakenEmail)
+
         val violations: Set<ConstraintViolation<UserCreateDto>> = validator.validate(invalidDto)
 
-        assertThat(violations.isNotEmpty()).isTrue
+        assertAndLogViolations(violations)
         assertThat(violations.any { it.propertyPath.toString() == "email" }).isTrue
 
-        LOGGER.info("testInvalidCreateDto passed!")
-        LOGGER.info("Violations: $violations")
+        LOGGER.info("testInvalidEmailForUserCreateDto passed!")
+    }
+
+    @Test
+    @DisplayName("should fail validation when password fails some constraints")
+    fun testInvalidPasswordForUserCreateDto() {
+        LOGGER.info("Running testInvalidPasswordForUserCreateDto...")
+
+        val invalidDto = UserCreateDto.createDefault(password = "password")
+
+        val violations: Set<ConstraintViolation<UserCreateDto>> = validator.validate(invalidDto)
+
+        assertAndLogViolations(violations)
+        assertThat(violations.any {
+            it.constraintDescriptor.annotation.annotationClass.simpleName == "PasswordDigitsDomain"
+        }).isTrue
+        assertThat(violations.any {
+            it.constraintDescriptor.annotation.annotationClass.simpleName == "PasswordUppercaseDomain"
+        }).isTrue
+        assertThat(violations.any {
+            it.constraintDescriptor.annotation.annotationClass.simpleName == "PasswordSpecialDomain"
+        }).isTrue
+
+        LOGGER.info("testInvalidPasswordForUserCreateDto passed!")
+    }
+
+    private fun assertAndLogViolations(violations: Set<ConstraintViolation<UserCreateDto>>) {
+        assertThat(violations.isNotEmpty()).isTrue
+        val violationsSimpleNames = violations.map {
+            it.constraintDescriptor.annotation.annotationClass.simpleName
+        }
+
+        LOGGER.info("Violations: $violationsSimpleNames")
     }
 
     companion object {
