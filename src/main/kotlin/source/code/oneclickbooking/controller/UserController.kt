@@ -12,14 +12,18 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import source.code.oneclickbooking.annotation.AccountOwnerOrAdmin
+import source.code.oneclickbooking.dto.request.RefreshTokenRequestDto
 import source.code.oneclickbooking.dto.request.UserCreateDto
+import source.code.oneclickbooking.dto.response.AccessTokenResponseDto
 import source.code.oneclickbooking.dto.response.UserResponseDto
 import source.code.oneclickbooking.service.declaration.UserService
+import source.code.oneclickbooking.service.implementation.util.JwtService
 
 @RestController
 @RequestMapping("/api/users")
 class UserController (
-    private val userService: UserService
+    private val userService: UserService,
+    private val jwtService: JwtService
 ) {
     @GetMapping("/{id}")
     fun get(@PathVariable id: Int) : ResponseEntity<UserResponseDto> =
@@ -43,4 +47,12 @@ class UserController (
         @RequestBody patch: JsonMergePatch
     ) : ResponseEntity<UserResponseDto> =
         ResponseEntity.ok(userService.updateUser(id, patch))
+
+    @PostMapping("/refresh-token")
+    fun refreshToken(
+        @Valid @RequestBody refreshToken: RefreshTokenRequestDto
+    ): ResponseEntity<AccessTokenResponseDto> {
+        val newAccessToken = jwtService.refreshAccessToken(refreshToken.refreshToken)
+        return ResponseEntity.ok(AccessTokenResponseDto(newAccessToken))
+    }
 }

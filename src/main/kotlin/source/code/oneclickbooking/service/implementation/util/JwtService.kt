@@ -1,6 +1,6 @@
 package source.code.oneclickbooking.service.implementation.util
 
-import com.nimbusds.jose.*;
+import com.nimbusds.jose.*
 import com.nimbusds.jose.crypto.MACSigner
 import com.nimbusds.jose.crypto.MACVerifier
 import com.nimbusds.jwt.JWTClaimsSet
@@ -21,8 +21,8 @@ class JwtService(@Value("\${spring.jws.sharedKey}") sharedKey: String) {
     companion object {
         private const val ACCESS_TOKEN_DURATION_MINUTES = 15
         private const val REFRESH_TOKEN_DURATION_MINUTES = 60 * 24 * 30
-        private const val ACCESS_TOKEN_TYPE = "ACCESS";
-        private const val REFRESH_TOKEN = "REFRESH";
+        private const val ACCESS_TOKEN_TYPE = "ACCESS"
+        private const val REFRESH_TOKEN = "REFRESH"
     }
     private val algorithm = JWSAlgorithm.HS256
     private val signer = MACSigner(sharedKey.toByteArray())

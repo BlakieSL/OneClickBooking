@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.unit.service
+package source.code.oneclickbooking.unit.service.utils
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.assertThrows
