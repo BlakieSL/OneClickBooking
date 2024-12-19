@@ -15,7 +15,6 @@ import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.context.jdbc.SqlMergeMode
 import org.testcontainers.junit.jupiter.Testcontainers
 import source.code.oneclickbooking.dto.request.UserCreateDto
-import source.code.oneclickbooking.repository.UserRepository
 
 @ActiveProfiles("test")
 @Testcontainers
@@ -28,15 +27,7 @@ import source.code.oneclickbooking.repository.UserRepository
 )
 @SpringBootTest
 class UserCreateDtoValidationTest {
-
-    private lateinit var userRepository: UserRepository
-
     private lateinit var validator: Validator
-
-    @Autowired
-    fun setRepository(userRepository: UserRepository) {
-        this.userRepository = userRepository
-    }
 
     @Autowired
     fun setValidator(validator: Validator) {
@@ -59,7 +50,7 @@ class UserCreateDtoValidationTest {
         LOGGER.info("Running testValidUserCreateDto...")
 
         val validDto = UserCreateDto.createDefault()
-        val violations: Set<ConstraintViolation<UserCreateDto>> = validator.validate(validDto)
+        val violations = validator.validate(validDto)
 
         assertThat(violations.isEmpty()).isTrue
 
@@ -84,7 +75,7 @@ class UserCreateDtoValidationTest {
         val alreadyTakenEmail = "test_email1@gmail.com"
         val invalidDto = UserCreateDto.createDefault(email = alreadyTakenEmail)
 
-        val violations: Set<ConstraintViolation<UserCreateDto>> = validator.validate(invalidDto)
+        val violations = validator.validate(invalidDto)
 
         assertAndLogViolations(violations)
         assertThat(violations.any { it.propertyPath.toString() == "email" }).isTrue
@@ -99,7 +90,7 @@ class UserCreateDtoValidationTest {
 
         val invalidDto = UserCreateDto.createDefault(password = "password")
 
-        val violations: Set<ConstraintViolation<UserCreateDto>> = validator.validate(invalidDto)
+        val violations = validator.validate(invalidDto)
 
         assertAndLogViolations(violations)
         assertThat(violations.any {

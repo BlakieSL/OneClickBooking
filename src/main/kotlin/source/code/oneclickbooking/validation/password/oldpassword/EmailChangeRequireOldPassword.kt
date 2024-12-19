@@ -4,12 +4,11 @@ import jakarta.validation.Constraint
 import jakarta.validation.Payload
 import kotlin.reflect.KClass
 
-
-@Constraint(validatedBy = [OldPasswordValidator::class])
+@Constraint(validatedBy = [EmailChangeRequireOldPasswordValidator::class])
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class OldPasswordDomain (
-    val message: String = "If you are changing your password, you must provide the old password",
+annotation class EmailChangeRequireOldPassword(
+    val message: String = "If you are changing your email, you must provide the password",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []
 )
