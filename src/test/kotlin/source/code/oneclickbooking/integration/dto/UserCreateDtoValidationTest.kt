@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.integration
+package source.code.oneclickbooking.integration.dto
 
 import jakarta.validation.ConstraintViolation
 import jakarta.validation.Validator
