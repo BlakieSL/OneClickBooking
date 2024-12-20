@@ -1,5 +1,6 @@
 delete from treatment_employees ;
 delete from service_point_employee ;
+delete from review;
 delete from booking ;
 delete from user_roles;
 delete from user;

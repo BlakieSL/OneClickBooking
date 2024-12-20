@@ -12,13 +12,13 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
-import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.context.jdbc.SqlMergeMode
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.testcontainers.junit.jupiter.Testcontainers
 import source.code.oneclickbooking.auth.CustomAuthenticationToken
+import source.code.oneclickbooking.integration.annotation.SqlSetup
 
 @ActiveProfiles("test")
 @Testcontainers
@@ -42,17 +42,8 @@ class BookingControllerTest {
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
     @DisplayName("Test GET /api/bookings/{id} should return booking")
-    @SqlGroup(
-        Sql(
-            value = ["classpath:testcontainers/add-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            value = ["classpath:testcontainers/remove-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
-    fun `test get booking by id should return booking`() {
+    @SqlSetup
+    fun `test get should return booking`() {
         LOGGER.info("RUNNING test get booking by id should return booking...")
 
         val bookingId = 1
@@ -72,17 +63,8 @@ class BookingControllerTest {
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
     @DisplayName("Test GET /api/bookings/{id} should return 404 when booking not found")
-    @SqlGroup(
-        Sql(
-            value = ["classpath:testcontainers/add-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            value = ["classpath:testcontainers/remove-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
-    fun `test get booking by id should return 404 when booking not found`() {
+    @SqlSetup
+    fun `test get should return 404 when booking not found`() {
         LOGGER.info("RUNNING test get booking by id should return 404 when booking not found...")
         val bookingId = 100
 
@@ -95,7 +77,7 @@ class BookingControllerTest {
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
     @DisplayName("Test GET /api/bookings/{id} should return 400 when id not a number")
-    fun `test get booking by id should return 400 when id not a number`() {
+    fun `test get should return 400 when id not a number`() {
         LOGGER.info("RUNNING test get booking by id should return 400 when id not a number...")
 
         mockMvc.perform(get("/api/bookings/abc"))
@@ -107,17 +89,8 @@ class BookingControllerTest {
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
     @DisplayName("Test GET /api/bookings should return all bookings")
-    @SqlGroup(
-        Sql(
-            value = ["classpath:testcontainers/add-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            value = ["classpath:testcontainers/remove-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
-    fun `test get all bookings should return all bookings`() {
+    @SqlSetup
+    fun `test get all should return all bookings`() {
         LOGGER.info("RUNNING test get all bookings should return all bookings...")
 
         mockMvc.perform(get("/api/bookings"))
@@ -136,7 +109,7 @@ class BookingControllerTest {
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
     @DisplayName("Test GET /api/bookings should return empty list when no bookings")
-    fun `test get all bookings should return empty list when no bookings`() {
+    fun `test get all should return empty list when no bookings`() {
         LOGGER.info("RUNNING test get all bookings should return empty list when no bookings...")
 
         mockMvc.perform(get("/api/bookings"))
@@ -149,17 +122,8 @@ class BookingControllerTest {
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
     @DisplayName("Test POST /api/bookings should create booking")
-    @SqlGroup(
-        Sql(
-            value = ["classpath:testcontainers/add-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            value = ["classpath:testcontainers/remove-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
-    fun `test create booking should create booking`() {
+    @SqlSetup
+    fun `test create should create booking`() {
         LOGGER.info("RUNNING test create booking should create booking...")
 
         val requestBody = """
@@ -190,7 +154,7 @@ class BookingControllerTest {
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
     @DisplayName("Test POST /api/bookings should return 400 when date is in the past")
-    fun `test create booking should return 400 when date is in the past`() {
+    fun `test create should return 400 when date is in the past`() {
         LOGGER.info("RUNNING test create booking should return 400 when date is in the past...")
 
         val requestBody = """
@@ -215,7 +179,8 @@ class BookingControllerTest {
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
     @DisplayName("Test POST /api/bookings should return 404 when provided service point not found")
-    fun `test create booking should return 404 when provided service point not found`() {
+    @SqlSetup
+    fun `test create should return 404 when provided service point not found`() {
         LOGGER.info("RUNNING test create booking should return 404 when provided service point not found...")
 
         val requestBody = """
@@ -238,22 +203,12 @@ class BookingControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test DELETE /api/bookings/{id} should delete booking")
-    @SqlGroup(
-        Sql(
-            value = ["classpath:testcontainers/add-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            value = ["classpath:testcontainers/remove-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
-    fun `test delete booking should delete booking when user is author`() {
+    @DisplayName("Test DELETE /api/bookings/{id} should delete booking when user is author")
+    @SqlSetup
+    fun `test delete should delete booking when user is author`() {
         LOGGER.info("RUNNING test delete booking should delete booking...")
 
-        setContext(userId = 1)
+        setUserContext(userId = 1)
         val bookingId = 1
 
         mockMvc.perform(get("/api/bookings/$bookingId"))
@@ -270,21 +225,34 @@ class BookingControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "testuser", roles = ["ADMIN"])
+    @DisplayName("Test DELETE /api/bookings/{id} should delete booking when user is admin")
+    @SqlSetup
+    fun `test delete should delete booking when user is admin`() {
+        LOGGER.info("RUNNING test delete booking should delete booking when user is admin...")
+
+        setAdminContext(userId = 3)
+        val bookingId = 1
+
+        mockMvc.perform(get("/api/bookings/$bookingId"))
+            .andExpect(status().isOk)
+
+        mockMvc.perform(delete("/api/bookings/$bookingId"))
+            .andExpect(status().isNoContent)
+
+        mockMvc.perform(get("/api/bookings/$bookingId"))
+            .andExpect(status().isNotFound)
+
+        LOGGER.info("test delete booking should delete booking when user is admin PASSED!")
+    }
+
+    @Test
     @DisplayName("Test DELETE /api/bookings/{id} should return 404 when booking not found")
-    @SqlGroup(
-        Sql(
-            value = ["classpath:testcontainers/add-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            value = ["classpath:testcontainers/remove-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
-    fun `test delete booking should return 404 when booking not found`() {
+    @SqlSetup
+    fun `test delete should return 404 when booking not found`() {
         LOGGER.info("RUNNING test delete booking should return 404 when booking not found...")
 
-        setContext(userId = 1)
+        setUserContext(userId = 1)
         val bookingId = 100
 
         mockMvc.perform(delete("/api/bookings/$bookingId"))
@@ -295,20 +263,11 @@ class BookingControllerTest {
 
     @Test
     @DisplayName("Test DELETE /api/bookings/{id} should return 403 when user is not author")
-    @SqlGroup(
-        Sql(
-            value = ["classpath:testcontainers/add-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            value = ["classpath:testcontainers/remove-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
-    fun `test delete booking should return 403 when user is not author`() {
+    @SqlSetup
+    fun `test delete should return 403 when user is not author`() {
         LOGGER.info("RUNNING test delete booking should return 403 when user is not author...")
 
-        setContext(userId = 2)
+        setUserContext(userId = 2)
         val bookingId = 1
 
         mockMvc.perform(delete("/api/bookings/$bookingId"))
@@ -318,21 +277,12 @@ class BookingControllerTest {
     }
 
     @Test
-    @DisplayName("Test PATCH /api/bookings/{id} should update booking")
-    @SqlGroup(
-        Sql(
-            value = ["classpath:testcontainers/add-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            value = ["classpath:testcontainers/remove-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
-    fun `test update booking should update booking when user is author`() {
+    @DisplayName("Test PATCH /api/bookings/{id} should update booking when user is author")
+    @SqlSetup
+    fun `test update should update booking when user is author`() {
         LOGGER.info("RUNNING test update booking should update booking...")
 
-        setContext(userId = 1)
+        setUserContext(userId = 1)
         val bookingId = 1
 
         val requestBody = """
@@ -361,21 +311,46 @@ class BookingControllerTest {
     }
 
     @Test
+    @DisplayName("Test PATCH /api/bookings/{id} should update when user is admin")
+    @SqlSetup
+    fun `test update should update when user is admin`() {
+        LOGGER.info("RUNNING test update booking should update when user is admin...")
+
+        setAdminContext(userId = 3)
+        val bookingId = 1
+
+        val requestBody = """
+            {
+                "date": "2025-01-01T00:00:00",
+                "userId": 1,
+                "servicePointId": 1,
+                "employeeId": 1,
+                "treatmentId": 1
+            }
+        """.trimIndent()
+
+        mockMvc.perform(
+            patch("/api/bookings/$bookingId")
+                .contentType("application/merge-patch+json")
+                .content(requestBody)
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.id").value(1))
+            .andExpect(jsonPath("$.date").value("2025-01-01T00:00:00"))
+            .andExpect(jsonPath("$.userId").value(1))
+            .andExpect(jsonPath("$.servicePointId").value(1))
+            .andExpect(jsonPath("$.employeeId").value(1))
+            .andExpect(jsonPath("$.treatmentId").value(1))
+
+        LOGGER.info("test update booking should update when user is admin PASSED!")
+    }
+
+    @Test
     @DisplayName("Test PATCH /api/bookings/{id} should return 404 when booking not found")
-    @SqlGroup(
-        Sql(
-            value = ["classpath:testcontainers/add-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            value = ["classpath:testcontainers/remove-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
-    fun `test update booking should return 404 when booking not found`() {
+    @SqlSetup
+    fun `test update should return 404 when booking not found`() {
         LOGGER.info("RUNNING test update booking should return 404 when booking not found...")
 
-        setContext(userId = 1)
+        setUserContext(userId = 1)
         val bookingId = 100
 
         val requestBody = """
@@ -399,20 +374,11 @@ class BookingControllerTest {
 
     @Test
     @DisplayName("Test PATCH /api/bookings/{id} should return 403 when user is not author")
-    @SqlGroup(
-        Sql(
-            value = ["classpath:testcontainers/add-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            value = ["classpath:testcontainers/remove-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
-    fun `test update booking should return 403 when user is not author`() {
+    @SqlSetup
+    fun `test update should return 403 when user is not author`() {
         LOGGER.info("RUNNING test update booking should return 403 when user is not author...")
 
-        setContext(userId = 2)
+        setUserContext(userId = 2)
         val bookingId = 1
 
         val requestBody = """
@@ -436,20 +402,11 @@ class BookingControllerTest {
 
     @Test
     @DisplayName("Test PATCH /api/bookings/{id} should return 400 when date is in the past")
-    @SqlGroup(
-        Sql(
-            value = ["classpath:testcontainers/add-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            value = ["classpath:testcontainers/remove-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
-    fun `test update booking should return 400 when date is in the past`() {
+    @SqlSetup
+    fun `test update should return 400 when date is in the past`() {
         LOGGER.info("RUNNING test update booking should return 400 when date is in the past...")
 
-        setContext(userId = 1)
+        setUserContext(userId = 1)
         val bookingId = 1
 
         val requestBody = """
@@ -473,20 +430,11 @@ class BookingControllerTest {
 
     @Test
     @DisplayName("Test PATCH /api/bookings/{id} should ignore illegal field")
-    @SqlGroup(
-        Sql(
-            value = ["classpath:testcontainers/add-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            value = ["classpath:testcontainers/remove-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
-    fun `test update booking should ignore illegal field`() {
+    @SqlSetup
+    fun `test update should ignore illegal field`() {
         LOGGER.info("RUNNING test update booking should ignore illegal field...")
 
-        setContext(userId = 1)
+        setUserContext(userId = 1)
         val bookingId = 1
 
         val requestBody = """
@@ -512,14 +460,20 @@ class BookingControllerTest {
         LOGGER.info("test update booking should return smth when illegal field provided PASSED!")
     }
 
+    private fun setUserContext(userId: Int) {
+        setContext(userId, "ROLE_USER")
+    }
 
+    private fun setAdminContext(userId: Int) {
+        setContext(userId, "ROLE_ADMIN")
+    }
 
-    private fun setContext(userId: Int) {
+    private fun setContext(userId: Int, role: String) {
         val customAuth = CustomAuthenticationToken(
             principal = "testuser",
             userId = userId,
             credentials = null,
-            authorities = listOf(SimpleGrantedAuthority("ROLE_USER"))
+            authorities = listOf(SimpleGrantedAuthority(role))
         )
         SecurityContextHolder.getContext().authentication = customAuth
     }

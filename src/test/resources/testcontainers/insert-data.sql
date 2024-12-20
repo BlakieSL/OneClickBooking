@@ -65,6 +65,7 @@ values (1,
 insert into user_roles (users_id, roles_id)
 VALUES (1, 1);
 
+
 insert into user (id, email, name, password, surname)
 values (2,
         'test_email2@gmail.com',
@@ -76,9 +77,28 @@ values (2,
 insert into user_roles (users_id, roles_id)
 VALUES (2, 1);
 
+
+insert into user (id, email, name, password, surname)
+values (3,
+        'test_email3@gmail.com',
+        'test_name3',
+        '$2a$10$fURaiWnioIAZeDtJ6k/0aOUBJ0dmo9uyJvFBKQaMNd5rXOwo5fYXO',
+        'test_surname3'
+       );
+
+insert into user_roles (users_id, roles_id)
+VALUES (3, 2);
+
 -- inserting new bookings
 insert into booking (id, date, employee_id, service_point_id, treatment_id, user_id)
 values (1, '2022-01-01 00:00:00', 1, 1, 1, 1);
 
 insert into booking (id, date, employee_id, service_point_id, treatment_id, user_id)
 values (2, '2022-01-02 00:00:00', 2, 1, 2, 1);
+
+--inserting new reviews
+insert into review (id, rating, text, booking_id)
+values (1,5, 'test_text1', 1);
+
+insert into review (id, rating, text, booking_id)
+values (2,4, 'test_text2', 2);
