@@ -96,6 +96,9 @@ values (1, '2022-01-01 00:00:00', 1, 1, 1, 1);
 insert into booking (id, date, employee_id, service_point_id, treatment_id, user_id)
 values (2, '2022-01-02 00:00:00', 2, 1, 2, 1);
 
+insert into booking (id, date, employee_id, service_point_id, treatment_id, user_id)
+values (3, '2022-01-03 00:00:00', 1, 1, 1, 1);
+
 --inserting new reviews
 insert into review (id, rating, text, booking_id)
 values (1,5, 'test_text1', 1);

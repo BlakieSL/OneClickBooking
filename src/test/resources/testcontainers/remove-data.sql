@@ -10,6 +10,7 @@ delete from employee;
 
 -- Resetting AUTO_INCREMENT counters
 ALTER TABLE treatment_employees AUTO_INCREMENT = 1;
+ALTER TABLE review AUTO_INCREMENT = 1;
 ALTER TABLE booking AUTO_INCREMENT = 1;
 ALTER TABLE user AUTO_INCREMENT = 1;
 ALTER TABLE user_roles AUTO_INCREMENT = 1;

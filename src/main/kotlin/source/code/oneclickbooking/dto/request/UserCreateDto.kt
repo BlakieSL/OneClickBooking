@@ -1,5 +1,6 @@
 package source.code.oneclickbooking.dto.request
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -15,20 +16,24 @@ import source.code.oneclickbooking.validation.password.special.PasswordSpecialDo
 import source.code.oneclickbooking.validation.password.uppercase.PasswordUppercaseDomain
 
 data class UserCreateDto(
+    @JsonProperty(required = true)
     @field:NotBlank
     @field:Size(max = NAME_MAX_LENGTH)
     val name: String,
 
+    @JsonProperty(required = true)
     @field:NotBlank
     @field:Size(max = SURNAME_MAX_LENGTH)
     val surname: String,
 
+    @JsonProperty(required = true)
     @field:NotBlank
     @field:Size(max = EMAIL_MAX_LENGTH)
     @field:Email
     @field:UniqueEmailDomain
     val email: String,
 
+    @JsonProperty(required = true)
     @field:NotBlank
     @field:Size(min = PASSWORD_MIN_LENGTH, max = PASSWORD_MAX_LENGTH)
     @field:PasswordDigitsDomain
