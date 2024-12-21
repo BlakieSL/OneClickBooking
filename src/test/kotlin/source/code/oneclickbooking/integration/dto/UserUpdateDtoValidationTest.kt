@@ -66,11 +66,11 @@ class UserUpdateDtoValidationTest {
     @DisplayName("should validate valid UserUpdateDto with email change")
     @SqlGroup(
        Sql(
-           value = ["classpath:testcontainers/add-chuck.sql"],
+           value = ["classpath:testcontainers/insert-user.sql"],
            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
        ),
        Sql(
-           value = ["classpath:testcontainers/remove-chuck.sql"],
+           value = ["classpath:testcontainers/remove-user.sql"],
            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
        )
     )
@@ -90,11 +90,11 @@ class UserUpdateDtoValidationTest {
     @DisplayName("should fail validation when email is not unique")
     @SqlGroup(
         Sql(
-            value = ["classpath:testcontainers/add-chuck.sql"],
+            value = ["classpath:testcontainers/insert-user.sql"],
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
         ),
         Sql(
-            value = ["classpath:testcontainers/remove-chuck.sql"],
+            value = ["classpath:testcontainers/remove-user.sql"],
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
         )
     )
@@ -117,11 +117,11 @@ class UserUpdateDtoValidationTest {
     @DisplayName("should fail validation when email is present, but oldpassword is not")
     @SqlGroup(
         Sql(
-            value = ["classpath:testcontainers/add-chuck.sql"],
+            value = ["classpath:testcontainers/insert-user.sql"],
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
         ),
         Sql(
-            value = ["classpath:testcontainers/remove-chuck.sql"],
+            value = ["classpath:testcontainers/remove-user.sql"],
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
         )
     )
@@ -144,11 +144,11 @@ class UserUpdateDtoValidationTest {
     @DisplayName("should fail validation when password is present, but oldpassword is not")
     @SqlGroup(
         Sql(
-            value = ["classpath:testcontainers/add-chuck.sql"],
+            value = ["classpath:testcontainers/insert-user.sql"],
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
         ),
         Sql(
-            value = ["classpath:testcontainers/remove-chuck.sql"],
+            value = ["classpath:testcontainers/remove-user.sql"],
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
         )
     )

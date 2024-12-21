@@ -88,7 +88,7 @@ class BookingServiceImpl(
         employee: Employee,
         treatment: Treatment
     ) {
-        val availabilities = employee.availabilities
+        val availabilities = employee.availabilities.filter { it.dayOfWeek == date.dayOfWeek }
 
         if(availabilities.isEmpty()) {
             throw IllegalArgumentException("Employee has no availabilities")

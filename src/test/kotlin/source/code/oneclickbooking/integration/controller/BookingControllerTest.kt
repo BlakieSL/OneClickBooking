@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
+import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.context.jdbc.SqlMergeMode
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
@@ -95,7 +96,7 @@ class BookingControllerTest {
 
         mockMvc.perform(get("/api/bookings"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.size()").value(2))
+            .andExpect(jsonPath("$.size()").value(3))
             .andExpect(jsonPath("$[0].id").value(1))
             .andExpect(jsonPath("$[0].date").value("2022-01-01T00:00:00"))
             .andExpect(jsonPath("$[0].userId").value(1))
@@ -128,7 +129,7 @@ class BookingControllerTest {
 
         val requestBody = """
             {
-                "date": "2025-01-01T00:00:00",
+                "date": "2025-01-02T10:00:00",
                 "userId": 1,
                 "servicePointId": 1,
                 "employeeId": 1,
@@ -141,14 +142,162 @@ class BookingControllerTest {
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isCreated)
-            .andExpect(jsonPath("$.id").value(3))
-            .andExpect(jsonPath("$.date").value("2025-01-01T00:00:00"))
+            .andExpect(jsonPath("$.id").value(4))
+            .andExpect(jsonPath("$.date").value("2025-01-02T10:00:00"))
             .andExpect(jsonPath("$.userId").value(1))
             .andExpect(jsonPath("$.servicePointId").value(1))
             .andExpect(jsonPath("$.employeeId").value(1))
             .andExpect(jsonPath("$.treatmentId").value(1))
 
         LOGGER.info("test create booking should create booking PASSED!")
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("Test POST /api/bookings should create booking, when selected employee " +
+            "have bookings on the selected date")
+    @SqlSetup
+    fun `test create should create booking when employee has bookings`() {
+        LOGGER.info("RUNNING test create booking should create booking, when selected employee " +
+                "have bookings on the selected date...")
+
+        val requestBody = """
+            {
+                "date": "2025-01-06T14:00:00",
+                "userId": 1,
+                "servicePointId": 1,
+                "employeeId": 1,
+                "treatmentId": 1
+            }
+        """.trimIndent()
+
+        mockMvc.perform(
+            post("/api/bookings")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isCreated)
+            .andExpect(jsonPath("$.id").value(4))
+            .andExpect(jsonPath("$.date").value("2025-01-06T14:00:00"))
+            .andExpect(jsonPath("$.userId").value(1))
+            .andExpect(jsonPath("$.servicePointId").value(1))
+            .andExpect(jsonPath("$.employeeId").value(1))
+            .andExpect(jsonPath("$.treatmentId").value(1))
+
+        LOGGER.info("test create should create booking when employee has bookings PASSED!")
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("Test POST /api/bookings should create booking, when selected employee " +
+            "have splitted availability on selected date")
+    @SqlSetup
+    fun `test create should create booking when employee has splitted availability`() {
+        LOGGER.info("RUNNING test create booking should create booking, when selected employee " +
+                "have splitted availability on selected date...")
+
+        val requestBody = """
+            {
+                "date": "2025-01-06T15:00:00",
+                "userId": 1,
+                "servicePointId": 1,
+                "employeeId": 2,
+                "treatmentId": 2
+            }
+        """.trimIndent()
+
+        mockMvc.perform(
+            post("/api/bookings")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isCreated)
+            .andExpect(jsonPath("$.id").value(4))
+            .andExpect(jsonPath("$.date").value("2025-01-06T15:00:00"))
+            .andExpect(jsonPath("$.userId").value(1))
+            .andExpect(jsonPath("$.servicePointId").value(1))
+            .andExpect(jsonPath("$.employeeId").value(2))
+            .andExpect(jsonPath("$.treatmentId").value(2))
+
+        LOGGER.info("test create should create booking when employee has splitted availability PASSED!")
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("Test POST /api/bookings should should create booking, when selected employee " +
+            "have splitted availability on selected date and bookings")
+    @SqlGroup(
+        Sql(
+            scripts = ["classpath:testcontainers/insert-data.sql",
+                      "classpath:testcontainers/booking/insert-booking.sql"],
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+        ),
+        Sql(
+            scripts = ["classpath:testcontainers/remove-data.sql"],
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
+        )
+    )
+    fun `test create should create booking when employee has splitted availability and bookings`() {
+        LOGGER.info("RUNNING test create booking should create booking, when selected employee " +
+                "have splitted availability on selected date and bookings...")
+
+        val requestBody = """
+            {
+                "date": "2025-01-06T15:15:00",
+                "userId": 1,
+                "servicePointId": 1,
+                "employeeId": 2,
+                "treatmentId": 2
+            }
+        """.trimIndent()
+
+        mockMvc.perform(
+            post("/api/bookings")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isCreated)
+            .andExpect(jsonPath("$.id").value(5))
+            .andExpect(jsonPath("$.date").value("2025-01-06T15:15:00"))
+            .andExpect(jsonPath("$.userId").value(1))
+            .andExpect(jsonPath("$.servicePointId").value(1))
+            .andExpect(jsonPath("$.employeeId").value(2))
+            .andExpect(jsonPath("$.treatmentId").value(2))
+
+        LOGGER.info("test create should create booking when employee has splitted availability" +
+                " and bookings PASSED!")
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("Test POST /api/bookings should return 400 when employee does not provide treatment")
+    @SqlSetup
+    fun `test create should return 400 when employee does not provide treatment`() {
+
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("Test POST /api/bookings should return 400 when employee is not associated " +
+            "with service point")
+    @SqlSetup
+    fun `test create should return 400 when employee is not associated with service point`() {
+
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("Test POST /api/bookings should return 400 when employee is not available " +
+            "at the specified date")
+    @SqlSetup
+    fun `test create should return 400 when employee is not available at the specified date`() {
+
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("Test POST /api/bookings should return 400 when employee is not available " +
+            "at specified time slot")
+    @SqlSetup
+    fun `test create should return 400 when employee is not available at specified time slot`() {
+
     }
 
     @Test
@@ -185,7 +334,7 @@ class BookingControllerTest {
 
         val requestBody = """
             {
-                "date": "2025-01-01T00:00:00",
+                "date": "2025-01-02T10:00:00",
                 "userId": 1,
                 "servicePointId": 100,
                 "employeeId": 1,

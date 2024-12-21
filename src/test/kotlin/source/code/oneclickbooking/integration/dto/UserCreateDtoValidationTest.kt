@@ -38,11 +38,11 @@ class UserCreateDtoValidationTest {
     @DisplayName("should validate valid UserCreateDto")
     @SqlGroup(
         Sql(
-            value = ["classpath:testcontainers/add-chuck.sql"],
+            value = ["classpath:testcontainers/insert-user.sql"],
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
         ),
         Sql(
-            value = ["classpath:testcontainers/remove-chuck.sql"],
+            value = ["classpath:testcontainers/remove-user.sql"],
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
         )
     )
@@ -61,11 +61,11 @@ class UserCreateDtoValidationTest {
     @DisplayName("should fail validation when email is not unique")
     @SqlGroup(
         Sql(
-            value = ["classpath:testcontainers/add-chuck.sql"],
+            value = ["classpath:testcontainers/insert-user.sql"],
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
         ),
         Sql(
-            value = ["classpath:testcontainers/remove-chuck.sql"],
+            value = ["classpath:testcontainers/remove-user.sql"],
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
         )
     )

@@ -6,6 +6,7 @@ delete from user_roles;
 delete from user;
 delete from service_point;
 delete from treatment;
+delete from employee_availability;
 delete from employee;
 
 -- Resetting AUTO_INCREMENT counters
@@ -17,4 +18,5 @@ ALTER TABLE user_roles AUTO_INCREMENT = 1;
 ALTER TABLE service_point_employee AUTO_INCREMENT = 1;
 ALTER TABLE service_point AUTO_INCREMENT = 1;
 ALTER TABLE treatment AUTO_INCREMENT = 1;
+ALTER TABLE employee_availability AUTO_INCREMENT = 1;
 ALTER TABLE employee AUTO_INCREMENT = 1;
