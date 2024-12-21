@@ -1,6 +1,5 @@
 package source.code.oneclickbooking.repository
 
-import jakarta.persistence.NamedEntityGraph
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -22,6 +21,18 @@ interface EmployeeRepository : JpaRepository<Employee, Int> {
         @Param("treatmentId") treatmentId: Int): List<Employee>
 
     @EntityGraph(attributePaths = ["availabilities"])
+    @Query("""
+        SELECT e
+        FROM Employee e
+        WHERE e.id = :id
+        """)
+    fun findByIdWithAvailabilities(@Param("id") id: Int): Employee?
+
+    @EntityGraph(attributePaths = [
+        "servicePointAssociations",
+        "treatments",
+        "availabilities",
+    ])
     @Query("""
         SELECT e
         FROM Employee e

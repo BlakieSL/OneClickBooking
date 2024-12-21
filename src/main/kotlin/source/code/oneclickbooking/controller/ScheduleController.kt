@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import source.code.oneclickbooking.dto.request.ScheduleRequestDto
 import source.code.oneclickbooking.dto.response.ScheduleResponseDto
-import source.code.oneclickbooking.service.declaration.ScheduleService
+import source.code.oneclickbooking.service.declaration.schedule.ScheduleService
 
 @RestController
 @RequestMapping("/api/schedule")

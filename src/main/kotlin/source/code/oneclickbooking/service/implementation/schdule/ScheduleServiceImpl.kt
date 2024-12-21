@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.service.implementation
+package source.code.oneclickbooking.service.implementation.schdule
 
 import org.springframework.stereotype.Service
 import source.code.oneclickbooking.dto.other.BookingFilterKey
@@ -8,7 +8,8 @@ import source.code.oneclickbooking.dto.response.ScheduleResponseDto
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.model.*
 import source.code.oneclickbooking.repository.*
-import source.code.oneclickbooking.service.declaration.ScheduleService
+import source.code.oneclickbooking.service.declaration.schedule.ScheduleService
+import source.code.oneclickbooking.service.declaration.schedule.ScheduleUtilsService
 import source.code.oneclickbooking.specification.BookingSpecification
 import source.code.oneclickbooking.specification.SpecificationBuilder
 import source.code.oneclickbooking.specification.SpecificationFactory
@@ -17,6 +18,7 @@ import java.time.LocalDateTime
 
 @Service
 class ScheduleServiceImpl(
+    private val utilsService: ScheduleUtilsService,
     private val bookingRepository: BookingRepository,
     private val employeeRepository: EmployeeRepository,
     private val servicePointRepository: ServicePointRepository,
@@ -36,14 +38,12 @@ class ScheduleServiceImpl(
         val employees = getLookedEmployees(employeeId, servicePoint, treatment)
 
         val dayOfWeek = date.dayOfWeek
-        val slotIncrementMinutes = 15
 
         return if (employeeId != null) {
             handleSingleEmployeeSchedule(
                 employees,
                 dayOfWeek,
                 date,
-                slotIncrementMinutes,
                 treatment,
                 bookings
             )
@@ -52,7 +52,6 @@ class ScheduleServiceImpl(
                 employees,
                 dayOfWeek,
                 date,
-                slotIncrementMinutes,
                 treatment,
                 bookings
             )
@@ -70,7 +69,6 @@ class ScheduleServiceImpl(
         employees: List<Employee>,
         dayOfWeek: java.time.DayOfWeek,
         date: LocalDate,
-        slotIncrementMinutes: Int,
         treatment: Treatment,
         bookings: List<Booking>
     ): ScheduleResponseDto {
@@ -83,10 +81,16 @@ class ScheduleServiceImpl(
         }
 
         val allPotentialSlots = availabilities
-            .flatMap { generatePotentialSlots(date, it, slotIncrementMinutes, treatment.duration) }
-            .distinct()
+            .flatMap {
+                utilsService.generatePotentialSlots(
+                    date,
+                    it,
+                    SLOT_INCREMENT_MINUTES,
+                    treatment.duration
+                )
+            }.distinct()
 
-        val takenSlots = findTakenSlots(allPotentialSlots, bookings, treatment.duration)
+        val takenSlots = utilsService.findTakenSlots(allPotentialSlots, bookings, treatment.duration)
         val freeSlots = allPotentialSlots.filterNot { it in takenSlots }
 
         return ScheduleResponseDto(freeSlots)
@@ -96,7 +100,6 @@ class ScheduleServiceImpl(
         employees: List<Employee>,
         dayOfWeek: java.time.DayOfWeek,
         date: LocalDate,
-        slotIncrementMinutes: Int,
         treatment: Treatment,
         bookings: List<Booking>
     ): ScheduleResponseDto {
@@ -107,7 +110,6 @@ class ScheduleServiceImpl(
                 employee,
                 dayOfWeek,
                 date,
-                slotIncrementMinutes,
                 treatment,
                 bookings
             )
@@ -125,7 +127,6 @@ class ScheduleServiceImpl(
         employee: Employee,
         dayOfWeek: java.time.DayOfWeek,
         date: LocalDate,
-        slotIncrementMinutes: Int,
         treatment: Treatment,
         bookings: List<Booking>
     ): List<LocalDateTime> {
@@ -134,12 +135,13 @@ class ScheduleServiceImpl(
         if (employeeAvailabilities.isEmpty()) return emptyList()
 
         val employeeSlots = employeeAvailabilities
-            .flatMap { generatePotentialSlots(date, it, slotIncrementMinutes, treatment.duration) }
-            .distinct()
+            .flatMap {
+                utilsService.generatePotentialSlots(date, it, SLOT_INCREMENT_MINUTES, treatment.duration)
+            }.distinct()
 
         val employeeBookings = bookings.filter { it.employee?.id == employee.id }
 
-        val takenSlots = findTakenSlots(employeeSlots, employeeBookings, treatment.duration)
+        val takenSlots = utilsService.findTakenSlots(employeeSlots, employeeBookings, treatment.duration)
         return employeeSlots.filterNot { it in takenSlots }
     }
 
@@ -170,7 +172,7 @@ class ScheduleServiceImpl(
     }
 
     private fun findEmployee(id: Int): Employee {
-        return employeeRepository.findByIdWithAssociations(id)
+        return employeeRepository.findByIdWithAvailabilities(id)
             ?: throw RecordNotFoundException(Employee::class, id)
     }
 
@@ -200,46 +202,7 @@ class ScheduleServiceImpl(
         }
     }
 
-    private fun generatePotentialSlots(
-        date: LocalDate,
-        availability: EmployeeAvailability,
-        incrementMinutes: Int,
-        treatmentDuration: Int
-    ): List<LocalDateTime> {
-        val startDateTime = date.atTime(availability.startTime)
-        val endDateTime = date.atTime(availability.endTime)
-
-        val slots = mutableListOf<LocalDateTime>()
-        var current = startDateTime
-
-        while (current.plusMinutes(treatmentDuration.toLong()) <= endDateTime) {
-            slots.add(current)
-            current = current.plusMinutes(incrementMinutes.toLong())
-        }
-
-        return slots
-    }
-
-    private fun findTakenSlots(
-        allPotentialSlots: List<LocalDateTime>,
-        bookings: List<Booking>,
-        treatmentDuration: Int
-    ): Set<LocalDateTime> {
-        val takenSlots = mutableSetOf<LocalDateTime>()
-
-        for (booking in bookings) {
-            val bookingStart = booking.date
-            val bookingDuration = booking.treatment!!.duration
-            val bookingEnd = bookingStart.plusMinutes(bookingDuration.toLong())
-
-            val overlappingSlots = allPotentialSlots.filter {
-                val slotEnd = it.plusMinutes(treatmentDuration.toLong())
-                it < bookingEnd && slotEnd > bookingStart
-            }
-
-            takenSlots.addAll(overlappingSlots)
-        }
-
-        return takenSlots
+    companion object {
+        private const val SLOT_INCREMENT_MINUTES: Int = 15
     }
 }

@@ -22,7 +22,7 @@ import source.code.oneclickbooking.repository.BookingRepository
 import source.code.oneclickbooking.repository.EmployeeRepository
 import source.code.oneclickbooking.repository.ServicePointRepository
 import source.code.oneclickbooking.repository.TreatmentRepository
-import source.code.oneclickbooking.service.implementation.ScheduleServiceImpl
+import source.code.oneclickbooking.service.implementation.schdule.ScheduleServiceImpl
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
@@ -173,7 +173,7 @@ class ScheduleServiceTest {
         val request = ScheduleRequestDto(filter = filter, treatmentId = 100)
 
         whenever(servicePointRepository.findByIdWithAssociations(1)).thenReturn(servicePoint)
-        whenever(employeeRepository.findByIdWithAssociations(10)).thenReturn(employee1)
+        whenever(employeeRepository.findByIdWithAvailabilities(10)).thenReturn(employee1)
         whenever(treatmentRepository.findById(100)).thenReturn(Optional.of(treatment))
         whenever(bookingRepository.findAll(any<Specification<Booking>>())).thenReturn(emptyList())
 
@@ -203,7 +203,7 @@ class ScheduleServiceTest {
         val request = ScheduleRequestDto(filter = filter, treatmentId = 100)
 
         whenever(servicePointRepository.findByIdWithAssociations(1)).thenReturn(servicePoint)
-        whenever(employeeRepository.findByIdWithAssociations(10)).thenReturn(employee1)
+        whenever(employeeRepository.findByIdWithAvailabilities(10)).thenReturn(employee1)
         whenever(treatmentRepository.findById(100)).thenReturn(Optional.of(treatment))
         whenever(bookingRepository.findAll(any<Specification<Booking>>())).thenReturn(listOf(booking))
 
