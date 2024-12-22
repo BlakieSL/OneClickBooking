@@ -35,7 +35,6 @@ class BookingMapper(
 
     fun update(booking: Booking, dto: BookingUpdateDto) {
         dto.date?.let { booking.date = it }
-        dto.userId?.let { booking.user = resolver.resolveUser(it)!! }
         dto.servicePointId?.let { booking.servicePoint = resolver.resolveServicePoint(it)!! }
         dto.employeeId?.let { booking.employee = resolver.resolveEmployee(it)!! }
         dto.treatmentId?.let { booking.treatment = resolver.resolveTreatment(it)!! }

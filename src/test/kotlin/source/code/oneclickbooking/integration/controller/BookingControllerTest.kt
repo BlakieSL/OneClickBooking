@@ -253,7 +253,7 @@ class BookingControllerTest {
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isCreated)
-            .andExpect(jsonPath("$.id").value(5))
+            .andExpect(jsonPath("$.id").value(6))
             .andExpect(jsonPath("$.date").value("2025-01-06T15:15:00"))
             .andExpect(jsonPath("$.userId").value(1))
             .andExpect(jsonPath("$.servicePointId").value(1))
@@ -528,12 +528,11 @@ class BookingControllerTest {
         logRunning()
 
         setUserContext(userId = 1)
-        val bookingId = 1
+        val bookingId = 3
 
         val requestBody = """
             {
-                "date": "2025-01-01T00:00:00",
-                "userId": 1,
+                "date": "2025-01-02T10:00:00",
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -545,8 +544,8 @@ class BookingControllerTest {
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
         ).andExpect(status().isOk)
-            .andExpect(jsonPath("$.id").value(1))
-            .andExpect(jsonPath("$.date").value("2025-01-01T00:00:00"))
+            .andExpect(jsonPath("$.id").value(3))
+            .andExpect(jsonPath("$.date").value("2025-01-02T10:00:00"))
             .andExpect(jsonPath("$.userId").value(1))
             .andExpect(jsonPath("$.servicePointId").value(1))
             .andExpect(jsonPath("$.employeeId").value(1))
@@ -562,12 +561,11 @@ class BookingControllerTest {
         logRunning()
 
         setAdminContext(userId = 3)
-        val bookingId = 1
+        val bookingId = 3
 
         val requestBody = """
             {
-                "date": "2025-01-01T00:00:00",
-                "userId": 1,
+                "date": "2025-01-02T10:00:00",
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -579,8 +577,8 @@ class BookingControllerTest {
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
         ).andExpect(status().isOk)
-            .andExpect(jsonPath("$.id").value(1))
-            .andExpect(jsonPath("$.date").value("2025-01-01T00:00:00"))
+            .andExpect(jsonPath("$.id").value(3))
+            .andExpect(jsonPath("$.date").value("2025-01-02T10:00:00"))
             .andExpect(jsonPath("$.userId").value(1))
             .andExpect(jsonPath("$.servicePointId").value(1))
             .andExpect(jsonPath("$.employeeId").value(1))
@@ -601,7 +599,6 @@ class BookingControllerTest {
         val requestBody = """
             {
                 "date": "2025-01-01T00:00:00",
-                "userId": 1,
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -629,7 +626,6 @@ class BookingControllerTest {
         val requestBody = """
             {
                 "date": "2025-01-01T00:00:00",
-                "userId": 1,
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -657,7 +653,6 @@ class BookingControllerTest {
         val requestBody = """
             {
                 "date": "2020-01-01T00:00:00",
-                "userId": 1,
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -680,11 +675,11 @@ class BookingControllerTest {
         logRunning()
 
         setUserContext(userId = 1)
-        val bookingId = 1
+        val bookingId = 3
 
         val requestBody = """
             {
-                "date": "2025-01-01T00:00:00",
+                "date": "2025-01-09T10:00:00",
                 "illegalField": "illegalValue",
                 "treatmentId": 2
             }
@@ -695,12 +690,172 @@ class BookingControllerTest {
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
         ).andExpect(status().isOk)
-            .andExpect(jsonPath("$.id").value(1))
-            .andExpect(jsonPath("$.date").value("2025-01-01T00:00:00"))
+            .andExpect(jsonPath("$.id").value(3))
+            .andExpect(jsonPath("$.date").value("2025-01-09T10:00:00"))
             .andExpect(jsonPath("$.userId").value(1))
             .andExpect(jsonPath("$.servicePointId").value(1))
             .andExpect(jsonPath("$.employeeId").value(1))
             .andExpect(jsonPath("$.treatmentId").value(2))
+
+        logPassed()
+    }
+
+    @Test
+    @DisplayName("Test PATCH /api/bookings/{id} should return 400 when updating past booking")
+    @SqlSetup
+    fun `test update should return 400 when updating past booking`() {
+        logRunning()
+
+        setUserContext(userId = 1)
+        val bookingId = 1
+
+        val requestBody = """
+            {
+                "treatmentId": 2
+            }
+        """.trimIndent()
+
+        mockMvc.perform(
+            patch("/api/bookings/$bookingId")
+                .contentType("application/merge-patch+json")
+                .content(requestBody)
+        ).andExpect(status().isBadRequest)
+
+        logPassed()
+    }
+
+    @Test
+    @DisplayName("Test PATCH /api/bookings/{id} should return 400 when updated employee does " +
+            "not provide treatment")
+    @SqlSetup
+    fun `test update should return 400 when updated employee does not provide treatment`() {
+        logRunning()
+
+        setUserContext(userId = 1)
+        val bookingId = 3
+
+        val requestBody = """
+            {
+                "employeeId": 2
+            }
+        """.trimIndent()
+
+        mockMvc.perform(
+            patch("/api/bookings/$bookingId")
+                .contentType("application/merge-patch+json")
+                .content(requestBody)
+        ).andExpect(status().isBadRequest)
+
+        logPassed()
+    }
+
+    @Test
+    @DisplayName("Test PATCH /api/bookings/{id} should return 400 when updated employee is not " +
+            "associated with service point")
+    @SqlSetup
+    fun `test update should return 400 when updated employee is not associated with service point`() {
+        logRunning()
+
+        setUserContext(userId = 1)
+        val bookingId = 3
+
+        val requestBody = """
+            {
+                "employeeId": 3,
+                "treatmentId": 3
+            }
+        """.trimIndent()
+
+        mockMvc.perform(
+            patch("/api/bookings/$bookingId")
+                .contentType("application/merge-patch+json")
+                .content(requestBody)
+        ).andExpect(status().isBadRequest)
+
+        logPassed()
+    }
+
+    @Test
+    @DisplayName("Test PATCH /api/bookings/{id} should return 400 when updated employee is not " +
+            "available at the specified date")
+    @SqlSetup
+    fun `test update should return 400 when updated employee is not available at the specified date`() {
+        logRunning()
+
+        setUserContext(userId = 1)
+        val bookingId = 3
+
+        val requestBody = """
+            {
+                "date": "2025-01-03T15:00:00",
+            }
+        """.trimIndent()
+
+        mockMvc.perform(
+            patch("/api/bookings/$bookingId")
+                .contentType("application/merge-patch+json")
+                .content(requestBody)
+        ).andExpect(status().isBadRequest)
+
+        logPassed()
+    }
+
+    @Test
+    @DisplayName("Test PATCH /api/bookings/{id} should return 400 when updated employee is not " +
+            "available at specified time slot")
+    @SqlSetup
+    fun `test update should return 400 when updated employee is not available at specified time slot`() {
+        logRunning()
+
+        setUserContext(userId = 1)
+        val bookingId = 3
+
+        val requestBody = """
+            {
+                "date": "2025-01-01T18:00:00",
+            }
+        """.trimIndent()
+
+        mockMvc.perform(
+            patch("/api/bookings/$bookingId")
+                .contentType("application/merge-patch+json")
+                .content(requestBody)
+        ).andExpect(status().isBadRequest)
+
+        logPassed()
+    }
+
+    @Test
+    @DisplayName("Test PATCH /api/bookings/{id} should return 400 when updated employee is not " +
+            "available at specified time slot due to bookings")
+    @SqlGroup(
+        Sql(
+            scripts = ["classpath:testcontainers/insert-data.sql",
+                      "classpath:testcontainers/booking/insert-booking.sql"],
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+        ),
+        Sql(
+            scripts = ["classpath:testcontainers/remove-data.sql"],
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
+        )
+    )
+    fun `test update should return 400 when updated employee is not available at specified time slot due to bookings`() {
+        logRunning()
+
+        setUserContext(userId = 1)
+        val bookingId = 3
+
+        val requestBody = """
+            {
+                "date": "2025-01-02T15:00:00",
+            }
+        """.trimIndent()
+
+        mockMvc.perform(
+            patch("/api/bookings/$bookingId")
+                .contentType("application/merge-patch+json")
+                .content(requestBody)
+        ).andExpect(status().isBadRequest)
 
         logPassed()
     }

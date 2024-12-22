@@ -55,7 +55,6 @@ class BookingMapperTest {
         )
         updateDto = BookingUpdateDto(
             date = LocalDateTime.of(2023, 11, 11, 11, 0),
-            userId = 1,
             servicePointId = 1,
             employeeId = 1,
             treatmentId = 2
@@ -93,7 +92,6 @@ class BookingMapperTest {
     @Test
     fun `should update Booking fields from BookingUpdateDto`() {
         val newTreatment = Treatment.createDefault(id = 2)
-        whenever(resolver.resolveUser(updateDto.userId)).thenReturn(user)
         whenever(resolver.resolveServicePoint(updateDto.servicePointId)).thenReturn(servicePoint)
         whenever(resolver.resolveEmployee(updateDto.employeeId)).thenReturn(employee)
         whenever(resolver.resolveTreatment(updateDto.treatmentId)).thenReturn(newTreatment)

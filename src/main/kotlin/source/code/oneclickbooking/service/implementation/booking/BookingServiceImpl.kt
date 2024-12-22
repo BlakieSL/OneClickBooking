@@ -30,7 +30,7 @@ class BookingServiceImpl(
 ): BookingService {
     @Transactional
     override fun create(bookingDto: BookingCreateDto): BookingResponseDto {
-        validateBookingRequest(bookingDto)
+        validateBookingCreateDto(bookingDto)
 
         val booking = mapper.toEntity(bookingDto)
         val savedBooking = repository.save(booking)
@@ -43,8 +43,9 @@ class BookingServiceImpl(
         val patched = applyPatch(booking, patch)
 
         validationService.validate(patched)
-        mapper.update(booking, patched)
+        validateBookingUpdateDto(booking, patched)
 
+        mapper.update(booking, patched)
         val savedBooking = repository.save(booking)
         return mapper.toResponseDto(savedBooking)
     }
@@ -68,18 +69,47 @@ class BookingServiceImpl(
         return jsonPatchService.applyPatch(patch, responseDto, BookingUpdateDto::class)
     }
 
-    private fun validateBookingRequest(bookingDto: BookingCreateDto) {
+    private fun validateBookingCreateDto(bookingDto: BookingCreateDto) {
         val servicePoint = findServicePoint(bookingDto.servicePointId)
         val employee = findEmployee(bookingDto.employeeId)
         val treatment = findTreatment(bookingDto.treatmentId)
 
+        validateAssociations(employee, treatment, servicePoint)
+        validateAvailability(bookingDto.date, servicePoint, employee, treatment)
+    }
+
+    private fun validateBookingUpdateDto(existingBooking: Booking, updateDto: BookingUpdateDto) {
+        validateDateNotInPast(existingBooking.date)
+
+        val date = updateDto.date ?: existingBooking.date
+        val servicePointId = updateDto.servicePointId ?: existingBooking.servicePoint.id!!
+        val employeeId = updateDto.employeeId ?: existingBooking.employee!!.id!!
+        val treatmentId = updateDto.treatmentId ?: existingBooking.treatment!!.id!!
+
+        val servicePoint = findServicePoint(servicePointId)
+        val employee = findEmployee(employeeId)
+        val treatment = findTreatment(treatmentId)
+
+        validateAssociations(employee, treatment, servicePoint)
+        validateAvailability(date, servicePoint, employee, treatment)
+    }
+
+    private fun validateDateNotInPast(date: LocalDateTime) {
+        if(date.isBefore(LocalDateTime.now())) {
+            throw IllegalArgumentException("You cannot update a past booking")
+        }
+    }
+
+    private fun validateAssociations(
+        employee: Employee,
+        treatment: Treatment,
+        servicePoint: ServicePoint
+    ) {
         if(!employee.treatments.contains(treatment)
             || !employee.servicePointAssociations.any { it.servicePoint == servicePoint }) {
             throw IllegalArgumentException("Employee does not provide the treatment " +
                     "or employee is not associated with the service point")
         }
-
-        validateAvailability(bookingDto.date, servicePoint, employee, treatment)
     }
 
     private fun validateAvailability(

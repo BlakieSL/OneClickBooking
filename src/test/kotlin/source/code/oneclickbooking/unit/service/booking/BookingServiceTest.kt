@@ -87,7 +87,6 @@ class BookingServiceTest {
 
         bookingUpdateDto = BookingUpdateDto(
             date = LocalDateTime.of(2023, 11, 11, 11, 0),
-            userId = 1,
             servicePointId = 1,
             employeeId = 1,
             treatmentId = 1
