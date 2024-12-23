@@ -20,7 +20,6 @@ import org.testcontainers.junit.jupiter.Testcontainers
 import source.code.oneclickbooking.integration.annotation.SqlSetup
 import java.time.Duration
 import java.time.LocalTime
-import kotlin.math.log
 
 @ActiveProfiles("test")
 @Testcontainers
