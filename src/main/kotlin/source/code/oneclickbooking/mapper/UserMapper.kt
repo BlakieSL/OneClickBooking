@@ -31,7 +31,6 @@ class UserMapper {
     fun update(user: User, dto: UserUpdateDto) {
         dto.name?.let { user.name = it }
         dto.surname?.let { user.surname = it }
-        dto.email?.let { user.email = it }
     }
 
     fun toCredentialsDto(user: User): UserCredentialsDto {

@@ -46,6 +46,7 @@ class UserServiceImpl(
 
         return mapper.toResponseDto(savedUser)
     }
+
     @Transactional
     override fun deleteUser(id: Int) {
         val user = find(id)
@@ -59,8 +60,20 @@ class UserServiceImpl(
 
         validationService.validate(patched)
         mapper.update(user, patched)
-        if(patched.password != null)
+
+        if((patched.password != null) && (patched.oldPassword != null)) {
+            if(!passwordEncoder.matches(patched.oldPassword, user.password)) {
+                throw IllegalArgumentException("Old password is incorrect")
+            }
             user.password = hash(patched.password)
+        }
+
+        if((patched.email != null) && (patched.oldPassword != null)) {
+            if(!passwordEncoder.matches(patched.oldPassword, user.password)) {
+                throw IllegalArgumentException("Old password is incorrect")
+            }
+            user.email = patched.email
+        }
 
         val savedUser = repository.save(user)
 

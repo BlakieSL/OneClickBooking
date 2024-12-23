@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.testcontainers.junit.jupiter.Testcontainers
 import source.code.oneclickbooking.integration.annotation.SqlSetup
+
 @ActiveProfiles("test")
 @Testcontainers
 @Sql(

@@ -59,14 +59,12 @@ class UserMapperTest {
         val updateDto = UserUpdateDto(
             name = "UpdatedName",
             surname = "UpdatedSurname",
-            email = "updated.email@example.com"
         )
 
         userMapper.update(user, updateDto)
 
         assertEquals(updateDto.name, user.name)
         assertEquals(updateDto.surname, user.surname)
-        assertEquals(updateDto.email, user.email)
         assertEquals("hashed_password", user.password)
     }
 

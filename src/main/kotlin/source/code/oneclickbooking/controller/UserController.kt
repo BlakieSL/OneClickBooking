@@ -3,6 +3,7 @@ package source.code.oneclickbooking.controller
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -25,11 +26,13 @@ class UserController (
     private val userService: UserService,
     private val jwtService: JwtService
 ) {
+    @AccountOwnerOrAdmin
     @GetMapping("/{id}")
     fun get(@PathVariable id: Int) : ResponseEntity<UserResponseDto> =
         ResponseEntity.ok(userService.getUser(id))
 
     @PostMapping("/register")
+    @PreAuthorize("isAnonymous()")
     fun create(
         @Valid @RequestBody request: UserCreateDto
     ) : ResponseEntity<UserResponseDto> =
