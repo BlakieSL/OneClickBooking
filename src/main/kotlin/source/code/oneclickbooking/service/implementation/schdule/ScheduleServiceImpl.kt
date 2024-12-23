@@ -59,7 +59,7 @@ class ScheduleServiceImpl(
     }
 
     private fun findFilteredBookings(filter: FilterDto): List<Booking> {
-        val bookingFactory = SpecificationFactory { criteria -> BookingSpecification(criteria) }
+        val bookingFactory = SpecificationFactory { BookingSpecification(it) }
         val specificationBuilder = SpecificationBuilder(filter, bookingFactory)
         val specification = specificationBuilder.build()
         return bookingRepository.findAll(specification)
@@ -76,9 +76,7 @@ class ScheduleServiceImpl(
             .flatMap { it.availabilities }
             .filter { it.dayOfWeek == dayOfWeek }
 
-        if (availabilities.isEmpty()) {
-            return ScheduleResponseDto(emptyList())
-        }
+        if (availabilities.isEmpty()) return ScheduleResponseDto(emptyList())
 
         val allPotentialSlots = availabilities
             .flatMap {
@@ -116,10 +114,6 @@ class ScheduleServiceImpl(
             freeSlotsForAll.addAll(employeeFreeSlots)
         }
 
-        if (freeSlotsForAll.isEmpty()) {
-            return ScheduleResponseDto(emptyList())
-        }
-
         return ScheduleResponseDto(freeSlotsForAll.sorted())
     }
 
@@ -136,12 +130,22 @@ class ScheduleServiceImpl(
 
         val employeeSlots = employeeAvailabilities
             .flatMap {
-                utilsService.generatePotentialSlots(date, it, SLOT_INCREMENT_MINUTES, treatment.duration)
+                utilsService.generatePotentialSlots(
+                    date,
+                    it,
+                    SLOT_INCREMENT_MINUTES,
+                    treatment.duration
+                )
             }.distinct()
 
         val employeeBookings = bookings.filter { it.employee?.id == employee.id }
 
-        val takenSlots = utilsService.findTakenSlots(employeeSlots, employeeBookings, treatment.duration)
+        val takenSlots = utilsService.findTakenSlots(
+            employeeSlots,
+            employeeBookings,
+            treatment.duration
+        )
+
         return employeeSlots.filterNot { it in takenSlots }
     }
 
@@ -163,12 +167,18 @@ class ScheduleServiceImpl(
     }
 
     private fun extractDate(filter: FilterDto): LocalDate {
-        return filter.filterCriteria
-            .find { it.filterKey.equals(BookingFilterKey.DATE.name , ignoreCase = true) }
+        val date = filter.filterCriteria
+            .find { it.filterKey.equals(BookingFilterKey.DATE.name, ignoreCase = true) }
             ?.value
             ?.toString()
             ?.let { LocalDate.parse(it) }
             ?: throw IllegalArgumentException("Date is required")
+
+        if (date.isBefore(LocalDate.now())) {
+            throw IllegalArgumentException("The date must be today or in the future")
+        }
+
+        return date
     }
 
     private fun findEmployee(id: Int): Employee {

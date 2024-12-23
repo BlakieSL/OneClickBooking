@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.testcontainers.junit.jupiter.Testcontainers
 import source.code.oneclickbooking.auth.CustomAuthenticationToken
 import source.code.oneclickbooking.integration.annotation.SqlSetup
-import kotlin.math.log
 
 @ActiveProfiles("test")
 @Testcontainers
@@ -43,7 +42,7 @@ class BookingControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test GET /api/bookings/{id} should return booking")
+    @DisplayName("GET /api/bookings/{id} - Should return booking")
     @SqlSetup
     fun `test get should return booking`() {
         logRunning()
@@ -52,19 +51,21 @@ class BookingControllerTest {
 
         mockMvc.perform(get("/api/bookings/$bookingId"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.id").value(bookingId))
-            .andExpect(jsonPath("$.date").value("2022-01-01T00:00:00"))
-            .andExpect(jsonPath("$.userId").value(1))
-            .andExpect(jsonPath("$.servicePointId").value(1))
-            .andExpect(jsonPath("$.employeeId").value(1))
-            .andExpect(jsonPath("$.treatmentId").value(1))
+            .andExpectAll(
+                jsonPath("$.id").value(bookingId),
+                jsonPath("$.date").value("2022-01-01T00:00:00"),
+                jsonPath("$.userId").value(1),
+                jsonPath("$.servicePointId").value(1),
+                jsonPath("$.employeeId").value(1),
+                jsonPath("$.treatmentId").value(1)
+            )
 
         logPassed()
     }
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test GET /api/bookings/{id} should return 404 when booking not found")
+    @DisplayName("GET /api/bookings/{id} - Should return 404 when booking not found")
     @SqlSetup
     fun `test get should return 404 when booking not found`() {
         logRunning()
@@ -79,7 +80,7 @@ class BookingControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test GET /api/bookings/{id} should return 400 when id not a number")
+    @DisplayName("GET /api/bookings/{id} - Should return 400 when id not a number")
     fun `test get should return 400 when id not a number`() {
         logRunning()
 
@@ -91,27 +92,29 @@ class BookingControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test GET /api/bookings should return all bookings")
+    @DisplayName("GET /api/bookings - Should return all bookings")
     @SqlSetup
     fun `test get all should return all bookings`() {
         logRunning()
 
         mockMvc.perform(get("/api/bookings"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.size()").value(3))
-            .andExpect(jsonPath("$[0].id").value(1))
-            .andExpect(jsonPath("$[0].date").value("2022-01-01T00:00:00"))
-            .andExpect(jsonPath("$[0].userId").value(1))
-            .andExpect(jsonPath("$[0].servicePointId").value(1))
-            .andExpect(jsonPath("$[0].employeeId").value(1))
-            .andExpect(jsonPath("$[0].treatmentId").value(1))
+            .andExpectAll(
+                jsonPath("$.size()").value(3),
+                jsonPath("$[0].id").value(1),
+                jsonPath("$[0].date").value("2022-01-01T00:00:00"),
+                jsonPath("$[0].userId").value(1),
+                jsonPath("$[0].servicePointId").value(1),
+                jsonPath("$[0].employeeId").value(1),
+                jsonPath("$[0].treatmentId").value(1)
+            )
 
         logPassed()
     }
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test GET /api/bookings should return empty list when no bookings")
+    @DisplayName("GET /api/bookings - Should return empty list, When no bookings")
     fun `test get all should return empty list when no bookings`() {
         logRunning()
 
@@ -124,7 +127,7 @@ class BookingControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test POST /api/bookings should create booking")
+    @DisplayName("POST /api/bookings - Should create booking")
     @SqlSetup
     fun `test create should create booking`() {
         logRunning()
@@ -143,20 +146,21 @@ class BookingControllerTest {
             post("/api/bookings")
                 .contentType("application/json")
                 .content(requestBody)
-        ).andExpect(status().isCreated)
-            .andExpect(jsonPath("$.id").value(4))
-            .andExpect(jsonPath("$.date").value("2025-01-02T10:00:00"))
-            .andExpect(jsonPath("$.userId").value(1))
-            .andExpect(jsonPath("$.servicePointId").value(1))
-            .andExpect(jsonPath("$.employeeId").value(1))
-            .andExpect(jsonPath("$.treatmentId").value(1))
+        ).andExpect(status().isCreated).andExpectAll(
+            jsonPath("$.id").value(4),
+            jsonPath("$.date").value("2025-01-02T10:00:00"),
+            jsonPath("$.userId").value(1),
+            jsonPath("$.servicePointId").value(1),
+            jsonPath("$.employeeId").value(1),
+            jsonPath("$.treatmentId").value(1)
+        )
 
         logPassed()
     }
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test POST /api/bookings should create booking, when selected employee " +
+    @DisplayName("POST /api/bookings - Should create booking, When selected employee " +
             "have bookings on the selected date")
     @SqlSetup
     fun `test create should create booking when employee has bookings`() {
@@ -176,20 +180,21 @@ class BookingControllerTest {
             post("/api/bookings")
                 .contentType("application/json")
                 .content(requestBody)
-        ).andExpect(status().isCreated)
-            .andExpect(jsonPath("$.id").value(4))
-            .andExpect(jsonPath("$.date").value("2025-01-06T14:00:00"))
-            .andExpect(jsonPath("$.userId").value(1))
-            .andExpect(jsonPath("$.servicePointId").value(1))
-            .andExpect(jsonPath("$.employeeId").value(1))
-            .andExpect(jsonPath("$.treatmentId").value(1))
+        ).andExpect(status().isCreated).andExpectAll(
+            jsonPath("$.id").value(4),
+            jsonPath("$.date").value("2025-01-06T14:00:00"),
+            jsonPath("$.userId").value(1),
+            jsonPath("$.servicePointId").value(1),
+            jsonPath("$.employeeId").value(1),
+            jsonPath("$.treatmentId").value(1)
+        )
 
         logPassed()
     }
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test POST /api/bookings should create booking, when selected employee " +
+    @DisplayName("POST /api/bookings - Should create booking, When selected employee " +
             "have splitted availability on selected date")
     @SqlSetup
     fun `test create should create booking when employee has splitted availability`() {
@@ -209,20 +214,21 @@ class BookingControllerTest {
             post("/api/bookings")
                 .contentType("application/json")
                 .content(requestBody)
-        ).andExpect(status().isCreated)
-            .andExpect(jsonPath("$.id").value(4))
-            .andExpect(jsonPath("$.date").value("2025-01-06T15:00:00"))
-            .andExpect(jsonPath("$.userId").value(1))
-            .andExpect(jsonPath("$.servicePointId").value(1))
-            .andExpect(jsonPath("$.employeeId").value(2))
-            .andExpect(jsonPath("$.treatmentId").value(2))
+        ).andExpect(status().isCreated).andExpectAll(
+            jsonPath("$.id").value(4),
+            jsonPath("$.date").value("2025-01-06T15:00:00"),
+            jsonPath("$.userId").value(1),
+            jsonPath("$.servicePointId").value(1),
+            jsonPath("$.employeeId").value(2),
+            jsonPath("$.treatmentId").value(2)
+        )
 
         logPassed()
     }
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test POST /api/bookings should should create booking, when selected employee " +
+    @DisplayName("POST /api/bookings - Should  create booking, When selected employee " +
             "have splitted availability on selected date and bookings")
     @SqlGroup(
         Sql(
@@ -252,20 +258,21 @@ class BookingControllerTest {
             post("/api/bookings")
                 .contentType("application/json")
                 .content(requestBody)
-        ).andExpect(status().isCreated)
-            .andExpect(jsonPath("$.id").value(6))
-            .andExpect(jsonPath("$.date").value("2025-01-06T15:15:00"))
-            .andExpect(jsonPath("$.userId").value(1))
-            .andExpect(jsonPath("$.servicePointId").value(1))
-            .andExpect(jsonPath("$.employeeId").value(2))
-            .andExpect(jsonPath("$.treatmentId").value(2))
+        ).andExpect(status().isCreated).andExpectAll(
+            jsonPath("$.id").value(4),
+            jsonPath("$.date").value("2025-01-06T15:15:00"),
+            jsonPath("$.userId").value(1),
+            jsonPath("$.servicePointId").value(1),
+            jsonPath("$.employeeId").value(2),
+            jsonPath("$.treatmentId").value(2)
+        )
 
         logPassed()
     }
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test POST /api/bookings should return 400 when employee does not provide treatment")
+    @DisplayName("POST /api/bookings - Should return 400, When employee does not provide treatment")
     @SqlSetup
     fun `test create should return 400 when employee does not provide treatment`() {
         logRunning()
@@ -291,7 +298,7 @@ class BookingControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test POST /api/bookings should return 400 when employee is not associated " +
+    @DisplayName("POST /api/bookings - Should return 400, When employee is not associated " +
             "with service point")
     @SqlSetup
     fun `test create should return 400 when employee is not associated with service point`() {
@@ -318,7 +325,7 @@ class BookingControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test POST /api/bookings should return 400 when employee is not available " +
+    @DisplayName("POST /api/bookings - Should return 400, When employee is not available " +
             "at the specified date")
     @SqlSetup
     fun `test create should return 400 when employee is not available at the specified date`() {
@@ -345,7 +352,7 @@ class BookingControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test POST /api/bookings should return 400 when employee is not available " +
+    @DisplayName("POST /api/bookings - Should return 400, When employee is not available " +
             "at specified time slot due to different availability")
     @SqlSetup
     fun `test create should return 400 when employee is not available at specified time slot`() {
@@ -372,7 +379,7 @@ class BookingControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test POST /api/bookings should return 400 when employee is not available " +
+    @DisplayName("POST /api/bookings - Should return 400, When employee is not available " +
             "at specified time slot due bookings")
     @SqlSetup
     fun `test create should return 400 when employee is not available at specified time slot due bookings`() {
@@ -399,7 +406,7 @@ class BookingControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test POST /api/bookings should return 400 when date is in the past")
+    @DisplayName("POST /api/bookings - Should return 400, When date is in the past")
     fun `test create should return 400 when date is in the past`() {
          logRunning()
 
@@ -424,7 +431,7 @@ class BookingControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test POST /api/bookings should return 404 when provided service point not found")
+    @DisplayName("POST /api/bookings - Should return 404, When provided service point not found")
     @SqlSetup
     fun `test create should return 404 when provided service point not found`() {
         logRunning()
@@ -449,7 +456,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @DisplayName("Test DELETE /api/bookings/{id} should delete booking when user is author")
+    @DisplayName("DELETE /api/bookings/{id} - Should delete booking - When user is author")
     @SqlSetup
     fun `test delete should delete booking when user is author`() {
         logRunning()
@@ -470,8 +477,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testuser", roles = ["ADMIN"])
-    @DisplayName("Test DELETE /api/bookings/{id} should delete booking when user is admin")
+    @DisplayName("DELETE /api/bookings/{id} - Should delete booking, When user is admin")
     @SqlSetup
     fun `test delete should delete booking when user is admin`() {
         logRunning()
@@ -492,7 +498,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @DisplayName("Test DELETE /api/bookings/{id} should return 404 when booking not found")
+    @DisplayName("DELETE /api/bookings/{id} - Should return 404, When booking not found")
     @SqlSetup
     fun `test delete should return 404 when booking not found`() {
         logRunning()
@@ -507,7 +513,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @DisplayName("Test DELETE /api/bookings/{id} should return 403 when user is not author")
+    @DisplayName("DELETE /api/bookings/{id} - Should return 403, When user is not author")
     @SqlSetup
     fun `test delete should return 403 when user is not author`() {
         logRunning()
@@ -522,7 +528,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @DisplayName("Test PATCH /api/bookings/{id} should update booking when user is author")
+    @DisplayName("PATCH /api/bookings/{id} - Should update booking, When user is author")
     @SqlSetup
     fun `test update should update booking when user is author`() {
         logRunning()
@@ -543,19 +549,20 @@ class BookingControllerTest {
             patch("/api/bookings/$bookingId")
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
-        ).andExpect(status().isOk)
-            .andExpect(jsonPath("$.id").value(3))
-            .andExpect(jsonPath("$.date").value("2025-01-02T10:00:00"))
-            .andExpect(jsonPath("$.userId").value(1))
-            .andExpect(jsonPath("$.servicePointId").value(1))
-            .andExpect(jsonPath("$.employeeId").value(1))
-            .andExpect(jsonPath("$.treatmentId").value(1))
+        ).andExpect(status().isOk).andExpectAll(
+            jsonPath("$.id").value(3),
+            jsonPath("$.date").value("2025-01-02T10:00:00"),
+            jsonPath("$.userId").value(1),
+            jsonPath("$.servicePointId").value(1),
+            jsonPath("$.employeeId").value(1),
+            jsonPath("$.treatmentId").value(1)
+        )
 
         logPassed()
     }
 
     @Test
-    @DisplayName("Test PATCH /api/bookings/{id} should update when user is admin")
+    @DisplayName("PATCH /api/bookings/{id} - Should update, When user is admin")
     @SqlSetup
     fun `test update should update when user is admin`() {
         logRunning()
@@ -576,19 +583,20 @@ class BookingControllerTest {
             patch("/api/bookings/$bookingId")
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
-        ).andExpect(status().isOk)
-            .andExpect(jsonPath("$.id").value(3))
-            .andExpect(jsonPath("$.date").value("2025-01-02T10:00:00"))
-            .andExpect(jsonPath("$.userId").value(1))
-            .andExpect(jsonPath("$.servicePointId").value(1))
-            .andExpect(jsonPath("$.employeeId").value(1))
-            .andExpect(jsonPath("$.treatmentId").value(1))
+        ).andExpect(status().isOk).andExpectAll(
+            jsonPath("$.id").value(3),
+            jsonPath("$.date").value("2025-01-02T10:00:00"),
+            jsonPath("$.userId").value(1),
+            jsonPath("$.servicePointId").value(1),
+            jsonPath("$.employeeId").value(1),
+            jsonPath("$.treatmentId").value(1)
+        )
 
         logPassed()
     }
 
     @Test
-    @DisplayName("Test PATCH /api/bookings/{id} should return 404 when booking not found")
+    @DisplayName("PATCH /api/bookings/{id} - Should return 404, When booking not found")
     @SqlSetup
     fun `test update should return 404 when booking not found`() {
         logRunning()
@@ -615,7 +623,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @DisplayName("Test PATCH /api/bookings/{id} should return 403 when user is not author")
+    @DisplayName("PATCH /api/bookings/{id} - Should return 403, When user is not author")
     @SqlSetup
     fun `test update should return 403 when user is not author`() {
         logRunning()
@@ -642,7 +650,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @DisplayName("Test PATCH /api/bookings/{id} should return 400 when date is in the past")
+    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When date is in the past")
     @SqlSetup
     fun `test update should return 400 when date is in the past`() {
         logRunning()
@@ -669,7 +677,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @DisplayName("Test PATCH /api/bookings/{id} should ignore illegal field")
+    @DisplayName("PATCH /api/bookings/{id} - Should ignore illegal field")
     @SqlSetup
     fun `test update should ignore illegal field`() {
         logRunning()
@@ -689,19 +697,20 @@ class BookingControllerTest {
             patch("/api/bookings/$bookingId")
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
-        ).andExpect(status().isOk)
-            .andExpect(jsonPath("$.id").value(3))
-            .andExpect(jsonPath("$.date").value("2025-01-09T10:00:00"))
-            .andExpect(jsonPath("$.userId").value(1))
-            .andExpect(jsonPath("$.servicePointId").value(1))
-            .andExpect(jsonPath("$.employeeId").value(1))
-            .andExpect(jsonPath("$.treatmentId").value(2))
+        ).andExpect(status().isOk).andExpectAll(
+            jsonPath("$.id").value(3),
+            jsonPath("$.date").value("2025-01-09T10:00:00"),
+            jsonPath("$.userId").value(1),
+            jsonPath("$.servicePointId").value(1),
+            jsonPath("$.employeeId").value(1),
+            jsonPath("$.treatmentId").value(2)
+        )
 
         logPassed()
     }
 
     @Test
-    @DisplayName("Test PATCH /api/bookings/{id} should return 400 when updating past booking")
+    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updating past booking")
     @SqlSetup
     fun `test update should return 400 when updating past booking`() {
         logRunning()
@@ -725,7 +734,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @DisplayName("Test PATCH /api/bookings/{id} should return 400 when updated employee does " +
+    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updated employee does " +
             "not provide treatment")
     @SqlSetup
     fun `test update should return 400 when updated employee does not provide treatment`() {
@@ -750,7 +759,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @DisplayName("Test PATCH /api/bookings/{id} should return 400 when updated employee is not " +
+    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updated employee is not " +
             "associated with service point")
     @SqlSetup
     fun `test update should return 400 when updated employee is not associated with service point`() {
@@ -776,7 +785,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @DisplayName("Test PATCH /api/bookings/{id} should return 400 when updated employee is not " +
+    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updated employee is not " +
             "available at the specified date")
     @SqlSetup
     fun `test update should return 400 when updated employee is not available at the specified date`() {
@@ -801,7 +810,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @DisplayName("Test PATCH /api/bookings/{id} should return 400 when updated employee is not " +
+    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updated employee is not " +
             "available at specified time slot")
     @SqlSetup
     fun `test update should return 400 when updated employee is not available at specified time slot`() {
@@ -826,7 +835,7 @@ class BookingControllerTest {
     }
 
     @Test
-    @DisplayName("Test PATCH /api/bookings/{id} should return 400 when updated employee is not " +
+    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updated employee is not " +
             "available at specified time slot due to bookings")
     @SqlGroup(
         Sql(

@@ -38,13 +38,13 @@ class ScheduleUtilsServiceImpl : ScheduleUtilsService {
         val takenSlots = mutableSetOf<LocalDateTime>()
 
         for (booking in bookings) {
-            val bookingStart = booking.date
             val bookingDuration = booking.treatment!!.duration
+            val bookingStart = booking.date
             val bookingEnd = bookingStart.plusMinutes(bookingDuration.toLong())
 
-            val overlappingSlots = allPotentialSlots.filter {
-                val slotEnd = it.plusMinutes(treatmentDuration.toLong())
-                it < bookingEnd && slotEnd > bookingStart
+            val overlappingSlots = allPotentialSlots.filter { slotStart ->
+                val slotEnd = slotStart.plusMinutes(treatmentDuration.toLong())
+                slotStart < bookingEnd && bookingStart < slotEnd
             }
 
             takenSlots.addAll(overlappingSlots)
