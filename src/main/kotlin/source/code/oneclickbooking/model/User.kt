@@ -26,7 +26,6 @@ class User (
     @field:NotBlank
     @field:Size(max = EMAIL_MAX_LENGTH)
     @field:Email
-    @field:UniqueEmailDomain
     @Column(nullable = false, length = EMAIL_MAX_LENGTH)
     var email: String,
 
@@ -82,6 +81,6 @@ class User (
     }
 
     override fun toString(): String {
-        return "User(id=$id, name='$name', surname='$surname', email='$email')"
+        return "User(id=$id, name='$name', surname='$surname', email='$email, password='$password')"
     }
 }

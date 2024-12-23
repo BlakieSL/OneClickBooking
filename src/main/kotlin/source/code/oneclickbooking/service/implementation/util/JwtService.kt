@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Service
 import source.code.oneclickbooking.auth.CustomAuthenticationToken
+import source.code.oneclickbooking.exception.InvalidRefreshTokenException
 import source.code.oneclickbooking.exception.JwtAuthenticationException
 import java.text.ParseException
 import java.time.Instant
@@ -19,10 +20,10 @@ import java.util.Date
 @Service
 class JwtService(@Value("\${spring.jws.sharedKey}") sharedKey: String) {
     companion object {
-        private const val ACCESS_TOKEN_DURATION_MINUTES = 15
-        private const val REFRESH_TOKEN_DURATION_MINUTES = 60 * 24 * 30
-        private const val ACCESS_TOKEN_TYPE = "ACCESS"
-        private const val REFRESH_TOKEN = "REFRESH"
+        const val ACCESS_TOKEN_DURATION_MINUTES = 15
+        const val REFRESH_TOKEN_DURATION_MINUTES = 60 * 24 * 30
+        const val ACCESS_TOKEN_TYPE = "ACCESS"
+        const val REFRESH_TOKEN = "REFRESH"
     }
     private val algorithm = JWSAlgorithm.HS256
     private val signer = MACSigner(sharedKey.toByteArray())
@@ -53,13 +54,21 @@ class JwtService(@Value("\${spring.jws.sharedKey}") sharedKey: String) {
             val signedJWT = JWTParser.parse(refreshToken) as SignedJWT
             verifySignature(signedJWT)
             verifyExpirationTime(signedJWT)
-            createAccessToken(
-                signedJWT.jwtClaimsSet.subject,
-                signedJWT.jwtClaimsSet.getIntegerClaim("userId"),
-                signedJWT.jwtClaimsSet.getStringListClaim("authorities")
-            )
+
+            val claims = signedJWT.jwtClaimsSet
+
+            val subject = claims.subject
+                ?: throw InvalidRefreshTokenException("Subject not provided")
+
+            val userId = claims.getIntegerClaim("userId")
+                ?: throw InvalidRefreshTokenException("User id not provided")
+
+            val authorities = claims.getStringListClaim("authorities")
+                ?: throw InvalidRefreshTokenException("Authorities not provided")
+
+            createAccessToken(subject, userId, authorities)
         } catch (e: ParseException) {
-            throw RuntimeException("Invalid refresh token")
+            throw InvalidRefreshTokenException("Invalid refresh token")
         }
     }
 

@@ -30,4 +30,10 @@ class GlobalExceptionHandler {
     fun handleJwtAuthenticationException(ex: JwtAuthenticationException): String? {
         return ex.message
     }
+
+    @ExceptionHandler(InvalidRefreshTokenException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleInvalidRefreshTokenException(ex: InvalidRefreshTokenException): String? {
+        return ex.message
+    }
 }

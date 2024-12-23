@@ -136,7 +136,7 @@ class UserServiceTest {
             roles = user.roles,
             bookings = user.bookings
         )
-        val responseDtoBeforePatch = UserResponseDto(1, user.name, user.surname, user.email)
+
         val responseDtoAfterUpdate = UserResponseDto(
             1,
             "UpdatedName",
@@ -146,8 +146,7 @@ class UserServiceTest {
         val userCaptor = argumentCaptor<User>()
 
         whenever(userRepository.findById(1)).thenReturn(Optional.of(user))
-        whenever(userMapper.toResponseDto(user)).thenReturn(responseDtoBeforePatch)
-        whenever(jsonPatchService.applyPatch(patch, responseDtoBeforePatch, UserUpdateDto::class))
+        whenever(jsonPatchService.applyPatch(patch, UserUpdateDto(), UserUpdateDto::class))
             .thenReturn(userUpdateDto)
         doNothing().whenever(validationService).validate(userUpdateDto)
         doAnswer {
@@ -160,13 +159,14 @@ class UserServiceTest {
 
         assertEquals(responseDtoAfterUpdate, result)
         verify(userRepository).findById(1)
-        verify(jsonPatchService).applyPatch(patch, responseDtoBeforePatch, UserUpdateDto::class)
+        verify(jsonPatchService).applyPatch(patch, UserUpdateDto(), UserUpdateDto::class)
         verify(validationService).validate(userUpdateDto)
         verify(userMapper).update(user, userUpdateDto)
         verify(userRepository).save(user)
-        verify(userMapper, times(2)).toResponseDto(userCaptor.capture())
-        assertEquals(user, userCaptor.firstValue)
-        assertEquals(updatedUser, userCaptor.secondValue)
+        verify(userMapper).toResponseDto(userCaptor.capture())
+
+        assertEquals(user.id, userCaptor.firstValue.id)
+        assertEquals("UpdatedName", userCaptor.firstValue.name)
     }
 
     @Test
@@ -183,7 +183,6 @@ class UserServiceTest {
         val responseDtoBeforePatch = UserResponseDto(1, user.name, user.surname, user.email)
 
         whenever(userRepository.findById(1)).thenReturn(Optional.of(user))
-        whenever(userMapper.toResponseDto(user)).thenReturn(responseDtoBeforePatch)
         whenever(jsonPatchService.applyPatch(patch, responseDtoBeforePatch, UserUpdateDto::class))
             .thenThrow(RuntimeException("Patch failed"))
 
@@ -197,7 +196,6 @@ class UserServiceTest {
         val responseDtoBeforePatch = UserResponseDto(1, user.name, user.surname, user.email)
 
         whenever(userRepository.findById(1)).thenReturn(Optional.of(user))
-        whenever(userMapper.toResponseDto(user)).thenReturn(responseDtoBeforePatch)
         whenever(jsonPatchService.applyPatch(patch, responseDtoBeforePatch, UserUpdateDto::class))
             .thenReturn(userUpdateDto)
         doThrow(RuntimeException("Validation failed")).whenever(validationService)
@@ -234,7 +232,7 @@ class UserServiceTest {
         val userCredentials = UserCredentialsDto(
             user.email,
             user.password,
-            arrayOf("ROLE_USER")
+            arrayOf("USER")
         )
 
         whenever(userRepository.findUserByEmail(user.email)).thenReturn(user)

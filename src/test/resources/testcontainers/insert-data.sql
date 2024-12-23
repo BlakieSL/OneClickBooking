@@ -86,7 +86,7 @@ insert into user (id, email, name, password, surname)
 values (1,
         'test_email1@gmail.com',
         'test_name1',
-        '$2a$10$fURaiWnioIAZeDtJ6k/0aOUBJ0dmo9uyJvFBKQaMNd5rXOwo5fYXO',
+        '$2a$10$Az0Jh30TmMOG05MaTDI3f.9lmeJtbtz9Ao7fagZOJLftZ0nliltlS',
         'test_surname1'
        );
 
@@ -98,7 +98,7 @@ insert into user (id, email, name, password, surname)
 values (2,
         'test_email2@gmail.com',
         'test_name2',
-        '$2a$10$fURaiWnioIAZeDtJ6k/0aOUBJ0dmo9uyJvFBKQaMNd5rXOwo5fYXO',
+        '$2a$10$Az0Jh30TmMOG05MaTDI3f.9lmeJtbtz9Ao7fagZOJLftZ0nliltlS',
         'test_surname2'
        );
 
@@ -110,7 +110,7 @@ insert into user (id, email, name, password, surname)
 values (3,
         'test_email3@gmail.com',
         'test_name3',
-        '$2a$10$fURaiWnioIAZeDtJ6k/0aOUBJ0dmo9uyJvFBKQaMNd5rXOwo5fYXO',
+        '$2a$10$Az0Jh30TmMOG05MaTDI3f.9lmeJtbtz9Ao7fagZOJLftZ0nliltlS',
         'test_surname3'
        );
 

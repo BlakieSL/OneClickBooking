@@ -56,7 +56,9 @@ class UserServiceImpl(
     @Transactional
     override fun updateUser(id: Int, patch: JsonMergePatch): UserResponseDto {
         val user = find(id)
-        val patched = applyPatch(user, patch)
+        val patched = applyPatch(patch)
+
+        println("PATCHED: $patched")
 
         validationService.validate(patched)
         mapper.update(user, patched)
@@ -75,6 +77,7 @@ class UserServiceImpl(
             user.email = patched.email
         }
 
+        println("UPDATED: $user")
         val savedUser = repository.save(user)
 
         return mapper.toResponseDto(savedUser)
@@ -89,9 +92,8 @@ class UserServiceImpl(
             ?: throw RecordNotFoundException(User::class, email)
     }
 
-    private fun applyPatch(user: User, patch: JsonMergePatch) : UserUpdateDto {
-        val userDto = mapper.toResponseDto(user)
-        return jsonPatchService.applyPatch(patch, userDto, UserUpdateDto::class)
+    private fun applyPatch(patch: JsonMergePatch) : UserUpdateDto {
+        return jsonPatchService.applyPatch(patch, UserUpdateDto(), UserUpdateDto::class)
     }
 
     private fun find(id: Int) : User {
