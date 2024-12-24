@@ -188,7 +188,10 @@ class UserControllerTest {
             }
             """.trimIndent()
 
-        mockMvc.perform(post("/api/users/register"))
+        mockMvc.perform(post("/api/users/register")
+            .contentType("application/json")
+            .content(requestBody)
+        )
             .andExpectAll(
                 status().isBadRequest
             )

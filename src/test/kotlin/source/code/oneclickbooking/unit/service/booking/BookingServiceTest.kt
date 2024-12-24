@@ -78,8 +78,6 @@ class BookingServiceTest {
 
     @BeforeEach
     fun setUp() {
-
-
         user = User.createDefault(id = 1)
         servicePoint = ServicePoint.createDefault(id = 1)
         employee = Employee.createDefault(id = 1)

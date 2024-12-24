@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.testcontainers.junit.jupiter.Testcontainers
 import source.code.oneclickbooking.exception.RecordNotFoundException
+import source.code.oneclickbooking.integration.annotation.SqlSetup
 import source.code.oneclickbooking.model.User
 import java.util.*
 
@@ -113,7 +114,87 @@ class LocalizationTest {
             .andExpect(content().string("ServicePoint nie znaleziono dla identyfikatorów: 999"))
     }
 
+    @Test
+    @SqlSetup
+    @WithMockUser(username = "user", roles = ["USER"])
+    @DisplayName("POST /api/users/register - Should return 400, When not found, With en")
+    fun `should return 400 en message`() {
+        val requestBody = """
+            {
+                "name": "test_name4",
+                "surname": "test_surname4",
+                "email": "completelyinvalidemail",
+                "password": "Aa!1"
+            }
+        """.trimIndent()
 
+        val result = mockMvc.perform(post("/api/users/register")
+            .header("Accept-Language", "en")
+            .contentType("application/json")
+            .content(requestBody)
+        ).andExpectAll(
+            status().isBadRequest,
+            jsonPath("$.email").value("Invalid email address."),
+            jsonPath("$.password").value("The size must be between 8 and 50.")
+        ).andReturn()
+
+        LOGGER.info(result.response.contentAsString)
+    }
+
+    @Test
+    @SqlSetup
+    @WithMockUser(username = "user", roles = ["USER"])
+    @DisplayName("POST /api/users/register - Should return 400, When not found, With ru")
+    fun `should return 400 ru message`() {
+        val requestBody = """
+            {
+                "name": "test_name4",
+                "surname": "test_surname4",
+                "email": "completelyinvalidemail",
+                "password": "Aa!1"
+            }
+        """.trimIndent()
+
+        val result = mockMvc.perform(post("/api/users/register")
+            .header("Accept-Language", "ru")
+            .contentType("application/json")
+            .content(requestBody)
+        ).andExpectAll(
+            status().isBadRequest,
+            jsonPath("$.email").value("Некорректный адрес электронной почты."),
+            jsonPath("$.password").value("Размер должен быть между 8 и 50.")
+        ).andReturn()
+
+        LOGGER.info(result.response.contentAsString)
+    }
+
+
+    @Test
+    @SqlSetup
+    @WithMockUser(username = "user", roles = ["USER"])
+    @DisplayName("POST /api/users/register - Should return 400, When not found, With pl")
+    fun `should return 400 pl message`() {
+        val requestBody = """
+            {
+                "name": "test_name4",
+                "surname": "test_surname4",
+                "email": "completelyinvalidemail",
+                "password": "Aa!1"
+            }
+        """.trimIndent()
+
+        val result = mockMvc.perform(post("/api/users/register")
+            .header("Accept-Language", "pl")
+            .contentType("application/json")
+            .content(requestBody)
+        ).andExpectAll(
+            status().isBadRequest,
+            jsonPath("$.email").value("Nieprawidłowy adres e-mail."),
+            jsonPath("$.password").value("Rozmiar musi mieścić się w zakresie od 8 do 50.")
+        ).andReturn()
+
+        LOGGER.info(result.response.contentAsString)
+    }
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(LocalizationTest::class.java)

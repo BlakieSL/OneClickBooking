@@ -3,10 +3,12 @@ package source.code.oneclickbooking.exception
 
 import jakarta.validation.ValidationException
 import org.springframework.http.HttpStatus
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import source.code.oneclickbooking.config.MessageResolverHolder
 import source.code.oneclickbooking.helper.ExceptionMessages
 import source.code.oneclickbooking.helper.MessageResolver
@@ -56,6 +58,15 @@ class GlobalExceptionHandler() {
     @ResponseBody
     fun handleInternalizedIllegalArgumentException(ex: InternalizedIllegalArgumentException): String? {
         return ex.message
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    fun handleMethodArgumentNotValidException(ex: MethodArgumentNotValidException): Map<String, String> {
+        return ex.bindingResult.fieldErrors.associate {
+            it.field to (it.defaultMessage ?: "VALIDATION ERROR")
+        }
     }
 
     @ExceptionHandler(JwtAuthenticationException::class)
