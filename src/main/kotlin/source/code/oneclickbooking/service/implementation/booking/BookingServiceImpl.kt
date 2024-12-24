@@ -177,6 +177,6 @@ class BookingServiceImpl(
     }
 
     companion object {
-        private const val SLOT_INCREMENT_MINUTES = 15
+        const val SLOT_INCREMENT_MINUTES = 15
     }
 }

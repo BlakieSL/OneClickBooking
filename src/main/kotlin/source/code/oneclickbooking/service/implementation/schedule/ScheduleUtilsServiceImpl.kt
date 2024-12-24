@@ -1,7 +1,6 @@
-package source.code.oneclickbooking.service.implementation.schdule
+package source.code.oneclickbooking.service.implementation.schedule
 
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
 import source.code.oneclickbooking.model.Booking
 import source.code.oneclickbooking.model.EmployeeAvailability
 import source.code.oneclickbooking.service.declaration.schedule.ScheduleUtilsService

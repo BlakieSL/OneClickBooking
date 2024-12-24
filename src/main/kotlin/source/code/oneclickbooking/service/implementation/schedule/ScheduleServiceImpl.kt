@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.service.implementation.schdule
+package source.code.oneclickbooking.service.implementation.schedule
 
 import org.springframework.stereotype.Service
 import source.code.oneclickbooking.dto.other.BookingFilterKey

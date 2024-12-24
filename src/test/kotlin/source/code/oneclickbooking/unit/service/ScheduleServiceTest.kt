@@ -23,9 +23,8 @@ import source.code.oneclickbooking.repository.BookingRepository
 import source.code.oneclickbooking.repository.EmployeeRepository
 import source.code.oneclickbooking.repository.ServicePointRepository
 import source.code.oneclickbooking.repository.TreatmentRepository
-import source.code.oneclickbooking.service.implementation.schdule.ScheduleServiceImpl
-import source.code.oneclickbooking.service.implementation.schdule.ScheduleUtilsServiceImpl
-import java.time.DayOfWeek
+import source.code.oneclickbooking.service.implementation.schedule.ScheduleServiceImpl
+import source.code.oneclickbooking.service.implementation.schedule.ScheduleUtilsServiceImpl
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeParseException

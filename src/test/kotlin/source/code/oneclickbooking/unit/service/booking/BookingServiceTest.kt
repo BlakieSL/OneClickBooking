@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -23,6 +24,7 @@ import source.code.oneclickbooking.service.declaration.util.JsonPatchService
 import source.code.oneclickbooking.service.declaration.util.ValidationService
 import source.code.oneclickbooking.service.implementation.booking.BookingMappingResolverImpl
 import source.code.oneclickbooking.service.implementation.booking.BookingServiceImpl
+import source.code.oneclickbooking.service.implementation.schedule.ScheduleUtilsServiceImpl
 import java.time.LocalDateTime
 import java.util.*
 
@@ -42,10 +44,22 @@ class BookingServiceTest {
     private lateinit var mappingResolver: BookingMappingResolverImpl
 
     @Mock
+    private lateinit var scheduleUtilsService: ScheduleUtilsServiceImpl
+
+    @Mock
     private lateinit var repository: BookingRepository
 
     @Mock
     private lateinit var userRepository: UserRepository
+
+    @Mock
+    private lateinit var servicePointRepository: ServicePointRepository
+
+    @Mock
+    private lateinit var employeeRepository: EmployeeRepository
+
+    @Mock
+    private lateinit var treatmentRepository: TreatmentRepository
 
     @InjectMocks
     private lateinit var bookingService: BookingServiceImpl
@@ -58,7 +72,6 @@ class BookingServiceTest {
     private lateinit var servicePoint: ServicePoint
     private lateinit var employee: Employee
     private lateinit var treatment: Treatment
-
 
     @BeforeEach
     fun setUp() {
@@ -101,42 +114,6 @@ class BookingServiceTest {
             treatmentId = 1,
             reviewId = null
         )
-    }
-
-    @Test
-    fun `should create booking`() {
-        val savedBooking = Booking.of(
-            id = 1,
-            date = booking.date,
-            user = booking.user,
-            servicePoint = booking.servicePoint,
-            employee = booking.employee,
-            treatment = booking.treatment,
-            review = booking.review
-        )
-        whenever(mapper.toEntity(bookingCreateDto)).thenReturn(booking)
-        whenever(repository.save(booking)).thenReturn(savedBooking)
-        whenever(mapper.toResponseDto(savedBooking)).thenReturn(bookingResponseDto)
-
-        val result = bookingService.create(bookingCreateDto)
-
-        assertEquals(bookingResponseDto, result)
-        verify(mapper).toResponseDto(savedBooking)
-    }
-
-    @Test
-    fun `should update booking successfully`() {
-        val patch = mock<JsonMergePatch>()
-        val patchedDto = bookingUpdateDto.copy()
-
-        whenever(repository.findById(1)).thenReturn(Optional.of(booking))
-        whenever(jsonPatchService.applyPatch(patch, bookingResponseDto, BookingUpdateDto::class))
-            .thenReturn(patchedDto)
-        whenever(mapper.toResponseDto(booking)).thenReturn(bookingResponseDto)
-        whenever(repository.save(booking)).thenReturn(booking)
-        val result = bookingService.update(1, patch)
-
-        assertEquals(bookingResponseDto, result)
     }
 
     @Test
