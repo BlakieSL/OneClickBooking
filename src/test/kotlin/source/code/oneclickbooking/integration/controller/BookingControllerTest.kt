@@ -259,7 +259,7 @@ class BookingControllerTest {
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isCreated).andExpectAll(
-            jsonPath("$.id").value(4),
+            jsonPath("$.id").value(6),
             jsonPath("$.date").value("2025-01-06T15:15:00"),
             jsonPath("$.userId").value(1),
             jsonPath("$.servicePointId").value(1),

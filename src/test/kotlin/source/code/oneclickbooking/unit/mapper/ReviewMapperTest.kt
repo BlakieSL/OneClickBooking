@@ -73,6 +73,6 @@ class ReviewMapperTest {
         reviewMapper.update(review, partialUpdateDto)
 
         assertEquals(5, review.rating)
-        assertEquals(partialUpdateDto, review.text)
+        assertEquals(partialUpdateDto.text, review.text)
     }
 }
