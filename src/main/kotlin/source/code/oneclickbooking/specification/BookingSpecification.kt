@@ -5,6 +5,8 @@ import org.springframework.data.jpa.domain.Specification
 import source.code.oneclickbooking.dto.other.BookingFilterKey
 import source.code.oneclickbooking.dto.other.FilterCriteria
 import source.code.oneclickbooking.dto.other.FilterOperation
+import source.code.oneclickbooking.exception.InvalidFilterKeyException
+import source.code.oneclickbooking.exception.InvalidFilterOperationException
 import source.code.oneclickbooking.model.Booking
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
@@ -25,7 +27,7 @@ class BookingSpecification(private val criteria: FilterCriteria): Specification<
             BookingFilterKey.DATE.name ->
                 handleDateProperty(root.get("date"), builder)
 
-            else -> throw IllegalStateException("Unexpected filter key: ${criteria.filterKey}")
+            else -> throw InvalidFilterKeyException(criteria.filterKey)
         }
     }
 
@@ -39,9 +41,7 @@ class BookingSpecification(private val criteria: FilterCriteria): Specification<
         return when (criteria.operation) {
             FilterOperation.EQUAL -> builder.equal(join.get<Any>("id"), value)
             FilterOperation.NOT_EQUAL -> builder.notEqual(join.get<Any>("id"), value)
-            else -> throw IllegalArgumentException(
-                "Unsupported operation for $joinProperty: ${criteria.operation}"
-            )
+            else -> throw InvalidFilterOperationException(criteria.operation.name)
         }
     }
 
@@ -59,10 +59,7 @@ class BookingSpecification(private val criteria: FilterCriteria): Specification<
         return when (criteria.operation) {
             FilterOperation.EQUAL ->
                 builder.equal(builder.function("DATE", LocalDate::class.java, path), value)
-
-            else -> throw IllegalArgumentException(
-                "Unsupported operation for date: ${criteria.operation}"
-            )
+            else -> throw InvalidFilterOperationException(criteria.operation.name)
         }
     }
 

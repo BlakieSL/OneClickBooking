@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service
 import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.request.BookingUpdateDto
 import source.code.oneclickbooking.dto.response.BookingResponseDto
+import source.code.oneclickbooking.exception.InternalizedIllegalArgumentException
 import source.code.oneclickbooking.exception.RecordNotFoundException
+import source.code.oneclickbooking.helper.ExceptionMessages
 import source.code.oneclickbooking.mapper.BookingMapper
 import source.code.oneclickbooking.model.*
 import source.code.oneclickbooking.repository.*
@@ -95,7 +97,7 @@ class BookingServiceImpl(
 
     private fun validateDateNotInPast(date: LocalDateTime) {
         if(date.isBefore(LocalDateTime.now())) {
-            throw IllegalArgumentException("You cannot update a past booking")
+            throw InternalizedIllegalArgumentException(ExceptionMessages.UPDATE_PAST_BOOKING)
         }
     }
 
@@ -104,10 +106,12 @@ class BookingServiceImpl(
         treatment: Treatment,
         servicePoint: ServicePoint
     ) {
-        if(!employee.treatments.contains(treatment)
-            || !employee.servicePointAssociations.any { it.servicePoint == servicePoint }) {
-            throw IllegalArgumentException("Employee does not provide the treatment " +
-                    "or employee is not associated with the service point")
+        if(!employee.treatments.contains(treatment)) {
+            throw InternalizedIllegalArgumentException(ExceptionMessages.EMPLOYEE_NOT_PROVIDE_TREATMENT)
+        }
+
+        if(!employee.servicePointAssociations.any { it.servicePoint == servicePoint }) {
+            throw InternalizedIllegalArgumentException(ExceptionMessages.EMPLOYEE_NOT_ASSOCIATED_WITH_SERVICE_POINT)
         }
     }
 
@@ -120,7 +124,9 @@ class BookingServiceImpl(
         val availabilities = employee.availabilities.filter { it.dayOfWeek == date.dayOfWeek }
 
         if(availabilities.isEmpty()) {
-            throw IllegalArgumentException("Employee has no availabilities")
+            throw InternalizedIllegalArgumentException(
+                ExceptionMessages.EMPLOYEE_HAS_NO_AVAILABILITIES_ON_DATE
+            )
         }
 
         val bookings = bookingRepository.findByServicePointIdAndEmployeeIdAndDate(
@@ -148,7 +154,9 @@ class BookingServiceImpl(
         val freeSlots = allPotentialSlots.filterNot { it in takenSLots }
 
         if(date !in freeSlots) {
-            throw IllegalArgumentException("Employee is not available at the specified time")
+            throw InternalizedIllegalArgumentException(
+                ExceptionMessages.EMPLOYEE_HAS_NO_AVAILABILITIES_ON_TIME
+            )
         }
     }
 

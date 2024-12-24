@@ -10,7 +10,9 @@ import source.code.oneclickbooking.dto.other.UserCredentialsDto
 import source.code.oneclickbooking.dto.request.UserCreateDto
 import source.code.oneclickbooking.dto.request.UserUpdateDto
 import source.code.oneclickbooking.dto.response.UserResponseDto
+import source.code.oneclickbooking.exception.InternalizedIllegalArgumentException
 import source.code.oneclickbooking.exception.RecordNotFoundException
+import source.code.oneclickbooking.helper.ExceptionMessages
 import source.code.oneclickbooking.helper.UserDetailsBuilder
 import source.code.oneclickbooking.mapper.UserMapper
 import source.code.oneclickbooking.model.RoleName
@@ -33,7 +35,7 @@ class UserServiceImpl(
     override fun loadUserByUsername(username: String?): UserDetails {
         val userCredentials = findUserCredentials(
             username
-            ?: throw IllegalArgumentException("Username can't be null")
+            ?: throw InternalizedIllegalArgumentException(ExceptionMessages.USERNAME_CANNOT_BE_NULL)
         )
         return UserDetailsBuilder.build(userCredentials)
     }
@@ -65,14 +67,14 @@ class UserServiceImpl(
 
         if((patched.password != null) && (patched.oldPassword != null)) {
             if(!passwordEncoder.matches(patched.oldPassword, user.password)) {
-                throw IllegalArgumentException("Old password is incorrect")
+                throw InternalizedIllegalArgumentException(ExceptionMessages.OLD_PASSWORD_INCORRECT)
             }
             user.password = hash(patched.password)
         }
 
         if((patched.email != null) && (patched.oldPassword != null)) {
             if(!passwordEncoder.matches(patched.oldPassword, user.password)) {
-                throw IllegalArgumentException("Old password is incorrect")
+                throw InternalizedIllegalArgumentException(ExceptionMessages.OLD_PASSWORD_INCORRECT)
             }
             user.email = patched.email
         }

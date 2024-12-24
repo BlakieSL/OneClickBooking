@@ -5,6 +5,8 @@ import org.springframework.data.jpa.domain.Specification
 import source.code.oneclickbooking.dto.other.BookingFilterKey
 import source.code.oneclickbooking.dto.other.FilterCriteria
 import source.code.oneclickbooking.dto.other.FilterOperation
+import source.code.oneclickbooking.exception.InvalidFilterKeyException
+import source.code.oneclickbooking.exception.InvalidFilterOperationException
 import source.code.oneclickbooking.model.Review
 
 class ReviewSpecification(private val criteria: FilterCriteria) : Specification<Review> {
@@ -22,7 +24,7 @@ class ReviewSpecification(private val criteria: FilterCriteria) : Specification<
             BookingFilterKey.SERVICE_POINT.name ->
                 handleEntityProperty(bookingJoin, "servicePoint", criteriaBuilder)
 
-            else -> throw IllegalStateException("Unexpected filter key: ${criteria.filterKey}")
+            else -> throw InvalidFilterKeyException(criteria.filterKey)
         }
     }
 
@@ -36,9 +38,7 @@ class ReviewSpecification(private val criteria: FilterCriteria) : Specification<
         return when (criteria.operation) {
             FilterOperation.EQUAL -> builder.equal(subJoin.get<Any>("id"), value)
             FilterOperation.NOT_EQUAL -> builder.notEqual(subJoin.get<Any>("id"), value)
-            else -> throw IllegalArgumentException(
-                "Unsupported operation for $joinProperty: ${criteria.operation}"
-            )
+            else -> throw InvalidFilterOperationException(criteria.operation.name)
         }
     }
 }

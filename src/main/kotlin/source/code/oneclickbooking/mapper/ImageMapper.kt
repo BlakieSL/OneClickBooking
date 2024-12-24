@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import source.code.oneclickbooking.dto.request.ImageCreateDto
 import source.code.oneclickbooking.dto.response.ImageResponseDto
+import source.code.oneclickbooking.exception.FileProcessingException
 import source.code.oneclickbooking.model.Image
 import java.io.IOException
 
@@ -30,7 +31,7 @@ class ImageMapper {
         return try {
             file.bytes
         } catch (e: IOException) {
-            throw IllegalArgumentException("Failed to convert MultipartFile to ByteArray", e)
+            throw FileProcessingException(cause = e)
         }
     }
 }

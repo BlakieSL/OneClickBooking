@@ -1,6 +1,7 @@
 package source.code.oneclickbooking.service.implementation.util
 
 import jakarta.validation.ConstraintViolation
+import jakarta.validation.ValidationException
 import jakarta.validation.Validator
 import org.springframework.stereotype.Service
 import source.code.oneclickbooking.service.declaration.util.ValidationService
@@ -10,11 +11,10 @@ class ValidationServiceImpl(private val validator: Validator) : ValidationServic
     override fun <T> validate(dto: T, vararg groups: Class<*>) {
         val errors: Set<ConstraintViolation<T>> = validator.validate(dto, *groups)
         if(errors.isNotEmpty()) {
-            println("Validation errors:")
-            errors.forEach {
-                println("${it.propertyPath} ${it.message} ${it.invalidValue}")
+            val errorMessages = errors.joinToString(", ") {
+                "${it.propertyPath} ${it.message} ${it.invalidValue}"
             }
-            throw IllegalArgumentException("Validation failed")
+            throw ValidationException(errorMessages)
         }
     }
 }
