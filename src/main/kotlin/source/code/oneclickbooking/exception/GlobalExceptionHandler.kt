@@ -5,7 +5,9 @@ import jakarta.validation.ValidationException
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
+import source.code.oneclickbooking.config.MessageResolverHolder
 import source.code.oneclickbooking.helper.ExceptionMessages
 import source.code.oneclickbooking.helper.MessageResolver
 
@@ -13,14 +15,16 @@ import source.code.oneclickbooking.helper.MessageResolver
 class GlobalExceptionHandler() {
     @ExceptionHandler(RecordNotFoundException::class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
     fun handleRecordNotFoundException(ex: RecordNotFoundException): String? {
         return ex.message
     }
 
     @ExceptionHandler(ValidationException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
     fun handleValidationException(ex: ValidationException): String? {
-        return MessageResolver.getMessage(
+        return MessageResolverHolder.messageResolver.getMessage(
             key = ExceptionMessages.VALIDATION,
             args = arrayOf(ex.message ?: "VALIDATION ERROR")
         )
@@ -28,36 +32,42 @@ class GlobalExceptionHandler() {
 
     @ExceptionHandler(InvalidFilterKeyException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
     fun handleInvalidFilterKeyException(ex: InvalidFilterKeyException): String? {
         return ex.message
     }
 
     @ExceptionHandler(InvalidFilterOperationException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
     fun handleInvalidFilterOperationException(ex: InvalidFilterOperationException): String? {
         return ex.message
     }
 
     @ExceptionHandler(FileProcessingException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
     fun handleFileProcessingException(ex: FileProcessingException): String? {
         return ex.message
     }
 
     @ExceptionHandler(InternalizedIllegalArgumentException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
     fun handleInternalizedIllegalArgumentException(ex: InternalizedIllegalArgumentException): String? {
         return ex.message
     }
 
     @ExceptionHandler(JwtAuthenticationException::class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
     fun handleJwtAuthenticationException(ex: JwtAuthenticationException): String? {
         return ex.message
     }
 
     @ExceptionHandler(InvalidRefreshTokenException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
     fun handleInvalidRefreshTokenException(ex: InvalidRefreshTokenException): String? {
         return ex.message
     }

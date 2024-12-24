@@ -32,13 +32,7 @@ class ReviewMappingResolverTest {
 
     @BeforeEach
     fun setUp() {
-        val mockMessageSource = mock<MessageSource>()
-        lenient().`when`(mockMessageSource.getMessage(
-            any(), any(), any()
-        )
-        ).thenReturn("Just to Silence the Warnings")
 
-        MessageResolver.setMessageSource(mockMessageSource)
 
         booking = Booking.createDefault(id = 1)
     }

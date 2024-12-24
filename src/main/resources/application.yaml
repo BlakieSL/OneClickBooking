@@ -33,6 +33,3 @@ spring:
   threads:
     virtual:
       enabled: true
-  web:
-    locale: en
-    locale-resolver: accept_header

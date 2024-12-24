@@ -78,13 +78,7 @@ class BookingServiceTest {
 
     @BeforeEach
     fun setUp() {
-        val mockMessageSource = mock<MessageSource>()
-        lenient().`when`(mockMessageSource.getMessage(
-            any(), any(), any()
-        )
-        ).thenReturn("Just to Silence the Warnings")
 
-        MessageResolver.setMessageSource(mockMessageSource)
 
         user = User.createDefault(id = 1)
         servicePoint = ServicePoint.createDefault(id = 1)

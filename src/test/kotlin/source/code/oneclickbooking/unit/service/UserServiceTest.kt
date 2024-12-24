@@ -60,12 +60,7 @@ class UserServiceTest {
 
     @BeforeEach
     fun setUp() {
-        val mockMessageSource = mock<MessageSource>()
-        lenient().`when`(mockMessageSource.getMessage(
-            any(), any(), any())
-        ).thenReturn("Just to Silence the Warnings")
 
-        MessageResolver.setMessageSource(mockMessageSource)
 
         userCreateDto = UserCreateDto.createDefault()
         userUpdateDto = UserUpdateDto(name = "UpdatedName")
