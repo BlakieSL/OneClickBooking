@@ -40,7 +40,7 @@ class BookingServiceImpl(
     @Transactional
     override fun update(id: Int, patch: JsonMergePatch): BookingResponseDto {
         val booking = find(id)
-        val patched = applyPatch(booking, patch)
+        val patched = applyPatch(patch)
 
         validationService.validate(patched)
         validateBookingUpdateDto(booking, patched)
@@ -64,9 +64,8 @@ class BookingServiceImpl(
         return repository.findAll().map { mapper.toResponseDto(it) }
     }
 
-    private fun applyPatch(booking: Booking, patch: JsonMergePatch): BookingUpdateDto {
-        val responseDto = mapper.toResponseDto(booking)
-        return jsonPatchService.applyPatch(patch, responseDto, BookingUpdateDto::class)
+    private fun applyPatch(patch: JsonMergePatch): BookingUpdateDto {
+        return jsonPatchService.applyPatch(patch, BookingUpdateDto(), BookingUpdateDto::class)
     }
 
     private fun validateBookingCreateDto(bookingDto: BookingCreateDto) {

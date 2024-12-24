@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -47,7 +46,7 @@ class BookingServiceTest {
     private lateinit var scheduleUtilsService: ScheduleUtilsServiceImpl
 
     @Mock
-    private lateinit var repository: BookingRepository
+    private lateinit var bookingRepository: BookingRepository
 
     @Mock
     private lateinit var userRepository: UserRepository
@@ -120,7 +119,7 @@ class BookingServiceTest {
     fun `should throw exception when updating non-existent booking`() {
         val patch = mock<JsonMergePatch>()
 
-        whenever(repository.findById(1)).thenReturn(Optional.empty())
+        whenever(bookingRepository.findById(1)).thenReturn(Optional.empty())
 
         assertThrows<RecordNotFoundException> {
             bookingService.update(1, patch)
@@ -129,16 +128,16 @@ class BookingServiceTest {
 
     @Test
     fun `should delete booking successfully`() {
-        whenever(repository.findById(1)).thenReturn(Optional.of(booking))
+        whenever(bookingRepository.findById(1)).thenReturn(Optional.of(booking))
 
         bookingService.delete(1)
 
-        verify(repository).delete(booking)
+        verify(bookingRepository).delete(booking)
     }
 
     @Test
     fun `should throw exception when deleting non-existent booking`() {
-        whenever(repository.findById(1)).thenReturn(Optional.empty())
+        whenever(bookingRepository.findById(1)).thenReturn(Optional.empty())
 
         assertThrows<RecordNotFoundException> {
             bookingService.delete(1)
@@ -147,7 +146,7 @@ class BookingServiceTest {
 
     @Test
     fun `should get booking successfully`() {
-        whenever(repository.findById(1)).thenReturn(Optional.of(booking))
+        whenever(bookingRepository.findById(1)).thenReturn(Optional.of(booking))
         whenever(mapper.toResponseDto(booking)).thenReturn(bookingResponseDto)
 
         val result = bookingService.get(1)
@@ -157,7 +156,7 @@ class BookingServiceTest {
 
     @Test
     fun `should throw exception when getting non-existent booking`() {
-        whenever(repository.findById(1)).thenReturn(Optional.empty())
+        whenever(bookingRepository.findById(1)).thenReturn(Optional.empty())
 
         assertThrows<RecordNotFoundException> {
             bookingService.get(1)
@@ -169,7 +168,7 @@ class BookingServiceTest {
         val bookings = listOf(booking)
         val bookingResponseDtos = listOf(bookingResponseDto)
 
-        whenever(repository.findAll()).thenReturn(bookings)
+        whenever(bookingRepository.findAll()).thenReturn(bookings)
         whenever(mapper.toResponseDto(booking)).thenReturn(bookingResponseDto)
 
         val result = bookingService.getAll()

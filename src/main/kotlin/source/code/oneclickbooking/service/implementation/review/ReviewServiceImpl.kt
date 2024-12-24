@@ -35,7 +35,7 @@ class ReviewServiceImpl(
     @Transactional
     override fun update(id: Int, patch: JsonMergePatch): ReviewResponseDto {
         val review = find(id)
-        val patched = applyPatch(review, patch)
+        val patched = applyPatch(patch)
 
         validationService.validate(patched)
         mapper.update(review, patched)
@@ -66,9 +66,8 @@ class ReviewServiceImpl(
         return repository.findAll(specification).map { mapper.toResponseDto(it) }
     }
 
-    private fun applyPatch(review: Review, patch: JsonMergePatch): ReviewUpdateDto {
-        val responseDto = mapper.toResponseDto(review)
-        return jsonPatchService.applyPatch(patch, responseDto, ReviewUpdateDto::class)
+    private fun applyPatch(patch: JsonMergePatch): ReviewUpdateDto {
+        return jsonPatchService.applyPatch(patch, ReviewUpdateDto(), ReviewUpdateDto::class)
     }
 
     private fun find(id: Int): Review {

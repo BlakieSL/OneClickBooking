@@ -103,7 +103,7 @@ class ReviewServiceTest {
         val patchedDto = reviewUpdateDto.copy()
 
         whenever(repository.findById(1)).thenReturn(Optional.of(review))
-        whenever(jsonPatchService.applyPatch(patch, reviewResponseDto, ReviewUpdateDto::class))
+        whenever(jsonPatchService.applyPatch(patch, ReviewUpdateDto(), ReviewUpdateDto::class))
             .thenReturn(patchedDto)
         whenever(mapper.toResponseDto(review)).thenReturn(reviewResponseDto)
         whenever(repository.save(review)).thenReturn(review)
