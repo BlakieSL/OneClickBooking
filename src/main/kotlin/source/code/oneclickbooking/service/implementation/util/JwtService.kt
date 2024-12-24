@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service
 import source.code.oneclickbooking.auth.CustomAuthenticationToken
 import source.code.oneclickbooking.exception.InvalidRefreshTokenException
 import source.code.oneclickbooking.exception.JwtAuthenticationException
+import source.code.oneclickbooking.helper.ExceptionMessages
 import java.text.ParseException
 import java.time.Instant
 import java.util.Date
@@ -58,17 +59,17 @@ class JwtService(@Value("\${spring.jws.sharedKey}") sharedKey: String) {
             val claims = signedJWT.jwtClaimsSet
 
             val subject = claims.subject
-                ?: throw InvalidRefreshTokenException("Subject not provided")
+                ?: throw InvalidRefreshTokenException(ExceptionMessages.REFRESH_TOKEN_NO_SUBJECT)
 
             val userId = claims.getIntegerClaim("userId")
-                ?: throw InvalidRefreshTokenException("User id not provided")
+                ?: throw InvalidRefreshTokenException(ExceptionMessages.REFRESH_TOKEN_NO_USER_ID)
 
             val authorities = claims.getStringListClaim("authorities")
-                ?: throw InvalidRefreshTokenException("Authorities not provided")
+                ?: throw InvalidRefreshTokenException(ExceptionMessages.REFRESH_TOKEN_NO_AUTHORITIES)
 
             createAccessToken(subject, userId, authorities)
         } catch (e: ParseException) {
-            throw InvalidRefreshTokenException("Invalid refresh token")
+            throw InvalidRefreshTokenException(ExceptionMessages.JWT_TOKEN_PARSE_ERROR)
         }
     }
 
@@ -85,17 +86,23 @@ class JwtService(@Value("\${spring.jws.sharedKey}") sharedKey: String) {
             signedJWT.sign(signer)
             signedJWT.serialize()
         } catch (e: JOSEException) {
-            throw JwtAuthenticationException("Failed to sign JWT $e")
+            throw JwtAuthenticationException(ExceptionMessages.JWT_SIGNATURE_INVALID)
         }
     }
 
     fun verifySignature(signedJWT: SignedJWT)  {
         try {
             if(!signedJWT.verify(verifier)) {
-                throw JwtAuthenticationException("JWT not verified - token: ${signedJWT.serialize()}")
+                throw JwtAuthenticationException(
+                    messageKey = ExceptionMessages.JWT_NOT_VERIFIED,
+                    args = arrayOf(signedJWT.serialize())
+                )
             }
         } catch (e: JOSEException) {
-            throw JwtAuthenticationException("JWT not verified - token: ${signedJWT.serialize()}")
+            throw JwtAuthenticationException(
+                messageKey = ExceptionMessages.JWT_NOT_VERIFIED,
+                args = arrayOf(signedJWT.serialize())
+            )
         }
     }
 
@@ -103,10 +110,10 @@ class JwtService(@Value("\${spring.jws.sharedKey}") sharedKey: String) {
         try {
             val expiration = signedJWT.jwtClaimsSet.expirationTime
             if (expiration.before(currentDate())) {
-                throw JwtAuthenticationException("JWT expired")
+                throw JwtAuthenticationException(ExceptionMessages.JWT_EXPIRED_TOKEN)
             }
         } catch (e: ParseException) {
-            throw JwtAuthenticationException("JWT expiration time is invalid")
+            throw JwtAuthenticationException(ExceptionMessages.JWT_TOKEN_PARSE_ERROR)
         }
     }
 
@@ -118,7 +125,10 @@ class JwtService(@Value("\${spring.jws.sharedKey}") sharedKey: String) {
             val authorities = getAuthorities(signedJWT)
             CustomAuthenticationToken(subject, userId, null, authorities)
         } catch (e: ParseException) {
-            throw RuntimeException("Invalid token")
+            throw JwtAuthenticationException(
+                messageKey = ExceptionMessages.JWT_TOKEN_PARSE_ERROR,
+                args = arrayOf(signedJWT.serialize())
+            )
         }
     }
 

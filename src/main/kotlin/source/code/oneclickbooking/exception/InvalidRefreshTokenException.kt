@@ -1,4 +1,8 @@
 package source.code.oneclickbooking.exception
 
-class InvalidRefreshTokenException(message: String): RuntimeException(message) {
-}
+import source.code.oneclickbooking.helper.MessageResolver
+
+class InvalidRefreshTokenException(
+    messageKey: String,
+    vararg args: Any
+) : RuntimeException(MessageResolver.getMessage(messageKey, args))

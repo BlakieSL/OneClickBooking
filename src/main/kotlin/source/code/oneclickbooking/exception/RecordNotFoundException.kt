@@ -8,7 +8,7 @@ class RecordNotFoundException(
     entityClass: KClass<*>,
     vararg identifiers: Any
 ) : RuntimeException(
-    message = MessageResolver.getMessage(
+    MessageResolver.getMessage(
         key = ExceptionMessages.RECORD_NOT_FOUND,
         args = arrayOf(
             entityClass.simpleName ?: "ENTITY",

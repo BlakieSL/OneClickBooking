@@ -8,14 +8,18 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.Mockito.lenient
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.context.MessageSource
 import source.code.oneclickbooking.dto.request.ReviewCreateDto
 import source.code.oneclickbooking.dto.request.ReviewUpdateDto
 import source.code.oneclickbooking.dto.response.ReviewResponseDto
 import source.code.oneclickbooking.exception.RecordNotFoundException
+import source.code.oneclickbooking.helper.MessageResolver
 import source.code.oneclickbooking.mapper.ReviewMapper
 import source.code.oneclickbooking.model.Booking
 import source.code.oneclickbooking.model.Review
@@ -51,6 +55,14 @@ class ReviewServiceTest {
 
     @BeforeEach
     fun setUp() {
+        val mockMessageSource = mock<MessageSource>()
+        lenient().`when`(mockMessageSource.getMessage(
+            any(), any(), any()
+        )
+        ).thenReturn("Just to Silence the Warnings")
+
+        MessageResolver.setMessageSource(mockMessageSource)
+
         booking = Booking.createDefault(id = 1)
 
         review = Review.of(

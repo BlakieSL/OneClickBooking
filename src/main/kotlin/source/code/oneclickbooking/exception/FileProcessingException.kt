@@ -6,8 +6,9 @@ import source.code.oneclickbooking.helper.MessageResolver
 class FileProcessingException(
     cause: Throwable? = null
 ): RuntimeException(
-    message = MessageResolver.getMessage(
+    MessageResolver.getMessage(
         key = ExceptionMessages.FILE_PROCESSING,
         args = arrayOf(cause ?: "FILE PROCESSING ERROR")
-    )
+    ),
+    cause
 )

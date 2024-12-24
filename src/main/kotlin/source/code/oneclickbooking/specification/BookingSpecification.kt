@@ -5,8 +5,10 @@ import org.springframework.data.jpa.domain.Specification
 import source.code.oneclickbooking.dto.other.BookingFilterKey
 import source.code.oneclickbooking.dto.other.FilterCriteria
 import source.code.oneclickbooking.dto.other.FilterOperation
+import source.code.oneclickbooking.exception.InternalizedIllegalArgumentException
 import source.code.oneclickbooking.exception.InvalidFilterKeyException
 import source.code.oneclickbooking.exception.InvalidFilterOperationException
+import source.code.oneclickbooking.helper.ExceptionMessages
 import source.code.oneclickbooking.model.Booking
 import java.time.LocalDate
 import java.time.format.DateTimeParseException
@@ -50,10 +52,16 @@ class BookingSpecification(private val criteria: FilterCriteria): Specification<
             when (criteria.value) {
                 is LocalDate -> criteria.value as LocalDate
                 is String -> LocalDate.parse(criteria.value as String)
-                else -> throw IllegalArgumentException("Unsupported value type for date filtering")
+                else -> throw InternalizedIllegalArgumentException(
+                    messageKey = ExceptionMessages.UNSUPPORTED_DATE_VALUE_TYPE,
+                    args = arrayOf(criteria.value.javaClass.name ?: "null")
+                )
             }
         } catch (e: DateTimeParseException) {
-            throw IllegalArgumentException("Value must be a valid LocalDate in ISO format (yyyy-MM-dd)", e)
+            throw InternalizedIllegalArgumentException(
+                messageKey = ExceptionMessages.INVALID_DATE_FORMAT,
+                args = arrayOf(criteria.value)
+            )
         }
 
         return when (criteria.operation) {

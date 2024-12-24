@@ -50,14 +50,6 @@ class GlobalExceptionHandler() {
         return ex.message
     }
 
-
-
-    @ExceptionHandler(IllegalArgumentException::class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    fun handleIllegalArgumentException(ex: IllegalArgumentException): String? {
-        return ex.message
-    }
-
     @ExceptionHandler(JwtAuthenticationException::class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     fun handleJwtAuthenticationException(ex: JwtAuthenticationException): String? {

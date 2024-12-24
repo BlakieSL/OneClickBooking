@@ -24,4 +24,20 @@ object ExceptionMessages {
     const val EMPLOYEE_NOT_ASSOCIATED_WITH_SERVICE_POINT = "IllegalArgumentException.employeeNotAssociatedWithServicePoint.message"
     const val EMPLOYEE_HAS_NO_AVAILABILITIES_ON_DATE = "IllegalArgumentException.employeeNotHaveAvailabilitiesOnDay.message"
     const val EMPLOYEE_HAS_NO_AVAILABILITIES_ON_TIME = "IllegalArgumentException.employeeNotHaveAvailabilitiesOnTime.message"
+    const val SERVICE_POINT_REQUIRED = "IllegalArgumentException.servicePointRequired.message"
+    const val DATE_REQUIRED = "IllegalArgumentException.dateRequired.message"
+    const val DATE_IN_PAST = "IllegalArgumentException.dateInPast.message"
+    const val UNSUPPORTED_DATE_VALUE_TYPE = "IllegalArgumentException.unsupportedDateValueType.message"
+    const val INVALID_DATE_FORMAT = "IllegalArgumentException.invalidDateFormat.message"
+
+    const val JWT_INVALID_TOKEN = "JwtAuthenticationException.invalidToken.message"
+    const val JWT_INVALID_TOKEN_TYPE = "JwtAuthenticationException.invalidTokenType.message"
+    const val JWT_SIGNATURE_INVALID = "JwtAuthenticationException.signatureInvalid.message"
+    const val JWT_NOT_VERIFIED = "JwtAuthenticationException.notVerified.message"
+    const val JWT_EXPIRED_TOKEN = "JwtAuthenticationException.expiredToken.message"
+    const val JWT_TOKEN_PARSE_ERROR = "JwtAuthenticationException.tokenParseError.message"
+
+    const val REFRESH_TOKEN_NO_SUBJECT = "InvalidRefreshTokenException.subjectNotProvided.message"
+    const val REFRESH_TOKEN_NO_USER_ID = "InvalidRefreshTokenException.userIdNotProvided.message"
+    const val REFRESH_TOKEN_NO_AUTHORITIES = "InvalidRefreshTokenException.authoritiesNotProvided.message"
 }

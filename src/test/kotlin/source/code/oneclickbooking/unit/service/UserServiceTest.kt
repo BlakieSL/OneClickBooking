@@ -10,13 +10,19 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.Mockito.lenient
 import org.mockito.kotlin.*
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import source.code.oneclickbooking.dto.other.UserCredentialsDto
 import source.code.oneclickbooking.dto.request.UserCreateDto
 import source.code.oneclickbooking.dto.request.UserUpdateDto
 import source.code.oneclickbooking.dto.response.UserResponseDto
+import source.code.oneclickbooking.exception.InternalizedIllegalArgumentException
 import source.code.oneclickbooking.exception.RecordNotFoundException
+import source.code.oneclickbooking.helper.ExceptionMessages
+import source.code.oneclickbooking.helper.MessageResolver
 import source.code.oneclickbooking.mapper.UserMapper
 import source.code.oneclickbooking.model.Role
 import source.code.oneclickbooking.model.RoleName
@@ -54,6 +60,13 @@ class UserServiceTest {
 
     @BeforeEach
     fun setUp() {
+        val mockMessageSource = mock<MessageSource>()
+        lenient().`when`(mockMessageSource.getMessage(
+            any(), any(), any())
+        ).thenReturn("Just to Silence the Warnings")
+
+        MessageResolver.setMessageSource(mockMessageSource)
+
         userCreateDto = UserCreateDto.createDefault()
         userUpdateDto = UserUpdateDto(name = "UpdatedName")
         user = User.createDefault()
@@ -260,7 +273,7 @@ class UserServiceTest {
 
     @Test
     fun `should throw exception when username is null`() {
-        assertThrows<IllegalArgumentException> {
+        assertThrows<InternalizedIllegalArgumentException> {
             userService.loadUserByUsername(null)
         }
     }

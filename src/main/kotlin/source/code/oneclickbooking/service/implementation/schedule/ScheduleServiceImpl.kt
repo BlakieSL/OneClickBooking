@@ -5,7 +5,9 @@ import source.code.oneclickbooking.dto.other.BookingFilterKey
 import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.request.ScheduleRequestDto
 import source.code.oneclickbooking.dto.response.ScheduleResponseDto
+import source.code.oneclickbooking.exception.InternalizedIllegalArgumentException
 import source.code.oneclickbooking.exception.RecordNotFoundException
+import source.code.oneclickbooking.helper.ExceptionMessages
 import source.code.oneclickbooking.model.*
 import source.code.oneclickbooking.repository.*
 import source.code.oneclickbooking.service.declaration.schedule.ScheduleService
@@ -163,7 +165,7 @@ class ScheduleServiceImpl(
             ?.value
             ?.toString()
             ?.toIntOrNull()
-            ?: throw IllegalArgumentException("Service point id is required")
+            ?: throw InternalizedIllegalArgumentException(ExceptionMessages.SERVICE_POINT_REQUIRED)
     }
 
     private fun extractDate(filter: FilterDto): LocalDate {
@@ -172,10 +174,10 @@ class ScheduleServiceImpl(
             ?.value
             ?.toString()
             ?.let { LocalDate.parse(it) }
-            ?: throw IllegalArgumentException("Date is required")
+            ?: throw InternalizedIllegalArgumentException(ExceptionMessages.DATE_REQUIRED)
 
         if (date.isBefore(LocalDate.now())) {
-            throw IllegalArgumentException("The date must be today or in the future")
+            throw InternalizedIllegalArgumentException(ExceptionMessages.DATE_IN_PAST)
         }
 
         return date

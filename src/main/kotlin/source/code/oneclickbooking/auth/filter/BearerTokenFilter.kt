@@ -10,6 +10,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
 import source.code.oneclickbooking.service.implementation.util.JwtService
 import source.code.oneclickbooking.exception.JwtAuthenticationException
+import source.code.oneclickbooking.helper.ExceptionMessages
 import java.text.ParseException
 
 class BearerTokenFilter(
@@ -40,7 +41,7 @@ class BearerTokenFilter(
                     failureHandler.onAuthenticationFailure(
                         request,
                         response,
-                        JwtAuthenticationException("Invalid token")
+                        JwtAuthenticationException(ExceptionMessages.JWT_INVALID_TOKEN)
                     )
                 else -> throw e
             }
@@ -65,7 +66,7 @@ class BearerTokenFilter(
     private fun validateTokenType(signedJWT: SignedJWT) {
         val tokenType = signedJWT.jwtClaimsSet.getStringClaim("tokenType")
         if (ACCESS_TOKEN_TYPE != tokenType) {
-            throw JwtAuthenticationException("Invalid token type")
+            throw JwtAuthenticationException(ExceptionMessages.JWT_INVALID_TOKEN_TYPE)
         }
     }
 
