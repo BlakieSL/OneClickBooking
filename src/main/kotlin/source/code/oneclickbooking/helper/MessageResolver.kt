@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-object MessageResolver {
+class MessageResolver() {
     private lateinit var messageSource: MessageSource
 
     @Autowired
@@ -20,6 +20,7 @@ object MessageResolver {
     }
 
     private fun getMessage(key: String, vararg args: Any, locale: Locale): String {
+        println("Resolving key: $key for locale: $locale")
         return messageSource.getMessage(key, args, locale)
     }
 }

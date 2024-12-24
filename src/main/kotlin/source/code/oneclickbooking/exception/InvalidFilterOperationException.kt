@@ -1,11 +1,8 @@
 package source.code.oneclickbooking.exception
 
 import source.code.oneclickbooking.helper.ExceptionMessages
-import source.code.oneclickbooking.helper.MessageResolver
 
-class InvalidFilterOperationException(operation: String) : RuntimeException(
-    MessageResolver.getMessage(
-        key = ExceptionMessages.INVALID_FILTER_KEY,
-        args = arrayOf(operation)
-    )
+class InvalidFilterOperationException(operation: String) : LocalizedException(
+    messageKey = ExceptionMessages.INVALID_FILTER_OPERATION,
+    args = arrayOf(operation)
 )
