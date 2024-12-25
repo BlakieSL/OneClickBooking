@@ -33,6 +33,14 @@ class ImageController(
     ): ResponseEntity<List<ImageResponseDto>> =
         ResponseEntity.ok(imageService.getAllImagesForParent(parentType, parentId))
 
+    @GetMapping("/first/parent/{parentType}/{parentId}")
+    fun getFirstImageForParent(
+        @PathVariable parentType: EntityType,
+        @PathVariable parentId: Int
+    ): ResponseEntity<ImageResponseDto> =
+        ResponseEntity.ok(imageService.getFirstImageForParent(parentType, parentId))
+
+
     @ImageRelatedEntityAuthorOrAdmin
     @PostMapping
     fun create(

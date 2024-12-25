@@ -6,4 +6,5 @@ import source.code.oneclickbooking.model.Image
 
 interface ImageRepository : JpaRepository<Image, Int> {
     fun findAllByParentTypeAndParentId(parentType: EntityType, parentId: Int): List<Image>
+    fun findFirstByParentTypeAndParentId(parentType: EntityType, parentId: Int): Image?
 }
