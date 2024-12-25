@@ -89,25 +89,113 @@ class EmployeeControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test GET /api/employees/service-point/{servicePointId}/treatment/{treatmentId} "+
-            "should return employees")
+    @DisplayName("Test POST /api/employees/filtered should return employees")
     @SqlSetup
-    fun `test get by service point and treatment should return employees`() {
-        mockMvc.perform(get("/api/employees/service-point/1/treatment/1"))
-            .andExpect(status().isOk)
+    fun `test get filtered by service point and treatment`() {
+        val requestBody = """
+        {
+            "filterCriteria": [
+                { "filterKey": "SERVICE_POINT", "value": 1, "operation": "EQUAL" },
+                { "filterKey": "TREATMENT", "value": 1, "operation": "EQUAL" }
+            ],
+            "dataOption": "AND"
+        }
+        """.trimIndent()
+
+        mockMvc.perform(
+            post("/api/employees/filtered")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isOk)
             .andExpect(jsonPath("$.size()").value(1))
             .andExpect(jsonPath("$[0].id").value(1))
-            .andExpect(jsonPath("$[0].username").value("test_username1"))
-            .andExpect(jsonPath("$[0].description").value("test_description1"))
     }
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test GET /api/employees/service-point/{servicePointId}/treatment/{treatmentId} "+
-            "should return empty list when no employees found")
-    fun `test get by service point and treatment should return empty list when no employees found`() {
-        mockMvc.perform(get("/api/employees/service-point/1/treatment/100"))
-            .andExpect(status().isOk)
+    @DisplayName("Test POST /api/employees/filtered should return employees by service point")
+    @SqlSetup
+    fun `test get filtered by service point`() {
+        val requestBody = """
+        {
+            "filterCriteria": [
+                { "filterKey": "SERVICE_POINT", "value": 1, "operation": "EQUAL" }
+            ],
+            "dataOption": "AND"
+        }
+    """.trimIndent()
+
+        mockMvc.perform(
+            post("/api/employees/filtered")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.size()").value(2))
+            .andExpect(jsonPath("$[0].id").value(1))
+            .andExpect(jsonPath("$[1].id").value(2))
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("Test POST /api/employees/filtered should return empty list when no employees found")
+    @SqlSetup
+    fun `test get filtered empty list`() {
+        val requestBody = """
+        {
+            "filterCriteria": [
+                { "filterKey": "SERVICE_POINT", "value": 999, "operation": "EQUAL" }
+            ],
+            "dataOption": "AND"
+        }
+        """.trimIndent()
+
+        mockMvc.perform(
+            post("/api/employees/filtered")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isOk)
             .andExpect(jsonPath("$.size()").value(0))
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("Test POST /api/employees/filtered should return 400 when filter key is invalid")
+    @SqlSetup
+    fun `test get filtered should return 400 when filter key is invalid`() {
+        val requestBody = """
+        {
+            "filterCriteria": [
+                { "filterKey": "INVALID_KEY", "value": "invalidValue", "operation": "EQUAL" }
+            ],
+            "dataOption": "AND"
+        }
+        """.trimIndent()
+
+        mockMvc.perform(
+            post("/api/employees/filtered")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isBadRequest)
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("Test POST /api/employees/filtered should return 400 when filter operation is invalid")
+    @SqlSetup
+    fun `test get filtered should return 400 when filter operation is invalid`() {
+        val requestBody = """
+        {
+            "filterCriteria": [
+                { "filterKey": "SERVICE_POINT", "value": 1, "operation": "INVALID_OPERATION" }
+            ],
+            "dataOption": "AND"
+        }
+    """.trimIndent()
+
+        mockMvc.perform(
+            post("/api/employees/filtered")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isBadRequest)
     }
 }
