@@ -135,3 +135,4 @@ values (1,5, 'test_text1', 1);
 
 insert into review (id, rating, text, booking_id)
 values (2,4, 'test_text2', 2);
+

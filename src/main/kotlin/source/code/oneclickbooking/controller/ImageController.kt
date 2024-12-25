@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import source.code.oneclickbooking.annotation.ImageRelatedEntityAuthorOrAdmin
+import source.code.oneclickbooking.annotation.ImageRelatedEntityAuthorOrAdminById
 import source.code.oneclickbooking.dto.request.ImageCreateDto
 import source.code.oneclickbooking.dto.response.ImageResponseDto
 import source.code.oneclickbooking.model.EntityType
@@ -31,12 +33,14 @@ class ImageController(
     ): ResponseEntity<List<ImageResponseDto>> =
         ResponseEntity.ok(imageService.getAllImagesForParent(parentType, parentId))
 
+    @ImageRelatedEntityAuthorOrAdmin
     @PostMapping
     fun create(
         @Valid @ModelAttribute dto: ImageCreateDto
     ): ResponseEntity<ImageResponseDto> =
         ResponseEntity.ok(imageService.create(dto))
 
+    @ImageRelatedEntityAuthorOrAdminById
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Int): ResponseEntity<Unit> {
         imageService.delete(id)

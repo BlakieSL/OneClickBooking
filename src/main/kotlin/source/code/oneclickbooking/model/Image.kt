@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotNull
 
 @Entity
 @Table(name = "image")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 class Image (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +17,7 @@ class Image (
 
     @field:NotNull
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "parent_type", nullable = false)
     var parentType: EntityType,
 
     @field:NotNull

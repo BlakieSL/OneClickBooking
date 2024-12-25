@@ -117,8 +117,8 @@ class LocalizationTest {
     @Test
     @SqlSetup
     @WithMockUser(username = "user", roles = ["USER"])
-    @DisplayName("POST /api/users/register - Should return 400, When not found, With en")
-    fun `should return 400 en message`() {
+    @DisplayName("POST /api/users/register - Should return 400, With en")
+    fun `should return 400 en message, when default validation`() {
         val requestBody = """
             {
                 "name": "test_name4",
@@ -144,8 +144,8 @@ class LocalizationTest {
     @Test
     @SqlSetup
     @WithMockUser(username = "user", roles = ["USER"])
-    @DisplayName("POST /api/users/register - Should return 400, When not found, With ru")
-    fun `should return 400 ru message`() {
+    @DisplayName("POST /api/users/register - Should return 400, With ru")
+    fun `should return 400 ru message, when default validation`() {
         val requestBody = """
             {
                 "name": "test_name4",
@@ -168,12 +168,11 @@ class LocalizationTest {
         LOGGER.info(result.response.contentAsString)
     }
 
-
     @Test
     @SqlSetup
     @WithMockUser(username = "user", roles = ["USER"])
-    @DisplayName("POST /api/users/register - Should return 400, When not found, With pl")
-    fun `should return 400 pl message`() {
+    @DisplayName("POST /api/users/register - Should return 400, With pl")
+    fun `should return 400 pl message, when default validation`() {
         val requestBody = """
             {
                 "name": "test_name4",
@@ -191,6 +190,32 @@ class LocalizationTest {
             status().isBadRequest,
             jsonPath("$.email").value("Nieprawidłowy adres e-mail."),
             jsonPath("$.password").value("Rozmiar musi mieścić się w zakresie od 8 do 50.")
+        ).andReturn()
+
+        LOGGER.info(result.response.contentAsString)
+    }
+
+    @Test
+    @SqlSetup
+    @WithMockUser(username = "user", roles = ["USER"])
+    @DisplayName("POST /api/users/register - Should return 400, With en")
+    fun `should return 400 en message, when custom validation`() {
+        val requestBody = """
+            {
+                "name": "test_name4",
+                "surname": "test_surname4",
+                "email": "valid_email@gmail.com",
+                "password": "Artem123"
+            }
+        """.trimIndent()
+
+        val result = mockMvc.perform(post("/api/users/register")
+            .header("Accept-Language", "en")
+            .contentType("application/json")
+            .content(requestBody)
+        ).andExpectAll(
+            status().isBadRequest,
+            jsonPath("$.password").value("Password must contain at least one special character!")
         ).andReturn()
 
         LOGGER.info(result.response.contentAsString)

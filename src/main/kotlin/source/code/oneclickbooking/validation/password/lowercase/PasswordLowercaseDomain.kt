@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class PasswordLowercaseDomain(
-    val message: String = ExceptionMessages.PASSWORD_LOWERCASE,
+    val message: String = "{${ExceptionMessages.PASSWORD_LOWERCASE}}",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []
 )

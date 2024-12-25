@@ -19,6 +19,14 @@ class AuthorizationUtil {
             return false
         }
 
+        fun isAdmin(): Boolean {
+            val auth = SecurityContextHolder.getContext().authentication
+            if (auth is CustomAuthenticationToken) {
+                return auth.authorities.any { it.authority == "ROLE_ADMIN" }
+            }
+            return false
+        }
+
         fun getUserId(): Int {
             val auth = SecurityContextHolder.getContext().authentication as CustomAuthenticationToken
             return auth.userId

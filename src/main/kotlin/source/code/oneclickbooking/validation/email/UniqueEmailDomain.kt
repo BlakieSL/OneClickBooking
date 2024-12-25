@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class UniqueEmailDomain (
-    val message: String = ExceptionMessages.UNIQUE_EMAIL,
+    val message: String = "{${ExceptionMessages.UNIQUE_EMAIL}}",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []
 )

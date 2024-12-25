@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class EmailChangeRequireOldPassword(
-    val message: String = ExceptionMessages.EMAIL_CHANGE,
+    val message: String = "{${ExceptionMessages.EMAIL_CHANGE}}",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []
 )

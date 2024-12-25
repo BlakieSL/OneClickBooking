@@ -123,3 +123,10 @@ create table if not exists user_roles
 
 insert into role (id, name)
 VALUES (1, 'USER'), (2, 'ADMIN');
+
+CREATE TABLE IF NOT EXISTS image (
+    id INT auto_increment PRIMARY KEY,
+    image MEDIUMBLOB NOT NULL,
+    parent_type ENUM('REVIEW', 'EMPLOYEE', 'SERVICE_POINT') NOT NULL,
+    parent_id INT NOT NULL
+);

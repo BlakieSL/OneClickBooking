@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class PasswordDigitsDomain (
-    val message: String = ExceptionMessages.PASSWORD_DIGITS,
+    val message: String = "{${ExceptionMessages.PASSWORD_DIGITS}}",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []
 )
