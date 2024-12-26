@@ -6,6 +6,7 @@ import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
 import source.code.oneclickbooking.dto.other.BookingFilterKey
+import source.code.oneclickbooking.dto.other.EmployeeFilterKey
 import source.code.oneclickbooking.dto.other.FilterCriteria
 import source.code.oneclickbooking.dto.other.FilterOperation
 import source.code.oneclickbooking.exception.InvalidFilterOperationException
@@ -21,13 +22,13 @@ class EmployeeSpecification(private val criteria: FilterCriteria): Specification
         criteriaBuilder: CriteriaBuilder
     ): Predicate? {
         return when (criteria.filterKey) {
-            BookingFilterKey.SERVICE_POINT.name -> handleJoinPredicate(
+            EmployeeFilterKey.SERVICE_POINT.name -> handleJoinPredicate(
                 root = root,
                 joinProperty = "servicePointAssociations",
                 subJoinProperty = "servicePoint",
                 criteriaBuilder = criteriaBuilder
             )
-            BookingFilterKey.TREATMENT.name -> handleJoinPredicate(
+            EmployeeFilterKey.TREATMENT.name -> handleJoinPredicate(
                 root = root,
                 joinProperty = "treatments",
                 subJoinProperty = null,

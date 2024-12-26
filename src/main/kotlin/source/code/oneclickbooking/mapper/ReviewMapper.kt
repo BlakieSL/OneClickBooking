@@ -15,8 +15,11 @@ class ReviewMapper(
         return ReviewResponseDto(
             id = review.id!!,
             rating = review.rating,
+            date = review.date,
             text = review.text,
-            bookingId = review.booking.id!!
+            bookingId = review.booking.id!!,
+            userId = review.booking.user.id!!,
+            employeeId = review.booking.employee?.id
         )
     }
 

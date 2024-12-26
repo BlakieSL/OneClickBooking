@@ -130,9 +130,9 @@ values (3, '2025-01-06 15:00:00', 1, 1, 1, 1);
 
 
 --inserting new reviews
-insert into review (id, rating, text, booking_id)
-values (1,5, 'test_text1', 1);
+insert into review (id, rating, date, text, booking_id)
+values (1,5, '2023-12-25','test_text1', 1);
 
-insert into review (id, rating, text, booking_id)
-values (2,4, 'test_text2', 2);
+insert into review (id, rating, date, text, booking_id)
+values (2,4, '2023-12-26', 'test_text2', 2);
 

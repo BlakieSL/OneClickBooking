@@ -1,7 +1,9 @@
 package source.code.oneclickbooking.model
 
 import jakarta.persistence.*
+import jakarta.validation.constraints.FutureOrPresent
 import jakarta.validation.constraints.NotNull
+import java.time.LocalDate
 
 
 @Entity
@@ -14,6 +16,10 @@ class Review (
     @field:NotNull
     @Column(nullable = false)
     var rating: Int,
+
+    @field:NotNull
+    @Column(nullable = false)
+    var date: LocalDate,
 
     var text: String? = null,
 ) {
@@ -29,13 +35,17 @@ class Review (
             text: String? = "Default Review Text",
             booking: Booking = Booking.createDefault()
         ): Review {
-            return Review(id = id, rating = rating, text = text,).apply {
-                this.booking = booking
-            }
+            return of(id = id, rating = rating, text = text, booking = booking);
         }
 
-        fun of(id: Int? = null, rating: Int, text: String? = null, booking: Booking): Review {
-            return Review(id = id, rating = rating, text = text,).apply {
+        fun of(
+            id: Int? = null,
+            rating: Int,
+            date: LocalDate = LocalDate.now(),
+            text: String? = null,
+            booking: Booking
+        ): Review {
+            return Review(id = id, rating = rating, date = date,  text = text,).apply {
                 this.booking = booking
             }
         }
@@ -52,6 +62,6 @@ class Review (
     }
 
     override fun toString(): String {
-        return "Review(id=$id, rating=$rating)"
+        return "Review(id=$id, rating=$rating, date=$date, text=$text)"
     }
 }

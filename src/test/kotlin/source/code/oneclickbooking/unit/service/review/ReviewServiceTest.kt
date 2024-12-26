@@ -27,6 +27,7 @@ import source.code.oneclickbooking.repository.ReviewRepository
 import source.code.oneclickbooking.service.declaration.util.JsonPatchService
 import source.code.oneclickbooking.service.declaration.util.ValidationService
 import source.code.oneclickbooking.service.implementation.review.ReviewServiceImpl
+import java.time.LocalDate
 import java.util.*
 
 @ExtendWith(MockitoExtension::class)
@@ -52,6 +53,7 @@ class ReviewServiceTest {
     private lateinit var reviewUpdateDto: ReviewUpdateDto
     private lateinit var reviewResponseDto: ReviewResponseDto
     private lateinit var booking: Booking
+    private val date = LocalDate.of(2021, 1, 1);
 
     @BeforeEach
     fun setUp() {
@@ -61,6 +63,7 @@ class ReviewServiceTest {
         review = Review.of(
             id = 1,
             rating = 5,
+            date = date,
             text = "Great service!",
             booking = booking
         )
@@ -77,10 +80,13 @@ class ReviewServiceTest {
         )
 
         reviewResponseDto = ReviewResponseDto(
-            id = 1,
-            rating = 5,
-            text = "Great service!",
-            bookingId = 1
+            id = review.id!!,
+            rating = review.rating,
+            date = review.date,
+            text = review.text,
+            bookingId = booking.id!!,
+            userId = booking.user.id!!,
+            employeeId = booking.employee?.id
         )
     }
 

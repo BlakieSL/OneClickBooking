@@ -5,6 +5,7 @@ import org.springframework.data.jpa.domain.Specification
 import source.code.oneclickbooking.dto.other.BookingFilterKey
 import source.code.oneclickbooking.dto.other.FilterCriteria
 import source.code.oneclickbooking.dto.other.FilterOperation
+import source.code.oneclickbooking.dto.other.ReviewFilterKey
 import source.code.oneclickbooking.exception.InvalidFilterKeyException
 import source.code.oneclickbooking.exception.InvalidFilterOperationException
 import source.code.oneclickbooking.model.Review
@@ -18,13 +19,13 @@ class ReviewSpecification(private val criteria: FilterCriteria) : Specification<
         val bookingJoin = root.join<Any, Any>("booking")
 
         return when (criteria.filterKey) {
-            BookingFilterKey.EMPLOYEE.name ->
+            ReviewFilterKey.EMPLOYEE.name ->
                 handleEntityProperty(bookingJoin, "employee", criteriaBuilder)
 
-            BookingFilterKey.SERVICE_POINT.name ->
+            ReviewFilterKey.SERVICE_POINT.name ->
                 handleEntityProperty(bookingJoin, "servicePoint", criteriaBuilder)
 
-            BookingFilterKey.TEXT.name ->
+            ReviewFilterKey.TEXT.name ->
                 handleTextProperty(root, criteriaBuilder);
 
             else -> throw InvalidFilterKeyException(criteria.filterKey)
@@ -48,7 +49,7 @@ class ReviewSpecification(private val criteria: FilterCriteria) : Specification<
     private fun handleTextProperty(
         root: Root<Review>,
         builder: CriteriaBuilder
-    ) : Predicate {
+    ): Predicate {
         return if (criteria.value == "NOT_NULL") {
             builder.isNotNull(root.get<Any>("text"))
         } else {

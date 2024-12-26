@@ -14,6 +14,7 @@ import source.code.oneclickbooking.mapper.ReviewMapper
 import source.code.oneclickbooking.model.Booking
 import source.code.oneclickbooking.model.Review
 import source.code.oneclickbooking.service.declaration.review.ReviewMappingResolver
+import java.time.LocalDate
 
 @ExtendWith(MockitoExtension::class)
 class ReviewMapperTest {
@@ -28,11 +29,12 @@ class ReviewMapperTest {
     private lateinit var review: Review
     private lateinit var createDto: ReviewCreateDto
     private lateinit var updateDto: ReviewUpdateDto
+    private val date = LocalDate.of(2021, 1, 1);
 
     @BeforeEach
     fun setUp() {
         booking = Booking.createDefault(id = 1)
-        review = Review.of(id = 1, rating = 5, text = "Great service!", booking = booking)
+        review = Review.of(id = 1, rating = 5, date = date, text = "Great service!", booking = booking)
         createDto = ReviewCreateDto(rating = 5, text = "Great service!", bookingId = 1)
         updateDto = ReviewUpdateDto(rating = 4, text = "Updated review")
     }
@@ -56,6 +58,9 @@ class ReviewMapperTest {
         assertEquals(review.rating, result.rating)
         assertEquals(review.text, result.text)
         assertEquals(review.booking.id, result.bookingId)
+        assertEquals(review.date, result.date)
+        assertEquals(review.booking.employee?.id, result.employeeId)
+        assertEquals(review.booking.user.id, result.userId)
     }
 
     @Test

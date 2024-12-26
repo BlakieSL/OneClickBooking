@@ -102,6 +102,7 @@ create table if not exists review
     id         int auto_increment
         primary key,
     rating     int          not null,
+    date       Date        not null,
     text       varchar(255) null,
     booking_id int          not null,
     constraint UKm685o801uf70i84jf94qq3d0b

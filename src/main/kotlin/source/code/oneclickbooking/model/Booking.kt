@@ -40,10 +40,10 @@ class Booking (
         fun createDefault(
             id: Int? = null,
             date: LocalDateTime = LocalDateTime.now().plusSeconds(1),
-            user: User = User.createDefault(),
-            servicePoint: ServicePoint = ServicePoint.createDefault(),
-            employee: Employee = Employee.createDefault(),
-            treatment: Treatment = Treatment.createDefault(),
+            user: User = User.createDefault(id=1),
+            servicePoint: ServicePoint = ServicePoint.createDefault(id=1),
+            employee: Employee = Employee.createDefault(id=1),
+            treatment: Treatment = Treatment.createDefault(id=1),
             review: Review? = null
         ): Booking {
             return Booking(id = id, date = date).apply {
