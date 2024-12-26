@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import source.code.oneclickbooking.model.Review
 
 interface ReviewRepository : JpaRepository<Review, Int>, JpaSpecificationExecutor<Review> {
+    fun findAllByTextNotNull(): List<Review>
 }

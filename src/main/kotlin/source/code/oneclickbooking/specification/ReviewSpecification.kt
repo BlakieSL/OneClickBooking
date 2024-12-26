@@ -24,6 +24,9 @@ class ReviewSpecification(private val criteria: FilterCriteria) : Specification<
             BookingFilterKey.SERVICE_POINT.name ->
                 handleEntityProperty(bookingJoin, "servicePoint", criteriaBuilder)
 
+            BookingFilterKey.TEXT.name ->
+                handleTextProperty(root, criteriaBuilder);
+
             else -> throw InvalidFilterKeyException(criteria.filterKey)
         }
     }
@@ -39,6 +42,17 @@ class ReviewSpecification(private val criteria: FilterCriteria) : Specification<
             FilterOperation.EQUAL -> builder.equal(subJoin.get<Any>("id"), value)
             FilterOperation.NOT_EQUAL -> builder.notEqual(subJoin.get<Any>("id"), value)
             else -> throw InvalidFilterOperationException(criteria.operation.name)
+        }
+    }
+
+    private fun handleTextProperty(
+        root: Root<Review>,
+        builder: CriteriaBuilder
+    ) : Predicate {
+        return if (criteria.value == "NOT_NULL") {
+            builder.isNotNull(root.get<Any>("text"))
+        } else {
+            throw InvalidFilterOperationException(criteria.operation.name)
         }
     }
 }

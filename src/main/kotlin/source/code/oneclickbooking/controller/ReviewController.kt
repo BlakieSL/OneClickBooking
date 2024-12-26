@@ -30,6 +30,7 @@ class ReviewController(
     fun getAll(): ResponseEntity<List<ReviewResponseDto>> =
         ResponseEntity.ok(reviewService.getAll())
 
+
     @PostMapping("/filtered")
     fun getFiltered(@Valid @RequestBody filter: FilterDto): ResponseEntity<List<ReviewResponseDto>> =
         ResponseEntity.ok(reviewService.getFiltered(filter))
