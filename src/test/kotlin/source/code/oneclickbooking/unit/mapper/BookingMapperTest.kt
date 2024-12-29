@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.request.BookingUpdateDto
@@ -48,7 +49,6 @@ class BookingMapperTest {
         )
         createDto = BookingCreateDto(
             servicePointId = 1,
-            userId = 1,
             date = LocalDateTime.of(2023, 10, 10, 10, 0),
             employeeId = 1,
             treatmentId = 1
@@ -63,14 +63,15 @@ class BookingMapperTest {
 
     @Test
     fun `should map BookingCreateDto to Booking`() {
-        whenever(resolver.resolveUser(createDto.userId)).thenReturn(user)
+        val mockUserId = 1;
+        whenever(resolver.resolveUser(mockUserId)).thenReturn(user)
         whenever(resolver.resolveServicePoint(createDto.servicePointId)).thenReturn(servicePoint)
         whenever(resolver.resolveEmployee(createDto.employeeId)).thenReturn(employee)
         whenever(resolver.resolveTreatment(createDto.treatmentId)).thenReturn(treatment)
 
-        val result = bookingMapper.toEntity(createDto)
+        val result = bookingMapper.toEntity(createDto, mockUserId)
 
-        assertEquals(createDto.userId, result.user.id)
+        assertEquals(mockUserId, result.user.id)
         assertEquals(createDto.servicePointId, result.servicePoint.id)
         assertEquals(createDto.employeeId, result.employee?.id)
         assertEquals(createDto.treatmentId, result.treatment?.id)

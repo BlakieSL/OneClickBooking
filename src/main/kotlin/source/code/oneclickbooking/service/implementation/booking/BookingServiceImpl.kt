@@ -3,6 +3,7 @@ package source.code.oneclickbooking.service.implementation.booking
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.request.BookingUpdateDto
 import source.code.oneclickbooking.dto.response.BookingResponseDto
@@ -16,6 +17,10 @@ import source.code.oneclickbooking.service.declaration.booking.BookingService
 import source.code.oneclickbooking.service.declaration.schedule.ScheduleUtilsService
 import source.code.oneclickbooking.service.declaration.util.JsonPatchService
 import source.code.oneclickbooking.service.declaration.util.ValidationService
+import source.code.oneclickbooking.service.implementation.util.AuthorizationUtil
+import source.code.oneclickbooking.specification.BookingSpecification
+import source.code.oneclickbooking.specification.SpecificationBuilder
+import source.code.oneclickbooking.specification.SpecificationFactory
 import java.time.LocalDateTime
 
 @Service
@@ -33,8 +38,9 @@ class BookingServiceImpl(
     @Transactional
     override fun create(bookingDto: BookingCreateDto): BookingResponseDto {
         validateBookingCreateDto(bookingDto)
+        val userId = AuthorizationUtil.getUserId();
 
-        val booking = mapper.toEntity(bookingDto)
+        val booking = mapper.toEntity(bookingDto, userId)
         val savedBooking = repository.save(booking)
         return mapper.toResponseDto(savedBooking)
     }
@@ -64,6 +70,13 @@ class BookingServiceImpl(
 
     override fun getAll(): List<BookingResponseDto> {
         return repository.findAll().map { mapper.toResponseDto(it) }
+    }
+
+    override fun getFiltered(filter: FilterDto): List<BookingResponseDto> {
+        val bookingFactory = SpecificationFactory { BookingSpecification(it) }
+        val specificationBuilder = SpecificationBuilder(filter, bookingFactory)
+        val specification = specificationBuilder.build()
+        return repository.findAll(specification).map { mapper.toResponseDto(it) }
     }
 
     private fun applyPatch(patch: JsonMergePatch): BookingUpdateDto {

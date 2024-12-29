@@ -29,6 +29,10 @@ class BookingSpecification(private val criteria: FilterCriteria): Specification<
             BookingFilterKey.DATE.name ->
                 handleDateProperty(root.get("date"), builder)
 
+            BookingFilterKey.USER.name ->
+                handleEntityProperty(root, "user", builder)
+
+
             else -> throw InvalidFilterKeyException(criteria.filterKey)
         }
     }

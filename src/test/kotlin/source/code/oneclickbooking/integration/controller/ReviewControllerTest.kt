@@ -118,22 +118,22 @@ class ReviewControllerTest {
         LOGGER.info("RUNNING test get filtered reviews by employee...")
 
         val requestBody = """
-        {
-            "filterCriteria": [
-                { "filterKey": "EMPLOYEE", "value": 1, "operation": "EQUAL" }
-            ],
-            "dataOption": "AND"
-        }
-        """.trimIndent()
+    {
+        "filterCriteria": [
+            { "filterKey": "EMPLOYEE", "value": 1, "operation": "EQUAL" }
+        ],
+        "dataOption": "AND"
+    }
+    """.trimIndent()
 
         mockMvc.perform(
             post("/api/reviews/filtered")
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isOk)
-            .andExpect(jsonPath("$.size()").value(1))
-            .andExpect(jsonPath("$[0].text").value("test_text1"))
-
+            .andExpect(jsonPath("$.reviews.size()").value(1))
+            .andExpect(jsonPath("$.reviews[0].text").value("test_text1"))
+            .andExpect(jsonPath("$.averageRating").value(5.0))
         LOGGER.info("test get filtered reviews by employee PASSED!")
     }
 
@@ -145,20 +145,21 @@ class ReviewControllerTest {
         LOGGER.info("RUNNING test get filtered reviews by service point...")
 
         val requestBody = """
-        {
-            "filterCriteria": [
-                { "filterKey": "SERVICE_POINT", "value": 1, "operation": "EQUAL" }
-            ],
-            "dataOption": "AND"
-        }
-        """.trimIndent()
+    {
+        "filterCriteria": [
+            { "filterKey": "SERVICE_POINT", "value": 1, "operation": "EQUAL" }
+        ],
+        "dataOption": "AND"
+    }
+    """.trimIndent()
 
         mockMvc.perform(
             post("/api/reviews/filtered")
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isOk)
-            .andExpect(jsonPath("$.size()").value(2))
+            .andExpect(jsonPath("$.reviews.size()").value(2))
+            .andExpect(jsonPath("$.averageRating").value(4.5))
 
         LOGGER.info("test get filtered reviews by service point PASSED!")
     }
@@ -172,22 +173,23 @@ class ReviewControllerTest {
         LOGGER.info("RUNNING test get filtered reviews by service point and employee...")
 
         val requestBody = """
-        {
-            "filterCriteria": [
-                { "filterKey": "SERVICE_POINT", "value": 1, "operation": "EQUAL" },
-                { "filterKey": "EMPLOYEE", "value": 1, "operation": "EQUAL" }
-            ],
-            "dataOption": "AND"
-        }
-        """.trimIndent()
+    {
+        "filterCriteria": [
+            { "filterKey": "SERVICE_POINT", "value": 1, "operation": "EQUAL" },
+            { "filterKey": "EMPLOYEE", "value": 1, "operation": "EQUAL" }
+        ],
+        "dataOption": "AND"
+    }
+    """.trimIndent()
 
         mockMvc.perform(
             post("/api/reviews/filtered")
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isOk)
-            .andExpect(jsonPath("$.size()").value(1))
-            .andExpect(jsonPath("$[0].text").value("test_text1"))
+            .andExpect(jsonPath("$.reviews.size()").value(1))
+            .andExpect(jsonPath("$.reviews[0].text").value("test_text1"))
+            .andExpect(jsonPath("$.averageRating").value(5.0));
 
         LOGGER.info("test get filtered reviews by service point and employee PASSED!")
     }
@@ -201,21 +203,22 @@ class ReviewControllerTest {
         LOGGER.info("RUNNING test get filtered reviews by service point and text not null...")
 
         val requestBody = """
-        {
-            "filterCriteria": [
-               { "filterKey": "SERVICE_POINT", "value": 1, "operation": "EQUAL" },
-               { "filterKey": "TEXT", "value": "NOT_NULL", "operation": "EQUAL" }
-            ],
-            "dataOption": "AND"
-        }
-        """.trimIndent()
+    {
+        "filterCriteria": [
+           { "filterKey": "SERVICE_POINT", "value": 1, "operation": "EQUAL" },
+           { "filterKey": "TEXT", "value": "NOT_NULL", "operation": "EQUAL" }
+        ],
+        "dataOption": "AND"
+    }
+    """.trimIndent()
 
         mockMvc.perform(
             post("/api/reviews/filtered")
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isOk)
-            .andExpect(jsonPath("$.size()").value(2))
+            .andExpect(jsonPath("$.reviews.size()").value(2))
+            .andExpect(jsonPath("$.averageRating").value(4.5))
 
         LOGGER.info("test get filtered reviews by service point and text not null PASSED!")
     }
@@ -227,12 +230,12 @@ class ReviewControllerTest {
         LOGGER.info("RUNNING test get filtered reviews should return 400 when filter key is invalid...")
 
         val requestBody = """
-        {
-            "filterCriteria": [
-                { "filterKey": "INVALID_KEY", "value": "invalidValue", "operation": "EQUAL" }
-            ],
-            "dataOption": "AND"
-        }
+    {
+        "filterCriteria": [
+            { "filterKey": "INVALID_KEY", "value": "invalidValue", "operation": "EQUAL" }
+        ],
+        "dataOption": "AND"
+    }
     """.trimIndent()
 
         mockMvc.perform(
@@ -251,10 +254,10 @@ class ReviewControllerTest {
         LOGGER.info("RUNNING test get filtered reviews should return 400 when request body is invalid...")
 
         val requestBody = """
-        {
-            "wrongKey": "wrongValue"
-        }
-        """.trimIndent()
+    {
+        "wrongKey": "wrongValue"
+    }
+    """.trimIndent()
 
         mockMvc.perform(
             post("/api/reviews/filtered")
@@ -264,6 +267,7 @@ class ReviewControllerTest {
 
         LOGGER.info("test get filtered reviews should return 400 when request body is invalid PASSED!")
     }
+
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])

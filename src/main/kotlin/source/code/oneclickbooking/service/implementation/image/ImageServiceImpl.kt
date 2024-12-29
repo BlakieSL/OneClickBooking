@@ -43,14 +43,10 @@ class ImageServiceImpl(
     override fun getFirstImageForParent(
         parentType: EntityType,
         parentId: Int
-    ): ImageResponseDto {
-        val image = repository.findFirstByParentTypeAndParentId(parentType, parentId)
-            ?: throw RecordNotFoundException(
-                Image::class,
-                "parentType" to parentType,
-                "parentId" to parentId
-            )
-        return mapper.toResponseDto(image)
+    ): ImageResponseDto? {
+        return repository.findFirstByParentTypeAndParentId(parentType, parentId)?.let {
+            mapper.toResponseDto(it)
+        }
     }
 
     fun find(id: Int): Image {

@@ -9,5 +9,5 @@ interface ImageService {
     fun delete(id: Int)
     fun get(id: Int): ImageResponseDto
     fun getAllImagesForParent(parentType: EntityType, parentId: Int): List<ImageResponseDto>
-    fun getFirstImageForParent(parentType: EntityType, parentId: Int): ImageResponseDto
+    fun getFirstImageForParent(parentType: EntityType, parentId: Int): ImageResponseDto?
 }

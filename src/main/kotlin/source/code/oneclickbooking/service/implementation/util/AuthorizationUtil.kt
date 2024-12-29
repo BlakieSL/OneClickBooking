@@ -28,7 +28,10 @@ class AuthorizationUtil {
         }
 
         fun getUserId(): Int {
-            val auth = SecurityContextHolder.getContext().authentication as CustomAuthenticationToken
+            val auth = SecurityContextHolder.getContext().authentication
+            if (auth !is CustomAuthenticationToken) {
+                throw IllegalStateException("User is not authenticated")
+            }
             return auth.userId
         }
     }

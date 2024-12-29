@@ -7,6 +7,7 @@ import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.request.ReviewCreateDto
 import source.code.oneclickbooking.dto.request.ReviewUpdateDto
 import source.code.oneclickbooking.dto.response.ReviewResponseDto
+import source.code.oneclickbooking.dto.response.ReviewSummaryResponseDto
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.mapper.ReviewMapper
 import source.code.oneclickbooking.model.Review
@@ -59,11 +60,14 @@ class ReviewServiceImpl(
         return repository.findAll().map { mapper.toResponseDto(it) }
     }
 
-    override fun getFiltered(filter: FilterDto): List<ReviewResponseDto> {
+    override fun getFiltered(filter: FilterDto): ReviewSummaryResponseDto {
         val reviewFactory = SpecificationFactory { criteria -> ReviewSpecification(criteria) }
         val builder = SpecificationBuilder(filter, reviewFactory)
         val specification = builder.build()
-        return repository.findAll(specification).map { mapper.toResponseDto(it) }
+        val reviews = repository.findAll(specification).map { mapper.toResponseDto(it) }
+        val overallRating = reviews.map { it.rating }.average()
+        val totalReviews = reviews.size
+        return ReviewSummaryResponseDto(reviews, overallRating, totalReviews)
     }
 
     private fun applyPatch(patch: JsonMergePatch): ReviewUpdateDto {

@@ -92,10 +92,8 @@ class BookingServiceTest {
             treatment = treatment
         )
 
-
         bookingCreateDto = BookingCreateDto(
             date = LocalDateTime.of(2023, 10, 10, 10, 0),
-            userId = user.id!!,
             servicePointId = servicePoint.id!!,
             employeeId = employee.id!!,
             treatmentId = treatment.id!!

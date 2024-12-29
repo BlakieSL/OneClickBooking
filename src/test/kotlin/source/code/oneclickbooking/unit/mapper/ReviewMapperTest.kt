@@ -59,8 +59,10 @@ class ReviewMapperTest {
         assertEquals(review.text, result.text)
         assertEquals(review.booking.id, result.bookingId)
         assertEquals(review.date, result.date)
-        assertEquals(review.booking.employee?.id, result.employeeId)
-        assertEquals(review.booking.user.id, result.userId)
+        assertEquals(review.booking.employee?.id, result.employee?.id)
+        assertEquals(review.booking.employee?.username, result.employee?.username)
+        assertEquals(review.booking.user.id, result.user.id)
+        assertEquals(review.booking.user.name, result.user.name)
     }
 
     @Test

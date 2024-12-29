@@ -3,7 +3,9 @@ package source.code.oneclickbooking.mapper
 import org.springframework.stereotype.Component
 import source.code.oneclickbooking.dto.request.ReviewCreateDto
 import source.code.oneclickbooking.dto.request.ReviewUpdateDto
+import source.code.oneclickbooking.dto.response.EmployeeDetails
 import source.code.oneclickbooking.dto.response.ReviewResponseDto
+import source.code.oneclickbooking.dto.response.UserDetails
 import source.code.oneclickbooking.model.Review
 import source.code.oneclickbooking.service.declaration.review.ReviewMappingResolver
 
@@ -18,8 +20,16 @@ class ReviewMapper(
             date = review.date,
             text = review.text,
             bookingId = review.booking.id!!,
-            userId = review.booking.user.id!!,
-            employeeId = review.booking.employee?.id
+            user = UserDetails(
+                id = review.booking.user.id!!,
+                name = review.booking.user.name
+            ),
+            employee = review.booking.employee?.let {
+                EmployeeDetails(
+                    id = it.id!!,
+                    username = it.username
+                )
+            }
         )
     }
 

@@ -15,6 +15,7 @@ import source.code.oneclickbooking.annotation.ReviewOwnerOrAdmin
 import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.request.ReviewCreateDto
 import source.code.oneclickbooking.dto.response.ReviewResponseDto
+import source.code.oneclickbooking.dto.response.ReviewSummaryResponseDto
 import source.code.oneclickbooking.service.declaration.review.ReviewService
 
 @RestController
@@ -32,7 +33,7 @@ class ReviewController(
 
 
     @PostMapping("/filtered")
-    fun getFiltered(@Valid @RequestBody filter: FilterDto): ResponseEntity<List<ReviewResponseDto>> =
+    fun getFiltered(@Valid @RequestBody filter: FilterDto): ResponseEntity<ReviewSummaryResponseDto> =
         ResponseEntity.ok(reviewService.getFiltered(filter))
 
     @PostMapping

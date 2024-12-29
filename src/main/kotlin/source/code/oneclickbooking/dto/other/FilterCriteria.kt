@@ -14,7 +14,7 @@ enum class FilterOperation {
 }
 
 enum class BookingFilterKey {
-    EMPLOYEE, SERVICE_POINT, DATE,
+    EMPLOYEE, SERVICE_POINT, DATE, USER
 }
 
 enum class ReviewFilterKey {

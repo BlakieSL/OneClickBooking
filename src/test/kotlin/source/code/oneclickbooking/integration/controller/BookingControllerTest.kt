@@ -127,15 +127,109 @@ class BookingControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("GET /api/bookings/filtered - Should return filtered bookings by user")
+    @SqlSetup
+    fun `test get filtered should return filtered bookings by user`() {
+        val requestBody = """
+            {
+                "filterCriteria": [
+                    {
+                        "filterKey": "USER",
+                        "value": "1",
+                        "operation": "EQUAL"
+                    }
+                ],
+                "dataOption": "AND"
+            }
+        """.trimIndent()
+
+        mockMvc.perform(
+            post("/api/bookings/filtered")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.size()").value(3))
+            .andExpect(jsonPath("$[0].id").value(1))
+            .andExpect(jsonPath("$[1].id").value(2))
+            .andExpect(jsonPath("$[2].id").value(3))
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("GET /api/bookings/filtered - Should return 400 when filter key is invalid")
+    fun `test get filtered should return 400 when filter key is invalid`() {
+        val requestBody = """
+            {
+                "filterCriteria": [
+                    {
+                        "filterKey": "INVALID",
+                        "value": "1",
+                        "filterOperation": "EQUAL",
+                    }
+                ],
+            }
+        """.trimIndent()
+        mockMvc.perform(
+            post("/api/bookings/filtered")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isBadRequest)
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("GET /api/bookings/filtered - Should return 400 when filter operation is invalid")
+    fun `test get filtered should return 400 when filter operation is invalid`() {
+        val requestBody = """
+            {
+                "filterCriteria": [
+                    {
+                        "filterKey": "USER",
+                        "value": "1",
+                        "filterOperation": "INVALID",
+                    }
+                ],
+            }
+        """.trimIndent()
+        mockMvc.perform(
+            post("/api/bookings/filtered")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isBadRequest)
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("GET /api/bookings/filtered - Should return 400 when request body is invalid")
+    fun `test get filtered should return 400 when request body is invalid`() {
+        val requestBody = """
+            {
+                "filterCriteria": [
+                    {
+                        "filterKey": "USER",
+                        "value": "1",
+                        "filterOperation": "EQUAL",
+                    }
+                ],
+            }
+        """.trimIndent()
+        mockMvc.perform(
+            post("/api/bookings/filtered")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isBadRequest)
+    }
+
+    @Test
     @DisplayName("POST /api/bookings - Should create booking")
     @SqlSetup
     fun `test create should create booking`() {
         logRunning()
+        setUserContext(userId = 1)
 
         val requestBody = """
             {
                 "date": "2025-01-02T10:00:00",
-                "userId": 1,
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -148,8 +242,8 @@ class BookingControllerTest {
                 .content(requestBody)
         ).andExpect(status().isCreated).andExpectAll(
             jsonPath("$.id").value(4),
-            jsonPath("$.date").value("2025-01-02T10:00:00"),
             jsonPath("$.userId").value(1),
+            jsonPath("$.date").value("2025-01-02T10:00:00"),
             jsonPath("$.servicePointId").value(1),
             jsonPath("$.employeeId").value(1),
             jsonPath("$.treatmentId").value(1)
@@ -159,17 +253,16 @@ class BookingControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testuser", roles = ["USER"])
     @DisplayName("POST /api/bookings - Should create booking, When selected employee " +
             "have bookings on the selected date")
     @SqlSetup
     fun `test create should create booking when employee has bookings`() {
         logRunning()
+        setUserContext(userId = 1)
 
         val requestBody = """
             {
                 "date": "2025-01-06T14:00:00",
-                "userId": 1,
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -182,8 +275,8 @@ class BookingControllerTest {
                 .content(requestBody)
         ).andExpect(status().isCreated).andExpectAll(
             jsonPath("$.id").value(4),
-            jsonPath("$.date").value("2025-01-06T14:00:00"),
             jsonPath("$.userId").value(1),
+            jsonPath("$.date").value("2025-01-06T14:00:00"),
             jsonPath("$.servicePointId").value(1),
             jsonPath("$.employeeId").value(1),
             jsonPath("$.treatmentId").value(1)
@@ -193,17 +286,16 @@ class BookingControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testuser", roles = ["USER"])
     @DisplayName("POST /api/bookings - Should create booking, When selected employee " +
             "have splitted availability on selected date")
     @SqlSetup
     fun `test create should create booking when employee has splitted availability`() {
         logRunning()
+        setUserContext(userId = 1)
 
         val requestBody = """
             {
                 "date": "2025-01-06T15:00:00",
-                "userId": 1,
                 "servicePointId": 1,
                 "employeeId": 2,
                 "treatmentId": 2
@@ -216,8 +308,8 @@ class BookingControllerTest {
                 .content(requestBody)
         ).andExpect(status().isCreated).andExpectAll(
             jsonPath("$.id").value(4),
-            jsonPath("$.date").value("2025-01-06T15:00:00"),
             jsonPath("$.userId").value(1),
+            jsonPath("$.date").value("2025-01-06T15:00:00"),
             jsonPath("$.servicePointId").value(1),
             jsonPath("$.employeeId").value(2),
             jsonPath("$.treatmentId").value(2)
@@ -227,7 +319,6 @@ class BookingControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "testuser", roles = ["USER"])
     @DisplayName("POST /api/bookings - Should  create booking, When selected employee " +
             "have splitted availability on selected date and bookings")
     @SqlGroup(
@@ -243,11 +334,11 @@ class BookingControllerTest {
     )
     fun `test create should create booking when employee has splitted availability and bookings`() {
         logRunning()
+        setUserContext(userId = 1)
 
         val requestBody = """
             {
                 "date": "2025-01-06T15:15:00",
-                "userId": 1,
                 "servicePointId": 1,
                 "employeeId": 2,
                 "treatmentId": 2
@@ -260,8 +351,8 @@ class BookingControllerTest {
                 .content(requestBody)
         ).andExpect(status().isCreated).andExpectAll(
             jsonPath("$.id").value(6),
-            jsonPath("$.date").value("2025-01-06T15:15:00"),
             jsonPath("$.userId").value(1),
+            jsonPath("$.date").value("2025-01-06T15:15:00"),
             jsonPath("$.servicePointId").value(1),
             jsonPath("$.employeeId").value(2),
             jsonPath("$.treatmentId").value(2)
@@ -280,7 +371,6 @@ class BookingControllerTest {
         val requestBody = """
             {
                 "date": "2025-01-02T10:00:00",
-                "userId": 1,
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 3
@@ -307,7 +397,6 @@ class BookingControllerTest {
         val requestBody = """
             {
                 "date": "2025-01-02T10:00:00",
-                "userId": 1,
                 "servicePointId": 2,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -334,7 +423,6 @@ class BookingControllerTest {
         val requestBody = """
             {
                 "date": "2025-01-05T15:15:00",
-                "userId": 1,
                 "servicePointId": 1,
                 "employeeId": 2,
                 "treatmentId": 2
@@ -361,7 +449,6 @@ class BookingControllerTest {
         val requestBody = """
             {
                 "date": "2025-01-06T14:00:00",
-                "userId": 1,
                 "servicePointId": 1,
                 "employeeId": 2,
                 "treatmentId": 2
@@ -388,7 +475,6 @@ class BookingControllerTest {
         val requestBody = """
             {
                 "date": "2025-01-06T15:00:00",
-                "userId": 1,
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -413,7 +499,6 @@ class BookingControllerTest {
         val requestBody = """
             {
                 "date": "2020-01-01T00:00:00",
-                "userId": 1,
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -439,7 +524,6 @@ class BookingControllerTest {
         val requestBody = """
             {
                 "date": "2025-01-02T10:00:00",
-                "userId": 1,
                 "servicePointId": 100,
                 "employeeId": 1,
                 "treatmentId": 1

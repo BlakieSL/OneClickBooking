@@ -5,6 +5,7 @@ import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import source.code.oneclickbooking.annotation.BookingOwnerOrAdmin
+import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.response.BookingResponseDto
 import source.code.oneclickbooking.service.declaration.booking.BookingService
@@ -21,6 +22,10 @@ class BookingController(
     @GetMapping
     fun getAll(): ResponseEntity<List<BookingResponseDto>> =
         ResponseEntity.ok(bookingService.getAll())
+
+    @PostMapping("/filtered")
+    fun getFiltered(@Valid @RequestBody filter: FilterDto): ResponseEntity<List<BookingResponseDto>> =
+        ResponseEntity.ok(bookingService.getFiltered(filter))
 
     @PostMapping
     fun create(@Valid @RequestBody request: BookingCreateDto): ResponseEntity<BookingResponseDto> =

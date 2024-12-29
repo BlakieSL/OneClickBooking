@@ -37,7 +37,7 @@ class ImageController(
     fun getFirstImageForParent(
         @PathVariable parentType: EntityType,
         @PathVariable parentId: Int
-    ): ResponseEntity<ImageResponseDto> =
+    ): ResponseEntity<ImageResponseDto?> =
         ResponseEntity.ok(imageService.getFirstImageForParent(parentType, parentId))
 
 

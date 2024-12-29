@@ -9,6 +9,16 @@ data class ReviewResponseDto (
     val text: String? = null,
     val bookingId: Int,
 
-    val userId: Int,
-    val employeeId: Int? = null,
+    val user: UserDetails,
+    val employee: EmployeeDetails? = null,
+)
+
+data class UserDetails (
+    val id: Int,
+    val name: String
+)
+
+data class EmployeeDetails (
+    val id: Int,
+    val username: String
 )

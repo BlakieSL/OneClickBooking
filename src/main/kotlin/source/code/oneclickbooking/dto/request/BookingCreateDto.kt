@@ -13,10 +13,6 @@ data class BookingCreateDto (
 
     @JsonProperty(required = true)
     @field:NotNull
-    val userId: Int,
-
-    @JsonProperty(required = true)
-    @field:NotNull
     val servicePointId: Int,
 
     @JsonProperty(required = true)
