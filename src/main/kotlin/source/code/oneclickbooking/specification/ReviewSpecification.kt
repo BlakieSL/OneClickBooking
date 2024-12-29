@@ -28,6 +28,13 @@ class ReviewSpecification(private val criteria: FilterCriteria) : Specification<
             ReviewFilterKey.TEXT.name ->
                 handleTextProperty(root, criteriaBuilder);
 
+            ReviewFilterKey.USER.name -> handleJoinPredicate(
+                root = root,
+                joinProperty = "booking",
+                subJoinProperty = "user",
+                criteriaBuilder = criteriaBuilder
+            )
+
             else -> throw InvalidFilterKeyException(criteria.filterKey)
         }
     }
@@ -54,6 +61,22 @@ class ReviewSpecification(private val criteria: FilterCriteria) : Specification<
             builder.isNotNull(root.get<Any>("text"))
         } else {
             throw InvalidFilterOperationException(criteria.operation.name)
+        }
+    }
+
+    private fun handleJoinPredicate(
+        root: Root<Review>,
+        joinProperty: String,
+        subJoinProperty: String,
+        criteriaBuilder: CriteriaBuilder
+    ): Predicate {
+        val join = root.join<Any, Any>(joinProperty)
+        val subJoin = join.join<Any, Any>(subJoinProperty)
+        val value = criteria.value
+        return when (criteria.operation) {
+            FilterOperation.EQUAL -> criteriaBuilder.equal(subJoin.get<Any>("id"), value)
+            FilterOperation.NOT_EQUAL -> criteriaBuilder.notEqual(subJoin.get<Any>("id"), value)
+            else -> throw InvalidFilterOperationException(criteria.operation.name)
         }
     }
 }

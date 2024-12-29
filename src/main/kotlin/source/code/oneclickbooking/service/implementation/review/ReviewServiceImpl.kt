@@ -28,6 +28,7 @@ class ReviewServiceImpl(
 ): ReviewService {
     @Transactional
     override fun create(reviewDto: ReviewCreateDto): ReviewResponseDto {
+        println(reviewDto.text)
         val review = mapper.toEntity(reviewDto)
         val savedReview = repository.save(review)
         return mapper.toResponseDto(savedReview)
@@ -38,6 +39,8 @@ class ReviewServiceImpl(
         val review = find(id)
         val patched = applyPatch(patch)
 
+        println(patched.text)
+        println(patched.text?.length)
         validationService.validate(patched)
         mapper.update(review, patched)
 

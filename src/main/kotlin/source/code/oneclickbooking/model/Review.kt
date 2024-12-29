@@ -29,6 +29,8 @@ class Review (
     lateinit var booking: Booking
 
     companion object {
+        const val MAX_TEXT_LENGTH = 255
+
         fun createDefault(
             id: Int? = null,
             rating: Int = 5,

@@ -225,6 +225,34 @@ class ReviewControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("Test POST /api/reviews/filtered should return filtered reviews by user")
+    @SqlSetup
+    fun `test get filtered should return filtered reviews by user`() {
+        val requestBody = """
+            {
+                "filterCriteria": [
+                    { 
+                        "filterKey": "USER",
+                        "value": 1, 
+                        "operation": "EQUAL" 
+                    }
+                ],
+                "dataOption": "AND"
+            }
+        """.trimIndent()
+
+        mockMvc.perform(
+            post("/api/reviews/filtered")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isOk)
+            .andExpect(jsonPath("$.reviews.size()").value(2))
+            .andExpect(jsonPath("$.reviews[0].text").value("test_text1"))
+            .andExpect(jsonPath("$.averageRating").value(4.5))
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
     @DisplayName("Test POST /api/reviews/filtered should return 400 when filter key is invalid")
     fun `test get filtered should return 400 when filter key is invalid`() {
         LOGGER.info("RUNNING test get filtered reviews should return 400 when filter key is invalid...")
