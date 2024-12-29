@@ -14,12 +14,11 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.springframework.context.MessageSource
 import source.code.oneclickbooking.dto.request.ReviewCreateDto
 import source.code.oneclickbooking.dto.request.ReviewUpdateDto
-import source.code.oneclickbooking.dto.response.EmployeeDetails
 import source.code.oneclickbooking.dto.response.ReviewResponseDto
-import source.code.oneclickbooking.dto.response.UserDetails
+import source.code.oneclickbooking.dto.response.innerDtos.EmployeeDetails
+import source.code.oneclickbooking.dto.response.innerDtos.UserDetails
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.helper.MessageResolver
 import source.code.oneclickbooking.mapper.ReviewMapper

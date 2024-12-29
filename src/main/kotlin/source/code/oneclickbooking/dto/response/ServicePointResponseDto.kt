@@ -7,3 +7,4 @@ data class ServicePointResponseDto(
     val email: String,
     val phone: String,
 )
+

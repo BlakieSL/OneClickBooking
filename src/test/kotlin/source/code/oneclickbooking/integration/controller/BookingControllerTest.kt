@@ -148,10 +148,23 @@ class BookingControllerTest {
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isOk)
-            .andExpect(jsonPath("$.size()").value(3))
-            .andExpect(jsonPath("$[0].id").value(1))
-            .andExpect(jsonPath("$[1].id").value(2))
-            .andExpect(jsonPath("$[2].id").value(3))
+            .andExpectAll(
+                jsonPath("$.size()").value(3),
+
+                jsonPath("$[0].id").value(1),
+                jsonPath("$[0].date").value("2022-01-01T00:00:00"),
+                jsonPath("$[0].userId").value(1),
+
+                jsonPath("$[0].servicePoint.id").value(1),
+                jsonPath("$[0].servicePoint.location").value("test_location1"),
+                jsonPath("$[0].servicePoint.name").value("test_name1"),
+
+                jsonPath("$[0].employee.id").value(1),
+                jsonPath("$[0].employee.username").value("test_username1"),
+
+                jsonPath("$[0].treatmentId").value(1),
+                jsonPath("$[0].reviewId").value(1)
+            )
     }
 
     @Test

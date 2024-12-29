@@ -3,9 +3,10 @@ package source.code.oneclickbooking.mapper
 import org.springframework.stereotype.Component
 import source.code.oneclickbooking.dto.request.ReviewCreateDto
 import source.code.oneclickbooking.dto.request.ReviewUpdateDto
-import source.code.oneclickbooking.dto.response.EmployeeDetails
 import source.code.oneclickbooking.dto.response.ReviewResponseDto
-import source.code.oneclickbooking.dto.response.UserDetails
+import source.code.oneclickbooking.dto.response.innerDtos.EmployeeDetails
+import source.code.oneclickbooking.dto.response.innerDtos.UserDetails
+
 import source.code.oneclickbooking.model.Review
 import source.code.oneclickbooking.service.declaration.review.ReviewMappingResolver
 

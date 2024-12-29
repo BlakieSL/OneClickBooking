@@ -8,6 +8,7 @@ import source.code.oneclickbooking.annotation.BookingOwnerOrAdmin
 import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.response.BookingResponseDto
+import source.code.oneclickbooking.dto.response.booking.BookingDetailedResponseDto
 import source.code.oneclickbooking.service.declaration.booking.BookingService
 
 @RestController
@@ -23,8 +24,9 @@ class BookingController(
     fun getAll(): ResponseEntity<List<BookingResponseDto>> =
         ResponseEntity.ok(bookingService.getAll())
 
+    //currently used only for user filtering by user itself, other usages may require different response dto
     @PostMapping("/filtered")
-    fun getFiltered(@Valid @RequestBody filter: FilterDto): ResponseEntity<List<BookingResponseDto>> =
+    fun getFiltered(@Valid @RequestBody filter: FilterDto): ResponseEntity<List<BookingDetailedResponseDto>> =
         ResponseEntity.ok(bookingService.getFiltered(filter))
 
     @PostMapping

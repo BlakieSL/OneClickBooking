@@ -4,6 +4,7 @@ import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
 import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.response.BookingResponseDto
+import source.code.oneclickbooking.dto.response.booking.BookingDetailedResponseDto
 
 interface BookingService {
     fun create(bookingDto: BookingCreateDto): BookingResponseDto
@@ -11,5 +12,5 @@ interface BookingService {
     fun delete(id: Int)
     fun get(id: Int): BookingResponseDto
     fun getAll(): List<BookingResponseDto>
-    fun getFiltered(filter: FilterDto): List<BookingResponseDto>
+    fun getFiltered(filter: FilterDto): List<BookingDetailedResponseDto>
 }

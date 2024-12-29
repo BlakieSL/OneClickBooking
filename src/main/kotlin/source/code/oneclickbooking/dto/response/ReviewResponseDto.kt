@@ -1,5 +1,10 @@
+
+
 package source.code.oneclickbooking.dto.response
 
+
+import source.code.oneclickbooking.dto.response.innerDtos.EmployeeDetails
+import source.code.oneclickbooking.dto.response.innerDtos.UserDetails
 import java.time.LocalDate
 
 data class ReviewResponseDto (
@@ -13,12 +18,3 @@ data class ReviewResponseDto (
     val employee: EmployeeDetails? = null,
 )
 
-data class UserDetails (
-    val id: Int,
-    val name: String
-)
-
-data class EmployeeDetails (
-    val id: Int,
-    val username: String
-)

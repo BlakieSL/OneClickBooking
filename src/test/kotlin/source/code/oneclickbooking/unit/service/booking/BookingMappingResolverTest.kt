@@ -13,6 +13,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.springframework.context.MessageSource
+import source.code.oneclickbooking.dto.response.innerDtos.EmployeeDetails
+import source.code.oneclickbooking.dto.response.innerDtos.ServicePointDetails
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.helper.MessageResolver
 import source.code.oneclickbooking.model.*
@@ -120,30 +122,65 @@ class BookingMappingResolverTest {
     }
 
     @Test
-    fun `should return null when id is null for user`() {
-        val result = resolver.resolveUser(null)
+    fun `should resolve service point details by id`() {
+        val servicePointDetails = ServicePointDetails(
+            id = 1,
+            name = "Test Service Point",
+            location = "Test Location"
+        )
 
-        assertNull(result)
+        val servicePoint = ServicePoint(
+            id = 1,
+            name = servicePointDetails.name,
+            location = servicePointDetails.location,
+            email = "test@example.com",
+            phone = "1234567890"
+        )
+
+        whenever(servicePointRepository.findById(1)).thenReturn(Optional.of(servicePoint))
+
+        val result = resolver.resolveServicePointDetails(1)
+
+        assertEquals(servicePointDetails, result)
     }
 
     @Test
-    fun `should return null when id is null for service point`() {
-        val result = resolver.resolveServicePoint(null)
+    fun `should throw exception when service point details are not found`() {
+        whenever(servicePointRepository.findById(1)).thenReturn(Optional.empty())
 
-        assertNull(result)
+        assertThrows<RecordNotFoundException> {
+            resolver.resolveServicePointDetails(1)
+        }
     }
 
     @Test
-    fun `should return null when id is null for employee`() {
-        val result = resolver.resolveEmployee(null)
+    fun `should resolve employee details by id`() {
+        val employeeDetails = EmployeeDetails(
+            id = 1,
+            username = "Test Employee"
+        )
 
-        assertNull(result)
+        val employee = Employee(
+            id = 1,
+            username = employeeDetails.username,
+            description = "Test Employee Description"
+        )
+
+        whenever(employeeRepository.findById(1)).thenReturn(Optional.of(employee))
+
+        val result = resolver.resolveEmployeeDetails(1)
+
+        assertEquals(employeeDetails, result)
     }
 
     @Test
-    fun `should return null when id is null for treatment`() {
-        val result = resolver.resolveTreatment(null)
+    fun `should throw exception when employee details are not found`() {
+        whenever(employeeRepository.findById(1)).thenReturn(Optional.empty())
 
-        assertNull(result)
+        assertThrows<RecordNotFoundException> {
+            resolver.resolveEmployeeDetails(1)
+        }
     }
+
+
 }

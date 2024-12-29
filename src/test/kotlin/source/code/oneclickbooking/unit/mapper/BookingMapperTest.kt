@@ -11,6 +11,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.request.BookingUpdateDto
+import source.code.oneclickbooking.dto.response.innerDtos.EmployeeDetails
+import source.code.oneclickbooking.dto.response.innerDtos.ServicePointDetails
 import source.code.oneclickbooking.mapper.BookingMapper
 import source.code.oneclickbooking.model.*
 import source.code.oneclickbooking.service.declaration.booking.BookingMappingResolver
@@ -93,9 +95,9 @@ class BookingMapperTest {
     @Test
     fun `should update Booking fields from BookingUpdateDto`() {
         val newTreatment = Treatment.createDefault(id = 2)
-        whenever(resolver.resolveServicePoint(updateDto.servicePointId)).thenReturn(servicePoint)
-        whenever(resolver.resolveEmployee(updateDto.employeeId)).thenReturn(employee)
-        whenever(resolver.resolveTreatment(updateDto.treatmentId)).thenReturn(newTreatment)
+        whenever(resolver.resolveServicePoint(updateDto.servicePointId!!)).thenReturn(servicePoint)
+        whenever(resolver.resolveEmployee(updateDto.employeeId!!)).thenReturn(employee)
+        whenever(resolver.resolveTreatment(updateDto.treatmentId!!)).thenReturn(newTreatment)
 
         bookingMapper.update(booking, updateDto)
 
@@ -117,4 +119,65 @@ class BookingMapperTest {
         assertEquals(1, booking.employee?.id)
         assertEquals(1, booking.treatment?.id)
     }
+
+    @Test
+    fun `should map Booking to BookingDetailedResponseDto`() {
+        val servicePointDetails = ServicePointDetails(
+            id = 1,
+            name = "test_name1",
+            location = "test_location1"
+        )
+        val employeeDetails = EmployeeDetails(
+            id = 1,
+            username = "test_username1"
+        )
+
+        whenever(resolver.resolveServicePointDetails(booking.servicePoint.id!!))
+            .thenReturn(servicePointDetails)
+        whenever(resolver.resolveEmployeeDetails(booking.employee!!.id!!))
+            .thenReturn(employeeDetails)
+
+        val result = bookingMapper.toDetailedResponseDto(booking)
+
+        assertEquals(booking.id, result.id)
+        assertEquals(booking.date, result.date)
+        assertEquals(booking.user.id, result.userId)
+        assertEquals(servicePointDetails, result.servicePoint)
+        assertEquals(employeeDetails, result.employee)
+        assertEquals(booking.treatment?.id, result.treatmentId)
+        assertEquals(booking.review?.id, result.reviewId)
+    }
+
+
+    @Test
+    fun `should map Booking to BookingDetailedResponseDto when there is no employee and treatment`() {
+        booking = Booking.of(
+            id = 1,
+            date = LocalDateTime.of(2023, 10, 10, 10, 0),
+            user = user,
+            servicePoint = servicePoint,
+            employee = null,
+            treatment = null
+        )
+
+        val servicePointDetails = ServicePointDetails(
+            id = 1,
+            name = "test_name1",
+            location = "test_location1"
+        )
+
+        whenever(resolver.resolveServicePointDetails(booking.servicePoint.id!!))
+            .thenReturn(servicePointDetails)
+
+        val result = bookingMapper.toDetailedResponseDto(booking)
+
+        assertEquals(booking.id, result.id)
+        assertEquals(booking.date, result.date)
+        assertEquals(booking.user.id, result.userId)
+        assertEquals(servicePointDetails, result.servicePoint)
+        assertEquals(null, result.employee)
+        assertEquals(null, result.treatmentId)
+        assertEquals(booking.review?.id, result.reviewId)
+    }
+
 }

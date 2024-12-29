@@ -7,6 +7,7 @@ import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.request.BookingUpdateDto
 import source.code.oneclickbooking.dto.response.BookingResponseDto
+import source.code.oneclickbooking.dto.response.booking.BookingDetailedResponseDto
 import source.code.oneclickbooking.exception.InternalizedIllegalArgumentException
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.helper.ExceptionMessages
@@ -72,11 +73,11 @@ class BookingServiceImpl(
         return repository.findAll().map { mapper.toResponseDto(it) }
     }
 
-    override fun getFiltered(filter: FilterDto): List<BookingResponseDto> {
+    override fun getFiltered(filter: FilterDto): List<BookingDetailedResponseDto> {
         val bookingFactory = SpecificationFactory { BookingSpecification(it) }
         val specificationBuilder = SpecificationBuilder(filter, bookingFactory)
         val specification = specificationBuilder.build()
-        return repository.findAll(specification).map { mapper.toResponseDto(it) }
+        return repository.findAll(specification).map { mapper.toDetailedResponseDto(it) }
     }
 
     private fun applyPatch(patch: JsonMergePatch): BookingUpdateDto {
