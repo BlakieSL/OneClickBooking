@@ -1,7 +1,6 @@
 package source.code.oneclickbooking.model
 
 import jakarta.persistence.*
-import jakarta.validation.constraints.FutureOrPresent
 import jakarta.validation.constraints.NotNull
 import java.time.LocalDate
 

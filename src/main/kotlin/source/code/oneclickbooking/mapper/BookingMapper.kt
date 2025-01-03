@@ -5,7 +5,7 @@ import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.request.BookingUpdateDto
 import source.code.oneclickbooking.dto.response.BookingResponseDto
 import source.code.oneclickbooking.dto.response.booking.BookingDetailedResponseDto
-import source.code.oneclickbooking.model.*
+import source.code.oneclickbooking.model.Booking
 import source.code.oneclickbooking.service.declaration.booking.BookingMappingResolver
 
 @Component

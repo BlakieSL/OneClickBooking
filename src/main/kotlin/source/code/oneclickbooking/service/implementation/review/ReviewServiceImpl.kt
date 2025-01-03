@@ -2,6 +2,7 @@ package source.code.oneclickbooking.service.implementation.review
 
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
 import jakarta.transaction.Transactional
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.request.ReviewCreateDto
@@ -55,6 +56,7 @@ class ReviewServiceImpl(
         repository.delete(review)
     }
 
+    @Cacheable(value = ["reviews"], key = "#id")
     override fun get(id: Int): ReviewResponseDto {
         return find(id).let { mapper.toResponseDto(it) }
     }

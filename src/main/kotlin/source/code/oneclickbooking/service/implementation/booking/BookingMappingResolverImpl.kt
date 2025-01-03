@@ -1,7 +1,6 @@
 package source.code.oneclickbooking.service.implementation.booking
 
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
 import source.code.oneclickbooking.dto.response.innerDtos.EmployeeDetails
 import source.code.oneclickbooking.dto.response.innerDtos.ServicePointDetails
 import source.code.oneclickbooking.exception.RecordNotFoundException

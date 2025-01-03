@@ -5,15 +5,11 @@ import jakarta.persistence.criteria.CriteriaQuery
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
-import source.code.oneclickbooking.dto.other.BookingFilterKey
 import source.code.oneclickbooking.dto.other.EmployeeFilterKey
 import source.code.oneclickbooking.dto.other.FilterCriteria
 import source.code.oneclickbooking.dto.other.FilterOperation
 import source.code.oneclickbooking.exception.InvalidFilterOperationException
 import source.code.oneclickbooking.model.Employee
-import source.code.oneclickbooking.model.ServicePoint
-import source.code.oneclickbooking.model.ServicePointEmployee
-import source.code.oneclickbooking.model.Treatment
 
 class EmployeeSpecification(private val criteria: FilterCriteria): Specification<Employee> {
     override fun toPredicate(

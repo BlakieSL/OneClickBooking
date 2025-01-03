@@ -4,7 +4,6 @@ import jakarta.persistence.*
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
-import source.code.oneclickbooking.validation.email.UniqueEmailDomain
 
 @Entity
 @Table(name = "user")

@@ -3,3 +3,7 @@ How to run docker-compose to start Redis container?
 1. navigate to /resources folder under /src
 2. run the following command: docker-compose up -d
 this will create a container with name redis-server1
+
+How to access Redis in console?
+1.docker exec -it redis-server1 redis-cli
+a) FLUSHALL - removes all data

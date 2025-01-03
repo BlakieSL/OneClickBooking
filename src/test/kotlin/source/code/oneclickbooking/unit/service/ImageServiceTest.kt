@@ -18,7 +18,6 @@ import source.code.oneclickbooking.mapper.ImageMapper
 import source.code.oneclickbooking.model.EntityType
 import source.code.oneclickbooking.model.Image
 import source.code.oneclickbooking.repository.ImageRepository
-import source.code.oneclickbooking.service.declaration.image.ImageService
 import source.code.oneclickbooking.service.implementation.image.ImageServiceImpl
 
 @ExtendWith(MockitoExtension::class)

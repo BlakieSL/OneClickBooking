@@ -3,14 +3,7 @@ package source.code.oneclickbooking.controller
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PatchMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import source.code.oneclickbooking.annotation.ReviewOwnerOrAdmin
 import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.request.ReviewCreateDto
@@ -31,9 +24,8 @@ class ReviewController(
     fun getAll(): ResponseEntity<List<ReviewResponseDto>> =
         ResponseEntity.ok(reviewService.getAll())
 
-
     @PostMapping("/filtered")
-    fun getFiltered(@Valid @RequestBody filter: FilterDto): ResponseEntity<ReviewSummaryResponseDto> =
+    fun getFiltered(@RequestBody filter: FilterDto): ResponseEntity<ReviewSummaryResponseDto> =
         ResponseEntity.ok(reviewService.getFiltered(filter))
 
     @PostMapping

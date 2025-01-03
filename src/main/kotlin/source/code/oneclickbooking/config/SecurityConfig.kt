@@ -17,10 +17,10 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector
-import source.code.oneclickbooking.service.implementation.util.JwtService
 import source.code.oneclickbooking.auth.filter.BearerTokenFilter
 import source.code.oneclickbooking.auth.filter.JwtAuthenticationFilter
 import source.code.oneclickbooking.service.declaration.UserService
+import source.code.oneclickbooking.service.implementation.util.JwtService
 
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true)
@@ -39,9 +39,8 @@ class SecurityConfig(
     fun corsConfigurationSource() : CorsConfigurationSource {
         val configuration = CorsConfiguration().apply {
             allowedOrigins = listOf("http://localhost:5173")
-            allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-            allowedHeaders = listOf("*")
-            allowCredentials = true
+            allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH")
+            allowedHeaders = listOf("Content-Type", "Authorization", "Accept-Language")
         }
 
         return UrlBasedCorsConfigurationSource().apply {

@@ -3,17 +3,14 @@ package source.code.oneclickbooking.unit.service
 
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.junit.jupiter.MockitoExtension
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito.lenient
+import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.*
-import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import source.code.oneclickbooking.dto.other.UserCredentialsDto
 import source.code.oneclickbooking.dto.request.UserCreateDto
@@ -21,8 +18,6 @@ import source.code.oneclickbooking.dto.request.UserUpdateDto
 import source.code.oneclickbooking.dto.response.UserResponseDto
 import source.code.oneclickbooking.exception.InternalizedIllegalArgumentException
 import source.code.oneclickbooking.exception.RecordNotFoundException
-import source.code.oneclickbooking.helper.ExceptionMessages
-import source.code.oneclickbooking.helper.MessageResolver
 import source.code.oneclickbooking.mapper.UserMapper
 import source.code.oneclickbooking.model.Role
 import source.code.oneclickbooking.model.RoleName

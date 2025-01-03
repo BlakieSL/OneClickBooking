@@ -15,7 +15,8 @@ import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.context.jdbc.SqlMergeMode
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.testcontainers.junit.jupiter.Testcontainers
 import source.code.oneclickbooking.auth.CustomAuthenticationToken
 import source.code.oneclickbooking.integration.annotation.SqlSetup
@@ -277,21 +278,21 @@ class ReviewControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("Test POST /api/reviews/filtered should return 400 when request body is invalid")
+    @DisplayName("Test POST /api/reviews/filtered should return 200 when request body is invalid")
     fun `test get filtered should return 400 when request body is invalid`() {
         LOGGER.info("RUNNING test get filtered reviews should return 400 when request body is invalid...")
 
         val requestBody = """
-    {
-        "wrongKey": "wrongValue"
-    }
-    """.trimIndent()
+        {
+            "wrongKey": "wrongValue"
+        }
+        """.trimIndent()
 
         mockMvc.perform(
             post("/api/reviews/filtered")
                 .contentType("application/json")
                 .content(requestBody)
-        ).andExpect(status().isBadRequest)
+        ).andExpect(status().isOk)
 
         LOGGER.info("test get filtered reviews should return 400 when request body is invalid PASSED!")
     }

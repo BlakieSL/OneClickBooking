@@ -2,7 +2,6 @@ package source.code.oneclickbooking.specification
 
 import jakarta.persistence.criteria.*
 import org.springframework.data.jpa.domain.Specification
-import source.code.oneclickbooking.dto.other.BookingFilterKey
 import source.code.oneclickbooking.dto.other.FilterCriteria
 import source.code.oneclickbooking.dto.other.FilterOperation
 import source.code.oneclickbooking.dto.other.ReviewFilterKey

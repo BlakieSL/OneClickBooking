@@ -8,9 +8,9 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
-import source.code.oneclickbooking.service.implementation.util.JwtService
 import source.code.oneclickbooking.exception.JwtAuthenticationException
 import source.code.oneclickbooking.helper.ExceptionMessages
+import source.code.oneclickbooking.service.implementation.util.JwtService
 import java.text.ParseException
 
 class BearerTokenFilter(
@@ -72,7 +72,7 @@ class BearerTokenFilter(
 
     private fun setSecurityContext(signedJWT: SignedJWT) {
         val authentication = jwtService.authentication(signedJWT)
-        SecurityContextHolder.getContextHolderStrategy().context.authentication = authentication
+        SecurityContextHolder.getContext().authentication = authentication
     }
 
     companion object {

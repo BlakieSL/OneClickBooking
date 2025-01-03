@@ -1,6 +1,5 @@
 package source.code.oneclickbooking.unit.mapper
 
-import org.junit.Before
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks

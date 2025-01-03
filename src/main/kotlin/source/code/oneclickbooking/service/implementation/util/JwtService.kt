@@ -1,6 +1,8 @@
 package source.code.oneclickbooking.service.implementation.util
 
-import com.nimbusds.jose.*
+import com.nimbusds.jose.JOSEException
+import com.nimbusds.jose.JWSAlgorithm
+import com.nimbusds.jose.JWSHeader
 import com.nimbusds.jose.crypto.MACSigner
 import com.nimbusds.jose.crypto.MACVerifier
 import com.nimbusds.jwt.JWTClaimsSet
@@ -16,7 +18,7 @@ import source.code.oneclickbooking.exception.JwtAuthenticationException
 import source.code.oneclickbooking.helper.ExceptionMessages
 import java.text.ParseException
 import java.time.Instant
-import java.util.Date
+import java.util.*
 
 @Service
 class JwtService(@Value("\${spring.jws.sharedKey}") sharedKey: String) {
@@ -44,7 +46,7 @@ class JwtService(@Value("\${spring.jws.sharedKey}") sharedKey: String) {
         return createSignedJWT(
             username,
             userId,
-            listOf("ROLE_REFRESH"),
+            authorities,
             REFRESH_TOKEN_DURATION_MINUTES.toLong(),
             REFRESH_TOKEN
         )

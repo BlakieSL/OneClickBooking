@@ -1,5 +1,6 @@
 package source.code.oneclickbooking.service.implementation
 
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.response.EmployeeResponseDto
@@ -17,10 +18,12 @@ class EmployeeServiceImpl(
     private val mapper: EmployeeMapper,
     private val repository: EmployeeRepository,
 ): EmployeeService {
+    @Cacheable(value = ["employees"], key = "#id")
     override fun get(id: Int): EmployeeResponseDto {
         return find(id).let { mapper.toResponseDto(it) }
     }
 
+    @Cacheable(value = ["allEmployees"])
     override fun getAll(): List<EmployeeResponseDto> {
         return repository.findAll().map { mapper.toResponseDto(it) }
     }

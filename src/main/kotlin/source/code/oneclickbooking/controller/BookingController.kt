@@ -24,7 +24,6 @@ class BookingController(
     fun getAll(): ResponseEntity<List<BookingResponseDto>> =
         ResponseEntity.ok(bookingService.getAll())
 
-    //currently used only for user filtering by user itself, other usages may require different response dto
     @PostMapping("/filtered")
     fun getFiltered(@Valid @RequestBody filter: FilterDto): ResponseEntity<List<BookingDetailedResponseDto>> =
         ResponseEntity.ok(bookingService.getFiltered(filter))

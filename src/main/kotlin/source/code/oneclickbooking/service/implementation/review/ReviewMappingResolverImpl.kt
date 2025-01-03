@@ -3,8 +3,6 @@ package source.code.oneclickbooking.service.implementation.review
 import org.springframework.stereotype.Component
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.model.Booking
-import source.code.oneclickbooking.model.Employee
-import source.code.oneclickbooking.model.User
 import source.code.oneclickbooking.repository.BookingRepository
 import source.code.oneclickbooking.service.declaration.review.ReviewMappingResolver
 
