@@ -5,6 +5,8 @@ import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.request.BookingUpdateDto
 import source.code.oneclickbooking.dto.response.BookingResponseDto
 import source.code.oneclickbooking.dto.response.booking.BookingDetailedResponseDto
+import source.code.oneclickbooking.dto.response.innerDtos.EmployeeDetails
+import source.code.oneclickbooking.dto.response.innerDtos.ServicePointDetails
 import source.code.oneclickbooking.model.Booking
 import source.code.oneclickbooking.service.declaration.booking.BookingMappingResolver
 
@@ -46,8 +48,17 @@ class BookingMapper(
             id = booking.id!!,
             date = booking.date,
             userId = booking.user.id!!,
-            servicePoint = resolver.resolveServicePointDetails(booking.servicePoint.id!!),
-            employee = booking.employee?.let { resolver.resolveEmployeeDetails(it.id!!) },
+            servicePoint = ServicePointDetails(
+                id = booking.servicePoint.id!!,
+                name = booking.servicePoint.name,
+                location = booking.servicePoint.location
+            ),
+            employee = booking.employee?.let {
+                EmployeeDetails(
+                    id = it.id!!,
+                    username = it.username,
+                )
+            },
             treatmentId = booking.treatment?.id,
             reviewId = booking.review?.id
         )

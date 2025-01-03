@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
@@ -15,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.testcontainers.junit.jupiter.Testcontainers
+import source.code.oneclickbooking.integration.TestConfiguration
 import source.code.oneclickbooking.integration.annotation.SqlSetup
 
 @ActiveProfiles("test")
@@ -28,6 +30,7 @@ import source.code.oneclickbooking.integration.annotation.SqlSetup
 )
 @AutoConfigureMockMvc
 @SpringBootTest
+@Import(TestConfiguration::class)
 class EmployeeControllerTest {
 
     @Autowired

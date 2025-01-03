@@ -243,7 +243,7 @@ class BookingControllerTest {
 
         val requestBody = """
             {
-                "date": "2025-01-02T10:00:00",
+                "date": "2025-01-16T10:00:00",
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -257,7 +257,7 @@ class BookingControllerTest {
         ).andExpect(status().isCreated).andExpectAll(
             jsonPath("$.id").value(4),
             jsonPath("$.userId").value(1),
-            jsonPath("$.date").value("2025-01-02T10:00:00"),
+            jsonPath("$.date").value("2025-01-16T10:00:00"),
             jsonPath("$.servicePointId").value(1),
             jsonPath("$.employeeId").value(1),
             jsonPath("$.treatmentId").value(1)
@@ -537,7 +537,7 @@ class BookingControllerTest {
 
         val requestBody = """
             {
-                "date": "2025-01-02T10:00:00",
+                "date": "2025-01-16T10:00:00",
                 "servicePointId": 100,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -636,7 +636,7 @@ class BookingControllerTest {
 
         val requestBody = """
             {
-                "date": "2025-01-02T10:00:00",
+                "date": "2025-01-16T10:00:00",
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -649,7 +649,7 @@ class BookingControllerTest {
                 .content(requestBody)
         ).andExpect(status().isOk).andExpectAll(
             jsonPath("$.id").value(3),
-            jsonPath("$.date").value("2025-01-02T10:00:00"),
+            jsonPath("$.date").value("2025-01-16T10:00:00"),
             jsonPath("$.userId").value(1),
             jsonPath("$.servicePointId").value(1),
             jsonPath("$.employeeId").value(1),
@@ -670,7 +670,7 @@ class BookingControllerTest {
 
         val requestBody = """
             {
-                "date": "2025-01-02T10:00:00",
+                "date": "2025-01-16T10:00:00",
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -683,7 +683,7 @@ class BookingControllerTest {
                 .content(requestBody)
         ).andExpect(status().isOk).andExpectAll(
             jsonPath("$.id").value(3),
-            jsonPath("$.date").value("2025-01-02T10:00:00"),
+            jsonPath("$.date").value("2025-01-16T10:00:00"),
             jsonPath("$.userId").value(1),
             jsonPath("$.servicePointId").value(1),
             jsonPath("$.employeeId").value(1),

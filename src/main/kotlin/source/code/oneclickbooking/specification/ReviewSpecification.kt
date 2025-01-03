@@ -15,14 +15,17 @@ class ReviewSpecification(private val criteria: FilterCriteria) : Specification<
         query: CriteriaQuery<*>?,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
-        val bookingJoin = root.join<Any, Any>("booking")
+        val bookingFetch = root.fetch<Any, Any>("booking").apply {
+            fetch<Any, Any>("user")
+            fetch<Any, Any>("employee")
+        }
 
         return when (criteria.filterKey) {
             ReviewFilterKey.EMPLOYEE.name ->
-                handleEntityProperty(bookingJoin, "employee", criteriaBuilder)
+                handleEntityProperty(bookingFetch as Join<Any, Any>, "employee", criteriaBuilder)
 
             ReviewFilterKey.SERVICE_POINT.name ->
-                handleEntityProperty(bookingJoin, "servicePoint", criteriaBuilder)
+                handleEntityProperty(bookingFetch as Join<Any, Any>, "servicePoint", criteriaBuilder)
 
             ReviewFilterKey.TEXT.name ->
                 handleTextProperty(root, criteriaBuilder);
