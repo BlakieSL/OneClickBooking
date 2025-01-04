@@ -16,42 +16,22 @@ class EmployeeSpecification(private val criteria: FilterCriteria): Specification
         root: Root<Employee>,
         query: CriteriaQuery<*>?,
         criteriaBuilder: CriteriaBuilder
-    ): Predicate? {
+    ): Predicate {
         return when (criteria.filterKey) {
-            EmployeeFilterKey.SERVICE_POINT.name -> handleJoinPredicate(
+            EmployeeFilterKey.SERVICE_POINT.name -> GenericSpecificationHelper.buildPredicateJoinProperty(
+                builder = criteriaBuilder,
+                criteria = criteria,
                 root = root,
                 joinProperty = "servicePointAssociations",
-                subJoinProperty = "servicePoint",
-                criteriaBuilder = criteriaBuilder
+                subJoinProperty = "servicePoint"
             )
-            EmployeeFilterKey.TREATMENT.name -> handleJoinPredicate(
+            EmployeeFilterKey.TREATMENT.name -> GenericSpecificationHelper.buildPredicateEntityProperty(
+                builder = criteriaBuilder,
+                criteria = criteria,
                 root = root,
-                joinProperty = "treatments",
-                subJoinProperty = null,
-                criteriaBuilder = criteriaBuilder
+                joinProperty = "treatments"
             )
             else -> throw InvalidFilterOperationException(criteria.filterKey)
-        }
-    }
-
-    private fun handleJoinPredicate(
-        root: Root<Employee>,
-        joinProperty: String,
-        subJoinProperty: String?,
-        criteriaBuilder: CriteriaBuilder
-    ): Predicate {
-        val join = if (subJoinProperty != null) {
-            val servicePointAssociationJoin = root.join<Any, Any>(joinProperty)
-            servicePointAssociationJoin.join<Any, Any>(subJoinProperty)
-        } else {
-            root.join<Employee, Any>(joinProperty)
-        }
-
-        val value = criteria.value
-        return when (criteria.operation) {
-            FilterOperation.EQUAL -> criteriaBuilder.equal(join.get<Any>("id"), value)
-            FilterOperation.NOT_EQUAL -> criteriaBuilder.notEqual(join.get<Any>("id"), value)
-            else -> throw InvalidFilterOperationException(criteria.operation.name)
         }
     }
 }
