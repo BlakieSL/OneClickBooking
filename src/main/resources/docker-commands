@@ -1,9 +1,51 @@
 How to run docker-compose to start Redis container?
+    1. navigate to /resources folder under /src
+    2. run the following command: docker-compose up -d
+    this will create a container with name redis-server1
 
-1. navigate to /resources folder under /src
-2. run the following command: docker-compose up -d
-this will create a container with name redis-server1
+
 
 How to access Redis in console?
-1.docker exec -it redis-server1 redis-cli
-a) FLUSHALL - removes all data
+    1.docker exec -it redis-server1 redis-cli
+        a) FLUSHALL - removes all data
+
+
+
+How to change database connection?
+    1. open application.yaml under /src/main/resources
+    2. chnage the following properties:
+        a) spring.datasource.url
+        b) spring.datasource.username
+        c) spring.datasource.password
+
+
+
+How to create schema? Either:
+    1. application yaml file should have the following property:
+    spring.jpa.hibernate.ddl-auto: create
+        a) run this in query console:
+        insert into role (id, name)
+        VALUES (1, 'USER'), (2, 'ADMIN');
+
+    2. use create-schema.sql under /src/main/resources to create schema
+
+
+
+How to insert data?
+    1. open insert-data.sql under /src/main/resources
+
+
+
+How to insert image data?
+    1. open MySql Workbench
+    2. navigate to oneclickbookings schema
+    3. click on "Open a SQL script file in a new SQL tab"
+    4. select oneclickbooking_image.sql under src/main/resources
+    5. click on "Run" button
+or
+    1. "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -u root -p oneclickbooking < src\main\resources\oneclickbooking_image.sql
+    2. mysql -u root -p oneclickbooking < src\main\resources\oneclickbooking_image.sql
+
+
+Extra notes:
+    1.for all users password is: Dimas@123

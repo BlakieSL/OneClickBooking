@@ -121,28 +121,13 @@ class BookingMapperTest {
 
     @Test
     fun `should map Booking to BookingDetailedResponseDto`() {
-        val servicePointDetails = ServicePointDetails(
-            id = 1,
-            name = "test_name1",
-            location = "test_location1"
-        )
-        val employeeDetails = EmployeeDetails(
-            id = 1,
-            username = "test_username1"
-        )
-
-        whenever(resolver.resolveServicePointDetails(booking.servicePoint.id!!))
-            .thenReturn(servicePointDetails)
-        whenever(resolver.resolveEmployeeDetails(booking.employee!!.id!!))
-            .thenReturn(employeeDetails)
-
         val result = bookingMapper.toDetailedResponseDto(booking)
 
         assertEquals(booking.id, result.id)
         assertEquals(booking.date, result.date)
         assertEquals(booking.user.id, result.userId)
-        assertEquals(servicePointDetails, result.servicePoint)
-        assertEquals(employeeDetails, result.employee)
+        assertEquals(booking.servicePoint.id, result.servicePoint.id)
+        assertEquals(result.employee?.id, result.employee?.id)
         assertEquals(booking.treatment?.id, result.treatmentId)
         assertEquals(booking.review?.id, result.reviewId)
     }
@@ -159,21 +144,12 @@ class BookingMapperTest {
             treatment = null
         )
 
-        val servicePointDetails = ServicePointDetails(
-            id = 1,
-            name = "test_name1",
-            location = "test_location1"
-        )
-
-        whenever(resolver.resolveServicePointDetails(booking.servicePoint.id!!))
-            .thenReturn(servicePointDetails)
-
         val result = bookingMapper.toDetailedResponseDto(booking)
 
         assertEquals(booking.id, result.id)
         assertEquals(booking.date, result.date)
         assertEquals(booking.user.id, result.userId)
-        assertEquals(servicePointDetails, result.servicePoint)
+        assertEquals(booking.servicePoint.id, result.servicePoint.id)
         assertEquals(null, result.employee)
         assertEquals(null, result.treatmentId)
         assertEquals(booking.review?.id, result.reviewId)

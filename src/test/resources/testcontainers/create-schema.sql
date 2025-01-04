@@ -1,4 +1,4 @@
-create table if not exists employee
+create table employee
 (
     id          int auto_increment
         primary key,
@@ -6,7 +6,7 @@ create table if not exists employee
     username    varchar(255) not null
 );
 
-create table if not exists employee_availability
+create table employee_availability
 (
     id          int auto_increment
         primary key,
@@ -18,14 +18,23 @@ create table if not exists employee_availability
         foreign key (employee_id) references employee (id)
 );
 
-create table if not exists role
+create table image
+(
+    id          int auto_increment
+        primary key,
+    image       mediumblob                                   not null,
+    parent_id   int                                          not null,
+    parent_type enum ('EMPLOYEE', 'REVIEW', 'SERVICE_POINT') not null
+);
+
+create table role
 (
     id   int auto_increment
         primary key,
     name enum ('ADMIN', 'USER') not null
 );
 
-create table if not exists service_point
+create table service_point
 (
     id       int auto_increment
         primary key,
@@ -35,7 +44,7 @@ create table if not exists service_point
     phone    varchar(255) not null
 );
 
-create table if not exists service_point_employee
+create table service_point_employee
 (
     id               int auto_increment
         primary key,
@@ -47,7 +56,7 @@ create table if not exists service_point_employee
         foreign key (service_point_id) references service_point (id)
 );
 
-create table if not exists treatment
+create table treatment
 (
     id          int auto_increment
         primary key,
@@ -57,7 +66,7 @@ create table if not exists treatment
     price       double       not null
 );
 
-create table if not exists treatment_employees
+create table treatment_employees
 (
     treatments_id int not null,
     employees_id  int not null,
@@ -68,7 +77,7 @@ create table if not exists treatment_employees
         foreign key (employees_id) references employee (id)
 );
 
-create table if not exists user
+create table user
 (
     id       int auto_increment
         primary key,
@@ -78,7 +87,7 @@ create table if not exists user
     surname  varchar(50) not null
 );
 
-create table if not exists booking
+create table booking
 (
     id               int auto_increment
         primary key,
@@ -97,21 +106,21 @@ create table if not exists booking
         foreign key (service_point_id) references service_point (id)
 );
 
-create table if not exists review
+create table review
 (
     id         int auto_increment
         primary key,
     rating     int          not null,
-    date       Date        not null,
     text       varchar(255) null,
     booking_id int          not null,
+    date       date         not null,
     constraint UKm685o801uf70i84jf94qq3d0b
         unique (booking_id),
     constraint FKk4xawqohtguy5yx5nnpba6yf3
         foreign key (booking_id) references booking (id)
 );
 
-create table if not exists user_roles
+create table user_roles
 (
     users_id int not null,
     roles_id int not null,
@@ -124,10 +133,3 @@ create table if not exists user_roles
 
 insert into role (id, name)
 VALUES (1, 'USER'), (2, 'ADMIN');
-
-CREATE TABLE IF NOT EXISTS image (
-    id INT auto_increment PRIMARY KEY,
-    image MEDIUMBLOB NOT NULL,
-    parent_type ENUM('REVIEW', 'EMPLOYEE', 'SERVICE_POINT') NOT NULL,
-    parent_id INT NOT NULL
-);
