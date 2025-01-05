@@ -45,7 +45,7 @@ How to insert image data?
 or
     1. navigate to mysql folder (typically C:\Program Files\MySQL\MySQL Server 8.0\bin)
     2. run the following command:
-        cmd /c "mysql -u root -p test < C:\CodingProjects\Spring\OneClickBooking\src\main\resources\oneclickbooking_image.sql"
+        cmd /c "mysql -u USERNAME -p SCHEMA_NAME < C:\CodingProjects\Spring\OneClickBooking\src\main\resources\oneclickbooking_image.sql"
 
 
 
