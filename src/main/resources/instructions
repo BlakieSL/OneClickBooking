@@ -22,12 +22,12 @@ How to change database connection?
 
 How to create schema? Either:
     1. application yaml file should have the following property:
-    spring.jpa.hibernate.ddl-auto: create
-        a) run this in query console:
+        spring.jpa.hibernate.ddl-auto: create
+    2. run this in query console:
         insert into role (id, name)
         VALUES (1, 'USER'), (2, 'ADMIN');
-
-    2. use create-schema.sql under /src/main/resources to create schema
+or
+    1. use create-schema.sql under /src/main/resources to create schema
 
 
 
@@ -38,13 +38,15 @@ How to insert data?
 
 How to insert image data?
     1. open MySql Workbench
-    2. navigate to oneclickbookings schema
+    2. navigate to oneclickbooking schema
     3. click on "Open a SQL script file in a new SQL tab"
     4. select oneclickbooking_image.sql under src/main/resources
     5. click on "Run" button
 or
-    1. "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -u root -p oneclickbooking < src\main\resources\oneclickbooking_image.sql
-    2. mysql -u root -p oneclickbooking < src\main\resources\oneclickbooking_image.sql
+    1. navigate to mysql folder (typically C:\Program Files\MySQL\MySQL Server 8.0\bin)
+    2. run the following command:
+        cmd /c "mysql -u root -p test < C:\CodingProjects\Spring\OneClickBooking\src\main\resources\oneclickbooking_image.sql"
+
 
 
 Extra notes:
