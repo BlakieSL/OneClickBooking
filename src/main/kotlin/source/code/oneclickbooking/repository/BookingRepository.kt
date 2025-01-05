@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Query
 import source.code.oneclickbooking.model.Booking
-import java.awt.print.Book
 import java.time.LocalDateTime
 
 interface BookingRepository : JpaRepository<Booking, Int>, JpaSpecificationExecutor<Booking > {

@@ -7,7 +7,6 @@ import jakarta.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
 import source.code.oneclickbooking.dto.other.EmployeeFilterKey
 import source.code.oneclickbooking.dto.other.FilterCriteria
-import source.code.oneclickbooking.dto.other.FilterOperation
 import source.code.oneclickbooking.exception.InvalidFilterOperationException
 import source.code.oneclickbooking.model.Employee
 

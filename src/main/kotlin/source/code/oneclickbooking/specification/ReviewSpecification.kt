@@ -1,13 +1,13 @@
 package source.code.oneclickbooking.specification
 
-import jakarta.persistence.criteria.*
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.CriteriaQuery
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
 import source.code.oneclickbooking.dto.other.FilterCriteria
-import source.code.oneclickbooking.dto.other.FilterOperation
 import source.code.oneclickbooking.dto.other.ReviewFilterKey
 import source.code.oneclickbooking.exception.InvalidFilterKeyException
-import source.code.oneclickbooking.exception.InvalidFilterOperationException
-import source.code.oneclickbooking.model.Booking
 import source.code.oneclickbooking.model.Review
 
 class ReviewSpecification(private val criteria: FilterCriteria) : Specification<Review> {

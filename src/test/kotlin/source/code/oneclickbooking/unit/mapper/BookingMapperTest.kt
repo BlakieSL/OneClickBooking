@@ -10,8 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.whenever
 import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.request.BookingUpdateDto
-import source.code.oneclickbooking.dto.response.innerDtos.EmployeeDetails
-import source.code.oneclickbooking.dto.response.innerDtos.ServicePointDetails
 import source.code.oneclickbooking.mapper.BookingMapper
 import source.code.oneclickbooking.model.*
 import source.code.oneclickbooking.service.declaration.booking.BookingMappingResolver

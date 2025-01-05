@@ -1,7 +1,6 @@
 package source.code.oneclickbooking.specification
 
 import jakarta.persistence.criteria.CriteriaBuilder
-import jakarta.persistence.criteria.Path
 import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 import source.code.oneclickbooking.dto.other.FilterCriteria
