@@ -132,7 +132,8 @@ class ScheduleServiceImpl(
         treatment: Treatment,
         bookings: List<Booking>
     ): List<LocalDateTime> {
-        val employeeAvailabilities = employee.availabilities.filter { it.dayOfWeek == dayOfWeek }
+        val employeeAvailabilities = employee.availabilities
+            .filter { it.dayOfWeek == dayOfWeek }
 
         if (employeeAvailabilities.isEmpty()) return emptyList()
 
@@ -146,7 +147,8 @@ class ScheduleServiceImpl(
                 )
             }.distinct()
 
-        val employeeBookings = bookings.filter { it.employee?.id == employee.id }
+        val employeeBookings = bookings
+            .filter { it.employee?.id == employee.id }
 
         val takenSlots = utilsService.findTakenSlots(
             employeeSlots,

@@ -9,7 +9,7 @@ class SpecificationBuilder<T>(
     private val filterDto: FilterDto,
     private val specificationFactory: SpecificationFactory<T>
 ) {
-    fun build(): Specification<T>? {
+    fun build(): Specification<T> {
         val criteriaList = filterDto.filterCriteria
         if (criteriaList.isEmpty()) {
             return Specification.where(null)

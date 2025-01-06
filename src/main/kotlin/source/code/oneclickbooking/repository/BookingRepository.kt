@@ -9,15 +9,13 @@ import source.code.oneclickbooking.model.Booking
 import java.time.LocalDateTime
 
 interface BookingRepository : JpaRepository<Booking, Int>, JpaSpecificationExecutor<Booking > {
-    @Query(
-        """
+    @Query("""
     SELECT b FROM Booking b 
     WHERE b.servicePoint.id = :servicePointId 
       AND b.employee.id = :employeeId 
       AND DATE(b.date) = DATE(:date)
-    """
-    )
-    fun findByServicePointIdAndEmployeeIdAndDate(
+    """)
+    fun findByServicePointIdAndEmployeeIdAndDate (
         servicePointId: Int,
         employeeId: Int,
         date: LocalDateTime

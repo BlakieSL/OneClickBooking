@@ -10,7 +10,7 @@ interface ServicePointRepository : JpaRepository<ServicePoint, Int> {
 
     @EntityGraph(attributePaths = ["employeeAssociations.employee.treatments"])
     @Query("SELECT s FROM ServicePoint s WHERE s.id = :id")
-    fun findByIdWithAssociations(@Param("id") id: Int): ServicePoint?
+    fun findByIdWithAssociations ( id: Int): ServicePoint?
 
 
 }

@@ -12,22 +12,18 @@ interface EmployeeRepository : JpaRepository<Employee, Int>, JpaSpecificationExe
     @Query("""
         SELECT e
         FROM Employee e
-        JOIN e.servicePointAssociations spa
-        JOIN e.treatments t
-        WHERE spa.servicePoint.id = :servicePointId
-        AND t.id = :treatmentId
-        """)
-    fun findAllByServicePointIdAndTreatmentId(
-        @Param("servicePointId") servicePointId: Int,
-        @Param("treatmentId") treatmentId: Int): List<Employee>
+        JOIN e.servicePointAssociations spa ON spa.servicePoint.id = :servicePointId
+        JOIN e.treatments t ON t.id = :treatmentId
+    """)
+    fun findAllByServicePointIdAndTreatmentId (servicePointId: Int, treatmentId: Int): List<Employee>
 
     @EntityGraph(attributePaths = ["availabilities"])
     @Query("""
         SELECT e
         FROM Employee e
         WHERE e.id = :id
-        """)
-    fun findByIdWithAvailabilities(@Param("id") id: Int): Employee?
+    """)
+    fun findByIdWithAvailabilities (id: Int): Employee?
 
     @EntityGraph(attributePaths = [
         "servicePointAssociations",
@@ -38,6 +34,6 @@ interface EmployeeRepository : JpaRepository<Employee, Int>, JpaSpecificationExe
         SELECT e
         FROM Employee e
         WHERE e.id = :id
-        """)
-    fun findByIdWithAssociations(@Param("id") id: Int): Employee?
+   """)
+    fun findByIdWithAssociations (id: Int): Employee?
 }

@@ -36,14 +36,14 @@ class BearerTokenFilter(
             setSecurityContext(signedJWT)
             chain.doFilter(request, response)
         } catch (e: Exception) {
-            when (e) {
-                is JwtAuthenticationException, is ParseException ->
-                    failureHandler.onAuthenticationFailure(
-                        request,
-                        response,
-                        JwtAuthenticationException(ExceptionMessages.JWT_INVALID_TOKEN)
-                    )
-                else -> throw e
+            if (e is JwtAuthenticationException || e is ParseException) {
+                failureHandler.onAuthenticationFailure(
+                    request,
+                    response,
+                    JwtAuthenticationException(ExceptionMessages.JWT_INVALID_TOKEN)
+                )
+            } else {
+                throw e
             }
         }
     }

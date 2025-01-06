@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.helper
+package source.code.oneclickbooking.service.implementation.util
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.MessageSource
@@ -16,11 +16,6 @@ class MessageResolver() {
     }
 
     fun getMessage(key: String, vararg args: Any): String {
-        return getMessage(key, *args, locale = LocaleContextHolder.getLocale())
-    }
-
-    private fun getMessage(key: String, vararg args: Any, locale: Locale): String {
-        println("Resolving key: $key for locale: $locale")
-        return messageSource.getMessage(key, args, locale)
+        return messageSource.getMessage(key, args, LocaleContextHolder.getLocale())
     }
 }

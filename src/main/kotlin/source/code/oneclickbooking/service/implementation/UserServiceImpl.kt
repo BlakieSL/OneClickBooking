@@ -60,26 +60,11 @@ class UserServiceImpl(
         val user = find(id)
         val patched = applyPatch(patch)
 
-        println("PATCHED: $patched")
-
         validationService.validate(patched)
         mapper.update(user, patched)
+        updatePasswordIfNeeded(user, patched)
+        updateEmailIfNeeded(user, patched)
 
-        if((patched.password != null) && (patched.oldPassword != null)) {
-            if(!passwordEncoder.matches(patched.oldPassword, user.password)) {
-                throw InternalizedIllegalArgumentException(ExceptionMessages.OLD_PASSWORD_INCORRECT)
-            }
-            user.password = hash(patched.password)
-        }
-
-        if((patched.email != null) && (patched.oldPassword != null)) {
-            if(!passwordEncoder.matches(patched.oldPassword, user.password)) {
-                throw InternalizedIllegalArgumentException(ExceptionMessages.OLD_PASSWORD_INCORRECT)
-            }
-            user.email = patched.email
-        }
-
-        println("UPDATED: $user")
         val savedUser = repository.save(user)
 
         return mapper.toResponseDto(savedUser)
@@ -116,5 +101,35 @@ class UserServiceImpl(
         val user = repository.findUserByEmail(email)
             ?: throw RecordNotFoundException(User::class, email)
         return mapper.toCredentialsDto(user)
+    }
+
+    private fun updatePasswordIfNeeded(user: User, patchedUser: UserUpdateDto) {
+        if (isPasswordUpdate(patchedUser)) {
+            if (!passwordsMatch(user.password, patchedUser.oldPassword!!)) {
+                throw InternalizedIllegalArgumentException(ExceptionMessages.OLD_PASSWORD_INCORRECT)
+            }
+            user.password = hash(patchedUser.password!!)
+        }
+    }
+
+    private fun updateEmailIfNeeded(user: User, patchedUser: UserUpdateDto) {
+        if (isEmailUpdate(patchedUser)) {
+            if (!passwordsMatch(user.password, patchedUser.oldPassword!!)) {
+                throw InternalizedIllegalArgumentException(ExceptionMessages.OLD_PASSWORD_INCORRECT)
+            }
+            user.email = patchedUser.email!!
+        }
+    }
+
+    private fun isPasswordUpdate(patchedUser: UserUpdateDto): Boolean {
+        return (patchedUser.password != null) && (patchedUser.oldPassword != null)
+    }
+
+    private fun isEmailUpdate(patchedUser: UserUpdateDto): Boolean {
+        return (patchedUser.email != null) && (patchedUser.oldPassword != null)
+    }
+
+    private fun passwordsMatch(hashedPassword: String, rawPassword: String): Boolean {
+        return (passwordEncoder.matches(rawPassword, hashedPassword))
     }
 }

@@ -24,7 +24,7 @@ import source.code.oneclickbooking.service.declaration.booking.BookingService
 import source.code.oneclickbooking.service.declaration.schedule.ScheduleUtilsService
 import source.code.oneclickbooking.service.declaration.util.JsonPatchService
 import source.code.oneclickbooking.service.declaration.util.ValidationService
-import source.code.oneclickbooking.service.implementation.util.AuthorizationUtil
+import source.code.oneclickbooking.helper.AuthorizationUtil
 import source.code.oneclickbooking.specification.BookingSpecification
 import source.code.oneclickbooking.specification.SpecificationBuilder
 import source.code.oneclickbooking.specification.SpecificationFactory

@@ -11,8 +11,7 @@ interface TreatmentRepository : JpaRepository<Treatment, Int> {
         SELECT t
         FROM Treatment t
         JOIN t.employees e 
-        JOIN e.servicePointAssociations spa
-        WHERE spa.servicePoint.id = :servicePointId
+        JOIN e.servicePointAssociations spa ON spa.servicePoint.id = :servicePointId
     """)
-    fun findAllByServicePointId(@Param("servicePointId") servicePointId: Int): List<Treatment>
+    fun findAllByServicePointId (servicePointId: Int): List<Treatment>
 }
