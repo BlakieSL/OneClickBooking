@@ -51,10 +51,10 @@ class GlobalExceptionHandler() {
         return ex.message
     }
 
-    @ExceptionHandler(InternalizedIllegalArgumentException::class)
+    @ExceptionHandler(LocalizedIllegalArgument::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    fun handleInternalizedIllegalArgumentException(ex: InternalizedIllegalArgumentException): String? {
+    fun handleInternalizedIllegalArgumentException(ex: LocalizedIllegalArgument): String? {
         return ex.message
     }
 

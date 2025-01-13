@@ -17,7 +17,7 @@ import source.code.oneclickbooking.dto.other.FilterCriteria
 import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.other.FilterOperation
 import source.code.oneclickbooking.dto.request.ScheduleRequestDto
-import source.code.oneclickbooking.exception.InternalizedIllegalArgumentException
+import source.code.oneclickbooking.exception.LocalizedIllegalArgument
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.model.*
 import source.code.oneclickbooking.repository.BookingRepository
@@ -103,7 +103,7 @@ class ScheduleServiceTest {
         ))
         val request = ScheduleRequestDto(filter = filter, treatmentId = 100)
 
-        assertThrows<InternalizedIllegalArgumentException> {
+        assertThrows<LocalizedIllegalArgument> {
             scheduleService.getSchedule(request)
         }
     }
@@ -115,7 +115,7 @@ class ScheduleServiceTest {
         ))
         val request = ScheduleRequestDto(filter = filter, treatmentId = 100)
 
-        assertThrows<InternalizedIllegalArgumentException> {
+        assertThrows<LocalizedIllegalArgument> {
             scheduleService.getSchedule(request)
         }
     }

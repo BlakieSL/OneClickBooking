@@ -65,7 +65,6 @@ class ReviewServiceTest {
         review = Review.of(
             id = 1,
             rating = 5,
-            date = date,
             text = "Great service!",
             booking = booking
         )

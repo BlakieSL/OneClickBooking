@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service
 import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.request.BookingUpdateDto
-import source.code.oneclickbooking.dto.response.BookingResponseDto
+import source.code.oneclickbooking.dto.response.booking.BookingResponseDto
 import source.code.oneclickbooking.dto.response.booking.BookingDetailedResponseDto
-import source.code.oneclickbooking.exception.InternalizedIllegalArgumentException
+import source.code.oneclickbooking.exception.LocalizedIllegalArgument
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.helper.ExceptionMessages
 import source.code.oneclickbooking.mapper.BookingMapper
@@ -48,6 +48,7 @@ class BookingServiceImpl(
         val userId = AuthorizationUtil.getUserId();
 
         val booking = mapper.toEntity(bookingDto, userId)
+        println("MAPPED $booking")
         val savedBooking = repository.save(booking)
         return mapper.toResponseDto(savedBooking)
     }
@@ -117,7 +118,7 @@ class BookingServiceImpl(
 
     private fun validateDateNotInPast(date: LocalDateTime) {
         if(date.isBefore(LocalDateTime.now())) {
-            throw InternalizedIllegalArgumentException(ExceptionMessages.UPDATE_PAST_BOOKING)
+            throw LocalizedIllegalArgument(ExceptionMessages.UPDATE_PAST_BOOKING)
         }
     }
 
@@ -127,11 +128,11 @@ class BookingServiceImpl(
         servicePoint: ServicePoint
     ) {
         if(!employee.treatments.contains(treatment)) {
-            throw InternalizedIllegalArgumentException(ExceptionMessages.EMPLOYEE_NOT_PROVIDE_TREATMENT)
+            throw LocalizedIllegalArgument(ExceptionMessages.EMPLOYEE_NOT_PROVIDE_TREATMENT)
         }
 
         if(!employee.servicePointAssociations.any { it.servicePoint == servicePoint }) {
-            throw InternalizedIllegalArgumentException(ExceptionMessages.EMPLOYEE_NOT_ASSOCIATED_WITH_SERVICE_POINT)
+            throw LocalizedIllegalArgument(ExceptionMessages.EMPLOYEE_NOT_ASSOCIATED_WITH_SERVICE_POINT)
         }
     }
 
@@ -144,7 +145,7 @@ class BookingServiceImpl(
         val availabilities = employee.availabilities.filter { it.dayOfWeek == date.dayOfWeek }
 
         if(availabilities.isEmpty()) {
-            throw InternalizedIllegalArgumentException(
+            throw LocalizedIllegalArgument(
                 ExceptionMessages.EMPLOYEE_HAS_NO_AVAILABILITIES_ON_DATE
             )
         }
@@ -174,7 +175,7 @@ class BookingServiceImpl(
         val freeSlots = allPotentialSlots.filterNot { it in takenSLots }
 
         if(date !in freeSlots) {
-            throw InternalizedIllegalArgumentException(
+            throw LocalizedIllegalArgument(
                 ExceptionMessages.EMPLOYEE_HAS_NO_AVAILABILITIES_ON_TIME
             )
         }

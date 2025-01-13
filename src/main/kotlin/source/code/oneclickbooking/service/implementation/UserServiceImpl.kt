@@ -10,7 +10,7 @@ import source.code.oneclickbooking.dto.other.UserCredentialsDto
 import source.code.oneclickbooking.dto.request.UserCreateDto
 import source.code.oneclickbooking.dto.request.UserUpdateDto
 import source.code.oneclickbooking.dto.response.UserResponseDto
-import source.code.oneclickbooking.exception.InternalizedIllegalArgumentException
+import source.code.oneclickbooking.exception.LocalizedIllegalArgument
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.helper.ExceptionMessages
 import source.code.oneclickbooking.helper.UserDetailsBuilder
@@ -35,7 +35,7 @@ class UserServiceImpl(
     override fun loadUserByUsername(username: String?): UserDetails {
         val userCredentials = findUserCredentials(
             username
-            ?: throw InternalizedIllegalArgumentException(ExceptionMessages.USERNAME_CANNOT_BE_NULL)
+            ?: throw LocalizedIllegalArgument(ExceptionMessages.USERNAME_CANNOT_BE_NULL)
         )
         return UserDetailsBuilder.build(userCredentials)
     }
@@ -106,7 +106,7 @@ class UserServiceImpl(
     private fun updatePasswordIfNeeded(user: User, patchedUser: UserUpdateDto) {
         if (isPasswordUpdate(patchedUser)) {
             if (!passwordsMatch(user.password, patchedUser.oldPassword!!)) {
-                throw InternalizedIllegalArgumentException(ExceptionMessages.OLD_PASSWORD_INCORRECT)
+                throw LocalizedIllegalArgument(ExceptionMessages.OLD_PASSWORD_INCORRECT)
             }
             user.password = hash(patchedUser.password!!)
         }
@@ -115,7 +115,7 @@ class UserServiceImpl(
     private fun updateEmailIfNeeded(user: User, patchedUser: UserUpdateDto) {
         if (isEmailUpdate(patchedUser)) {
             if (!passwordsMatch(user.password, patchedUser.oldPassword!!)) {
-                throw InternalizedIllegalArgumentException(ExceptionMessages.OLD_PASSWORD_INCORRECT)
+                throw LocalizedIllegalArgument(ExceptionMessages.OLD_PASSWORD_INCORRECT)
             }
             user.email = patchedUser.email!!
         }

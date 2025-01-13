@@ -34,7 +34,7 @@ class ReviewMapperTest {
     @BeforeEach
     fun setUp() {
         booking = Booking.createDefault(id = 1)
-        review = Review.of(id = 1, rating = 5, date = date, text = "Great service!", booking = booking)
+        review = Review.of(id = 1, rating = 5, text = "Great service!", booking = booking)
         createDto = ReviewCreateDto(rating = 5, text = "Great service!", bookingId = 1)
         updateDto = ReviewUpdateDto(rating = 4, text = "Updated review")
     }

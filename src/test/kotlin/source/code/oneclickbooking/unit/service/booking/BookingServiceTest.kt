@@ -14,7 +14,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.request.BookingUpdateDto
-import source.code.oneclickbooking.dto.response.BookingResponseDto
+import source.code.oneclickbooking.dto.response.booking.BookingResponseDto
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.mapper.BookingMapper
 import source.code.oneclickbooking.model.*
@@ -105,6 +105,7 @@ class BookingServiceTest {
         bookingResponseDto = BookingResponseDto(
             id = 1,
             date = LocalDateTime.of(2023, 10, 10, 10, 0),
+            status = BookingStatus.PENDING,
             userId = 1,
             servicePointId = 1,
             employeeId = 1,

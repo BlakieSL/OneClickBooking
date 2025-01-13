@@ -16,7 +16,7 @@ import source.code.oneclickbooking.dto.other.UserCredentialsDto
 import source.code.oneclickbooking.dto.request.UserCreateDto
 import source.code.oneclickbooking.dto.request.UserUpdateDto
 import source.code.oneclickbooking.dto.response.UserResponseDto
-import source.code.oneclickbooking.exception.InternalizedIllegalArgumentException
+import source.code.oneclickbooking.exception.LocalizedIllegalArgument
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.mapper.UserMapper
 import source.code.oneclickbooking.model.Role
@@ -263,7 +263,7 @@ class UserServiceTest {
 
     @Test
     fun `should throw exception when username is null`() {
-        assertThrows<InternalizedIllegalArgumentException> {
+        assertThrows<LocalizedIllegalArgument> {
             userService.loadUserByUsername(null)
         }
     }

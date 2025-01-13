@@ -16,6 +16,11 @@ class Booking (
     @field:FutureOrPresent
     @Column(nullable = false)
     var date: LocalDateTime,
+
+    @field:NotNull
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    var status: BookingStatus = BookingStatus.PENDING
 ) {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -35,6 +40,7 @@ class Booking (
 
     @OneToOne(mappedBy = "booking", cascade = [CascadeType.ALL])
     var review: Review? = null
+
 
     companion object {
         fun createDefault(
@@ -87,4 +93,10 @@ class Booking (
     override fun toString(): String {
         return "Booking(id=$id, date=$date)"
     }
+}
+
+enum class BookingStatus {
+    PENDING,
+    COMPLETED,
+    CANCELLED
 }

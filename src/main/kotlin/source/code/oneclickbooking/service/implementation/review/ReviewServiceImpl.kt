@@ -11,9 +11,13 @@ import source.code.oneclickbooking.dto.request.ReviewUpdateDto
 import source.code.oneclickbooking.dto.response.ReviewResponseDto
 import source.code.oneclickbooking.dto.response.ReviewSummaryResponseDto
 import source.code.oneclickbooking.event.ReviewEvent
+import source.code.oneclickbooking.exception.LocalizedIllegalArgument
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.mapper.ReviewMapper
+import source.code.oneclickbooking.model.Booking
+import source.code.oneclickbooking.model.BookingStatus
 import source.code.oneclickbooking.model.Review
+import source.code.oneclickbooking.repository.BookingRepository
 import source.code.oneclickbooking.repository.ReviewRepository
 import source.code.oneclickbooking.service.declaration.review.ReviewService
 import source.code.oneclickbooking.service.declaration.util.JsonPatchService
@@ -21,6 +25,7 @@ import source.code.oneclickbooking.service.declaration.util.ValidationService
 import source.code.oneclickbooking.specification.ReviewSpecification
 import source.code.oneclickbooking.specification.SpecificationBuilder
 import source.code.oneclickbooking.specification.SpecificationFactory
+import java.time.LocalDateTime
 
 @Service
 class ReviewServiceImpl(
@@ -28,11 +33,12 @@ class ReviewServiceImpl(
     private val jsonPatchService: JsonPatchService,
     private val validationService: ValidationService,
     private val mapper: ReviewMapper,
-    private val repository: ReviewRepository
+    private val repository: ReviewRepository,
+    private val bookingRepository: BookingRepository,
 ): ReviewService {
     @Transactional
     override fun create(reviewDto: ReviewCreateDto): ReviewResponseDto {
-        println(reviewDto.text)
+        validateReview(reviewDto)
         val review = mapper.toEntity(reviewDto)
         val savedReview = repository.save(review)
         return mapper.toResponseDto(savedReview)
@@ -42,9 +48,6 @@ class ReviewServiceImpl(
     override fun update(id: Int, patch: JsonMergePatch): ReviewResponseDto {
         val review = find(id)
         val patched = applyPatch(patch)
-
-        println(patched.text)
-        println(patched.text?.length)
         validationService.validate(patched)
         mapper.update(review, patched)
 
@@ -90,6 +93,19 @@ class ReviewServiceImpl(
     private fun find(id: Int): Review {
         return repository.findById(id).orElseThrow {
             RecordNotFoundException(Review::class, id)
+        }
+    }
+
+    private fun findBooking(id: Int): Booking {
+        return bookingRepository.findById(id).orElseThrow {
+            RecordNotFoundException(Booking::class, id)
+        }
+    }
+
+    private fun validateReview(reviewDto: ReviewCreateDto) {
+        val booking = findBooking(reviewDto.bookingId)
+        if (booking.status != BookingStatus.COMPLETED) {
+            throw LocalizedIllegalArgument("Booking is not completed")
         }
     }
 }

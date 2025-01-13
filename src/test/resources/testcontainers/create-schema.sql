@@ -92,6 +92,7 @@ create table booking
     id               int auto_increment
         primary key,
     date             datetime(6) not null,
+    status           enum ('CANCELLED', 'COMPLETED', 'PENDING') not null,
     employee_id      int         null,
     service_point_id int         not null,
     treatment_id     int         null,

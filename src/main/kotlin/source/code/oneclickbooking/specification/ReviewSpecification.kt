@@ -9,6 +9,7 @@ import source.code.oneclickbooking.dto.other.FilterCriteria
 import source.code.oneclickbooking.dto.other.ReviewFilterKey
 import source.code.oneclickbooking.exception.InvalidFilterKeyException
 import source.code.oneclickbooking.model.Review
+import java.time.LocalDate
 
 class ReviewSpecification(private val criteria: FilterCriteria) : Specification<Review> {
     override fun toPredicate(
@@ -16,6 +17,7 @@ class ReviewSpecification(private val criteria: FilterCriteria) : Specification<
         query: CriteriaQuery<*>?,
         criteriaBuilder: CriteriaBuilder
     ): Predicate {
+        query?.orderBy(criteriaBuilder.desc(root.get<LocalDate>("date")))
         return when (criteria.filterKey) {
             ReviewFilterKey.EMPLOYEE.name -> GenericSpecificationHelper.buildPredicateJoinProperty(
                 builder = criteriaBuilder,

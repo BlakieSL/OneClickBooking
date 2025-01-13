@@ -5,7 +5,7 @@ import jakarta.persistence.criteria.Predicate
 import jakarta.persistence.criteria.Root
 import source.code.oneclickbooking.dto.other.FilterCriteria
 import source.code.oneclickbooking.dto.other.FilterOperation
-import source.code.oneclickbooking.exception.InternalizedIllegalArgumentException
+import source.code.oneclickbooking.exception.LocalizedIllegalArgument
 import source.code.oneclickbooking.exception.InvalidFilterOperationException
 import source.code.oneclickbooking.helper.ExceptionMessages
 import java.time.LocalDate
@@ -64,7 +64,7 @@ object GenericSpecificationHelper {
                     value
                 )
 
-            else -> throw InternalizedIllegalArgumentException(
+            else -> throw LocalizedIllegalArgument(
                 messageKey = ExceptionMessages.INVALID_FILTER_OPERATION,
                 args = arrayOf(criteria.operation.name)
             )
@@ -88,7 +88,7 @@ object GenericSpecificationHelper {
         return try {
             LocalDate.parse(rawValue as String)
         } catch (e: DateTimeParseException) {
-            throw InternalizedIllegalArgumentException(
+            throw LocalizedIllegalArgument(
                 messageKey = ExceptionMessages.INVALID_DATE_FORMAT,
                 args = arrayOf(rawValue)
             )

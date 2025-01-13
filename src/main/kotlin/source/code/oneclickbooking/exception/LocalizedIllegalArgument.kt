@@ -1,6 +1,6 @@
 package source.code.oneclickbooking.exception
 
-class InternalizedIllegalArgumentException(
+class LocalizedIllegalArgument(
     messageKey: String,
     vararg args: Any
 ) : LocalizedException(messageKey = messageKey, args = args)

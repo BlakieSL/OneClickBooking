@@ -9,6 +9,7 @@ import source.code.oneclickbooking.dto.other.BookingFilterKey
 import source.code.oneclickbooking.dto.other.FilterCriteria
 import source.code.oneclickbooking.exception.InvalidFilterKeyException
 import source.code.oneclickbooking.model.Booking
+import java.time.LocalDateTime
 
 class BookingSpecification(private val criteria: FilterCriteria): Specification<Booking> {
     override fun toPredicate(
@@ -16,6 +17,8 @@ class BookingSpecification(private val criteria: FilterCriteria): Specification<
         query: CriteriaQuery<*>?,
         builder: CriteriaBuilder
     ): Predicate {
+        query?.orderBy(builder.desc(root.get<LocalDateTime>("date")))
+
         return when (criteria.filterKey) {
             BookingFilterKey.EMPLOYEE.name -> GenericSpecificationHelper.buildPredicateEntityProperty(
                 builder = builder,

@@ -260,7 +260,8 @@ class BookingControllerTest {
             jsonPath("$.date").value("2025-01-16T10:00:00"),
             jsonPath("$.servicePointId").value(1),
             jsonPath("$.employeeId").value(1),
-            jsonPath("$.treatmentId").value(1)
+            jsonPath("$.treatmentId").value(1),
+            jsonPath("$.status").value("PENDING")
         )
 
         logPassed()
