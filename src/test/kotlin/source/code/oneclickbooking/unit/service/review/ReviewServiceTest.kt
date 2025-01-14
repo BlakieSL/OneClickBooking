@@ -13,19 +13,24 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.context.ApplicationEventPublisher
+import source.code.oneclickbooking.config.MessageResolverHolder
 import source.code.oneclickbooking.dto.request.ReviewCreateDto
 import source.code.oneclickbooking.dto.request.ReviewUpdateDto
 import source.code.oneclickbooking.dto.response.ReviewResponseDto
 import source.code.oneclickbooking.dto.response.innerDtos.EmployeeDetails
 import source.code.oneclickbooking.dto.response.innerDtos.UserDetails
+import source.code.oneclickbooking.exception.LocalizedIllegalArgument
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.mapper.ReviewMapper
 import source.code.oneclickbooking.model.Booking
+import source.code.oneclickbooking.model.BookingStatus
 import source.code.oneclickbooking.model.Review
+import source.code.oneclickbooking.repository.BookingRepository
 import source.code.oneclickbooking.repository.ReviewRepository
 import source.code.oneclickbooking.service.declaration.util.JsonPatchService
 import source.code.oneclickbooking.service.declaration.util.ValidationService
 import source.code.oneclickbooking.service.implementation.review.ReviewServiceImpl
+import source.code.oneclickbooking.service.implementation.util.MessageResolver
 import java.time.LocalDate
 import java.util.*
 
@@ -47,6 +52,12 @@ class ReviewServiceTest {
     @Mock
     private lateinit var eventPublisher: ApplicationEventPublisher
 
+    @Mock
+    private lateinit var bookingRepository: BookingRepository
+
+    @Mock
+    private lateinit var messageResolver: MessageResolver
+
     @InjectMocks
     private lateinit var reviewService: ReviewServiceImpl
 
@@ -59,6 +70,7 @@ class ReviewServiceTest {
 
     @BeforeEach
     fun setUp() {
+        MessageResolverHolder.messageResolver = messageResolver
 
         booking = Booking.createDefault(id = 1)
 
@@ -107,6 +119,9 @@ class ReviewServiceTest {
             text = review.text,
             booking = review.booking
         )
+        booking.status = BookingStatus.COMPLETED
+
+        whenever(bookingRepository.findById(1)).thenReturn(Optional.of(booking))
         whenever(mapper.toEntity(reviewCreateDto)).thenReturn(review)
         whenever(repository.save(review)).thenReturn(savedReview)
         whenever(mapper.toResponseDto(savedReview)).thenReturn(reviewResponseDto)
@@ -115,6 +130,23 @@ class ReviewServiceTest {
 
         assertEquals(reviewResponseDto, result)
         verify(mapper).toResponseDto(savedReview)
+    }
+
+    @Test
+    fun `should thow RecordNotFound when associated booking not found`() {
+        whenever(bookingRepository.findById(1)).thenReturn(Optional.empty())
+
+        assertThrows<RecordNotFoundException> {
+            reviewService.create(reviewCreateDto)
+        }
+    }
+
+    @Test
+    fun `should throw LocalizedIllegalArgument when booking is not COMPLETED`() {
+        whenever(bookingRepository.findById(1)).thenReturn(Optional.of(booking))
+        assertThrows<LocalizedIllegalArgument> {
+            reviewService.create(reviewCreateDto)
+        }
     }
 
     @Test

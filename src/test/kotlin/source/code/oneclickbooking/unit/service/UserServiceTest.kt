@@ -1,4 +1,3 @@
-// UserServiceTest.kt
 package source.code.oneclickbooking.unit.service
 
 import com.github.fge.jsonpatch.mergepatch.JsonMergePatch

@@ -248,7 +248,7 @@ class ReviewControllerTest {
                 .content(requestBody)
         ).andExpect(status().isOk)
             .andExpect(jsonPath("$.reviews.size()").value(2))
-            .andExpect(jsonPath("$.reviews[0].text").value("test_text1"))
+            .andExpect(jsonPath("$.reviews[0].text").value("test_text2"))
             .andExpect(jsonPath("$.averageRating").value(4.5))
     }
 

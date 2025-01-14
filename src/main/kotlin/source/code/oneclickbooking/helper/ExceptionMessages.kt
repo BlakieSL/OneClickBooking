@@ -40,4 +40,7 @@ object ExceptionMessages {
     const val REFRESH_TOKEN_NO_SUBJECT = "InvalidRefreshTokenException.subjectNotProvided.message"
     const val REFRESH_TOKEN_NO_USER_ID = "InvalidRefreshTokenException.userIdNotProvided.message"
     const val REFRESH_TOKEN_NO_AUTHORITIES = "InvalidRefreshTokenException.authoritiesNotProvided.message"
+
+    const val BOOKING_NOT_COMPLETED = "TODO"
+    const val BOOKING_NOT_PENDING =  "TODO"
 }

@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*
 import source.code.oneclickbooking.annotation.BookingOwnerOrAdmin
 import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.request.BookingCreateDto
-import source.code.oneclickbooking.dto.response.booking.BookingResponseDto
 import source.code.oneclickbooking.dto.response.booking.BookingDetailedResponseDto
+import source.code.oneclickbooking.dto.response.booking.BookingResponseDto
 import source.code.oneclickbooking.service.declaration.booking.BookingService
 
 @RestController

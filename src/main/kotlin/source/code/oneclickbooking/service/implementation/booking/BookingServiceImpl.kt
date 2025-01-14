@@ -6,16 +6,14 @@ import org.springframework.stereotype.Service
 import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.request.BookingCreateDto
 import source.code.oneclickbooking.dto.request.BookingUpdateDto
-import source.code.oneclickbooking.dto.response.booking.BookingResponseDto
 import source.code.oneclickbooking.dto.response.booking.BookingDetailedResponseDto
+import source.code.oneclickbooking.dto.response.booking.BookingResponseDto
 import source.code.oneclickbooking.exception.LocalizedIllegalArgument
 import source.code.oneclickbooking.exception.RecordNotFoundException
+import source.code.oneclickbooking.helper.AuthorizationUtil
 import source.code.oneclickbooking.helper.ExceptionMessages
 import source.code.oneclickbooking.mapper.BookingMapper
-import source.code.oneclickbooking.model.Booking
-import source.code.oneclickbooking.model.Employee
-import source.code.oneclickbooking.model.ServicePoint
-import source.code.oneclickbooking.model.Treatment
+import source.code.oneclickbooking.model.*
 import source.code.oneclickbooking.repository.BookingRepository
 import source.code.oneclickbooking.repository.EmployeeRepository
 import source.code.oneclickbooking.repository.ServicePointRepository
@@ -24,7 +22,6 @@ import source.code.oneclickbooking.service.declaration.booking.BookingService
 import source.code.oneclickbooking.service.declaration.schedule.ScheduleUtilsService
 import source.code.oneclickbooking.service.declaration.util.JsonPatchService
 import source.code.oneclickbooking.service.declaration.util.ValidationService
-import source.code.oneclickbooking.helper.AuthorizationUtil
 import source.code.oneclickbooking.specification.BookingSpecification
 import source.code.oneclickbooking.specification.SpecificationBuilder
 import source.code.oneclickbooking.specification.SpecificationFactory
@@ -48,7 +45,7 @@ class BookingServiceImpl(
         val userId = AuthorizationUtil.getUserId();
 
         val booking = mapper.toEntity(bookingDto, userId)
-        println("MAPPED $booking")
+
         val savedBooking = repository.save(booking)
         return mapper.toResponseDto(savedBooking)
     }
@@ -56,6 +53,8 @@ class BookingServiceImpl(
     @Transactional
     override fun update(id: Int, patch: JsonMergePatch): BookingResponseDto {
         val booking = find(id)
+        validateBookingStatus(booking)
+
         val patched = applyPatch(patch)
 
         validationService.validate(patched)
@@ -71,6 +70,7 @@ class BookingServiceImpl(
         val booking = find(id)
         repository.delete(booking)
     }
+
 
     override fun get(id: Int): BookingResponseDto {
         return find(id).let { mapper.toResponseDto(it) }
@@ -101,7 +101,7 @@ class BookingServiceImpl(
     }
 
     private fun validateBookingUpdateDto(existingBooking: Booking, updateDto: BookingUpdateDto) {
-        validateDateNotInPast(existingBooking.date)
+        validateBookingStatus(existingBooking)
 
         val date = updateDto.date ?: existingBooking.date
         val servicePointId = updateDto.servicePointId ?: existingBooking.servicePoint.id!!
@@ -116,9 +116,9 @@ class BookingServiceImpl(
         validateAvailability(date, servicePoint, employee, treatment)
     }
 
-    private fun validateDateNotInPast(date: LocalDateTime) {
-        if(date.isBefore(LocalDateTime.now())) {
-            throw LocalizedIllegalArgument(ExceptionMessages.UPDATE_PAST_BOOKING)
+    private fun validateBookingStatus(booking: Booking) {
+        if (booking.status != BookingStatus.PENDING) {
+            throw LocalizedIllegalArgument(ExceptionMessages.BOOKING_NOT_PENDING)
         }
     }
 

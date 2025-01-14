@@ -119,14 +119,14 @@ VALUES (3, 2);
 
 
 -- inserting new bookings
-insert into booking (id, date, employee_id, service_point_id, treatment_id, user_id)
-values (1, '2022-01-01 00:00:00', 1, 1, 1, 1);
+insert into booking (id, date, employee_id, service_point_id, treatment_id, user_id, status)
+values (1, '2022-01-01 00:00:00', 1, 1, 1, 1, 'COMPLETED');
 
-insert into booking (id, date, employee_id, service_point_id, treatment_id, user_id)
-values (2, '2022-01-02 00:00:00', 2, 1, 2, 1);
+insert into booking (id, date, employee_id, service_point_id, treatment_id, user_id, status)
+values (2, '2022-01-02 00:00:00', 2, 1, 2, 1, 'COMPLETED');
 
-insert into booking (id, date, employee_id, service_point_id, treatment_id, user_id)
-values (3, '2025-01-06 15:00:00', 1, 1, 1, 1);
+insert into booking (id, date, employee_id, service_point_id, treatment_id, user_id, status)
+values (3, '2025-01-06 15:00:00', 1, 1, 1, 1, 'COMPLETED');
 
 
 --inserting new reviews
@@ -134,5 +134,5 @@ insert into review (id, rating, date, text, booking_id)
 values (1,5, '2023-12-25','test_text1', 1);
 
 insert into review (id, rating, date, text, booking_id)
-values (2,4, '2023-12-26', 'test_text2', 2);
+values (2,4, '2023-12-26', 'test_text2', 2 );
 

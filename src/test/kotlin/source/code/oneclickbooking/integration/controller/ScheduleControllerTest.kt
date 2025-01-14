@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
@@ -19,7 +20,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.testcontainers.junit.jupiter.Testcontainers
 import source.code.oneclickbooking.integration.annotation.SqlSetup
+import source.code.oneclickbooking.model.Booking
+import java.time.DayOfWeek
 import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalTime
 
 @ActiveProfiles("test")
@@ -34,6 +38,8 @@ import java.time.LocalTime
 @AutoConfigureMockMvc
 @SpringBootTest
 class ScheduleControllerTest {
+    @Autowired
+    private lateinit var jdbcTemplate: JdbcTemplate
     private lateinit var mockMvc: MockMvc
 
     @Autowired
@@ -43,57 +49,12 @@ class ScheduleControllerTest {
 
     @Test
     @WithMockUser(username = "user", roles = ["USER"])
-    @DisplayName("POST /api/schedule - Should return schedule, When request without employee")
-    @SqlSetup
-    fun `test get schedule without employee`() {
-        logRunning()
-
-        val requestBody = """
-            {
-                "filter": {
-                    "filterCriteria": [
-                        {
-                            "filterKey": "SERVICE_POINT",
-                            "value": 1,
-                            "operation": "EQUAL"
-                        },
-                        {
-                            "filterKey": "DATE",
-                            "value": "2025-01-23",
-                            "operation": "EQUAL"
-                        }
-                    ],
-                    "dataOption": "AND"
-                },
-                "treatmentId": 1
-            }
-        """.trimIndent()
-
-        val expectedFirstSlot = "2025-01-23T09:00:00"
-        val expectedLastSlot = "2025-01-23T17:45:00"
-        val expectedSlotCount = calculateExpectedSlotCount("09:00", "18:00")
-
-        mockMvc.perform(
-            post("/api/schedule")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody)
-        ).andExpect(status().isOk).andExpectAll(
-            jsonPath("$.freeSlots").isArray,
-            jsonPath("$.freeSlots.length()").value(expectedSlotCount),
-            jsonPath("$.freeSlots[0]").value(expectedFirstSlot),
-            jsonPath("$.freeSlots[-1]").value(expectedLastSlot)
-        )
-
-        logPassed()
-    }
-
-    @Test
-    @WithMockUser(username = "user", roles = ["USER"])
     @DisplayName("POST /api/schedule - Should return schedule, When request with employee")
     @SqlSetup
     fun `test get schedule with employee`() {
         logRunning()
 
+        val date = getClosestDateForDay(DayOfWeek.MONDAY)
         val requestBody = """
             {
                 "filter": {
@@ -105,7 +66,7 @@ class ScheduleControllerTest {
                         },
                         {
                             "filterKey": "DATE",
-                            "value": "2025-01-20",
+                            "value": "$date",
                             "operation": "EQUAL"
                         },
                         {
@@ -120,8 +81,8 @@ class ScheduleControllerTest {
             }
         """.trimIndent()
 
-        val expectedFirstSlot = "2025-01-20T09:00:00"
-        val expectedLastSlot = "2025-01-20T17:45:00"
+        val expectedFirstSlot = "${date}T09:00:00"
+        val expectedLastSlot = "${date}T17:45:00"
         val expectedSlotCount = calculateExpectedSlotCount("09:00", "18:00")
 
         mockMvc.perform(
@@ -146,6 +107,7 @@ class ScheduleControllerTest {
     fun `test get schedule with employee that has bookings`() {
         logRunning()
 
+        val date = getClosestDateForDay(DayOfWeek.MONDAY)
         val request = """
             {
                 "filter": {
@@ -157,7 +119,7 @@ class ScheduleControllerTest {
                         },
                         {
                             "filterKey": "DATE",
-                            "value": "2025-01-06",
+                            "value": "$date",
                             "operation": "EQUAL"
                         },
                         {
@@ -172,8 +134,15 @@ class ScheduleControllerTest {
             }
         """.trimIndent()
 
-        val expectedFirstSlot = "2025-01-06T09:00:00"
-        val expectedLastSlot = "2025-01-06T17:45:00"
+        val sql = """
+            INSERT INTO booking (id, date, employee_id, service_point_id, treatment_id, user_id, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """.trimIndent()
+
+        jdbcTemplate.update(sql, 4, "$date 15:00:00", 1, 1, 1, 1,"COMPLETED")
+
+        val expectedFirstSlot = "${date}T09:00:00"
+        val expectedLastSlot = "${date}T17:45:00"
         val expectedSlotCount = calculateExpectedSlotCount("09:00", "18:00") - 1
 
         mockMvc.perform(
@@ -186,11 +155,10 @@ class ScheduleControllerTest {
             jsonPath("$.freeSlots[0]").value(expectedFirstSlot),
             jsonPath("$.freeSlots[-1]").value(expectedLastSlot),
             jsonPath("$.freeSlots").value(
-                Matchers.not(Matchers.containsString("2025-01-06T15:00:00"))
+                Matchers.not(Matchers.containsString("${date}T15:00:00"))
             )
         )
     }
-
 
     @Test
     @WithMockUser(username = "user", roles = ["USER"])
@@ -200,6 +168,7 @@ class ScheduleControllerTest {
     fun `test get schedule with employee and no availabilities`() {
         logRunning()
 
+        val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
                 "filter": {
@@ -211,7 +180,7 @@ class ScheduleControllerTest {
                         },
                         {
                             "filterKey": "DATE",
-                            "value": "2025-01-19",
+                            "value": "$date",
                             "operation": "EQUAL"
                         },
                         {
@@ -246,6 +215,7 @@ class ScheduleControllerTest {
     fun `test get schedule without employee and no availabilities`() {
         logRunning()
 
+        val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
                 "filter": {
@@ -257,7 +227,7 @@ class ScheduleControllerTest {
                         },
                         {
                             "filterKey": "DATE",
-                            "value": "2025-01-19",
+                            "value": "$date",
                             "operation": "EQUAL"
                         }
                     ],
@@ -281,11 +251,12 @@ class ScheduleControllerTest {
 
     @Test
     @WithMockUser(username = "user", roles = ["USER"])
-    @DisplayName("POST /api/schedule - Should return 400, When treatment not provided")
+    @DisplayName("POST /api/schedule - Should return schedule, When request without employee")
     @SqlSetup
-    fun `test get schedule without treatment`() {
+    fun `test get schedule without employee`() {
         logRunning()
 
+        val date = getClosestDateForDay(DayOfWeek.THURSDAY)
         val requestBody = """
             {
                 "filter": {
@@ -297,7 +268,54 @@ class ScheduleControllerTest {
                         },
                         {
                             "filterKey": "DATE",
-                            "value": "2025-01-19",
+                            "value": "$date",
+                            "operation": "EQUAL"
+                        }
+                    ],
+                    "dataOption": "AND"
+                },
+                "treatmentId": 1
+            }
+        """.trimIndent()
+
+        val expectedFirstSlot = "${date}T09:00:00"
+        val expectedLastSlot = "${date}T17:45:00"
+        val expectedSlotCount = calculateExpectedSlotCount("09:00", "18:00")
+
+        mockMvc.perform(
+            post("/api/schedule")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody)
+        ).andExpect(status().isOk).andExpectAll(
+            jsonPath("$.freeSlots").isArray,
+            jsonPath("$.freeSlots.length()").value(expectedSlotCount),
+            jsonPath("$.freeSlots[0]").value(expectedFirstSlot),
+            jsonPath("$.freeSlots[-1]").value(expectedLastSlot)
+        )
+
+        logPassed()
+    }
+
+    @Test
+    @WithMockUser(username = "user", roles = ["USER"])
+    @DisplayName("POST /api/schedule - Should return 400, When treatment not provided")
+    @SqlSetup
+    fun `test get schedule without treatment`() {
+        logRunning()
+
+        val date = getClosestDateForDay(DayOfWeek.SUNDAY)
+        val requestBody = """
+            {
+                "filter": {
+                    "filterCriteria": [
+                        {
+                            "filterKey": "SERVICE_POINT",
+                            "value": 1,
+                            "operation": "EQUAL"
+                        },
+                        {
+                            "filterKey": "DATE",
+                            "value": "$date",
                             "operation": "EQUAL"
                         }
                     ],
@@ -322,13 +340,14 @@ class ScheduleControllerTest {
     fun `test get schedule without service point`() {
         logRunning()
 
+        val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
                 "filter": {
                     "filterCriteria": [
                         {
                             "filterKey": "DATE",
-                            "value": "2025-01-19",
+                            "value": "$date",
                             "operation": "EQUAL"
                         }
                     ],
@@ -384,6 +403,7 @@ class ScheduleControllerTest {
     fun `test get schedule with invalid key`() {
         logRunning()
 
+        val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
                 "filter": {
@@ -395,7 +415,7 @@ class ScheduleControllerTest {
                         },
                         {
                             "filterKey": "DATE",
-                            "value": "2025-01-19",
+                            "value": "$date",
                             "operation": "EQUAL"
                         }
                     ],
@@ -421,6 +441,7 @@ class ScheduleControllerTest {
     fun `test get schedule with invalid operation for date`() {
         logRunning()
 
+        val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
                 "filter": {
@@ -432,7 +453,7 @@ class ScheduleControllerTest {
                         },
                         {
                             "filterKey": "DATE",
-                            "value": "2025-01-19",
+                            "value": "$date",
                             "operation": "INVALID"
                         }
                         
@@ -460,6 +481,7 @@ class ScheduleControllerTest {
     fun `test get schedule with invalid operation for employee`() {
         logRunning()
 
+        val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
                 "filter": {
@@ -471,7 +493,7 @@ class ScheduleControllerTest {
                         },
                         {
                             "filterKey": "DATE",
-                            "value": "2025-01-19",
+                            "value": "$date",
                             "operation": "EQUAL"
                         },
                         {
@@ -503,6 +525,7 @@ class ScheduleControllerTest {
     fun `test get schedule with invalid operation for service point`() {
         logRunning()
 
+        val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
                 "filter": {
@@ -514,7 +537,7 @@ class ScheduleControllerTest {
                         },
                         {
                             "filterKey": "DATE",
-                            "value": "2025-01-19",
+                            "value": "$date",
                             "operation": "EQUAL"
                         }
                     ],
@@ -540,6 +563,7 @@ class ScheduleControllerTest {
     fun `test get schedule with treatment not found`() {
         logRunning()
 
+        val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
                 "filter": {
@@ -551,7 +575,7 @@ class ScheduleControllerTest {
                         },
                         {
                             "filterKey": "DATE",
-                            "value": "2025-01-19",
+                            "value": "$date",
                             "operation": "EQUAL"
                         }
                     ],
@@ -577,6 +601,7 @@ class ScheduleControllerTest {
     fun `test get schedule with service point not found`() {
         logRunning()
 
+        val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
                 "filter": {
@@ -588,7 +613,7 @@ class ScheduleControllerTest {
                         },
                         {
                             "filterKey": "DATE",
-                            "value": "2025-01-19",
+                            "value": "$date",
                             "operation": "EQUAL"
                         }
                     ],
@@ -614,6 +639,7 @@ class ScheduleControllerTest {
     fun `test get schedule with employee not found`() {
         logRunning()
 
+        val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
                 "filter": {
@@ -625,7 +651,7 @@ class ScheduleControllerTest {
                         },
                         {
                             "filterKey": "DATE",
-                            "value": "2025-01-19",
+                            "value": "$date",
                             "operation": "EQUAL"
                         },
                         {
@@ -653,6 +679,20 @@ class ScheduleControllerTest {
         val start = LocalTime.parse(startTime)
         val end = LocalTime.parse(endTime)
         return (Duration.between(start, end).toMinutes() / 15).toInt()
+    }
+
+    private fun getClosestDateForDay(desiredDay: DayOfWeek): String {
+        val today = LocalDate.now()
+        val currentDay = today.dayOfWeek
+
+        val daysToAdd = if (currentDay <= desiredDay) {
+            desiredDay.value - currentDay.value
+        } else {
+            7 - (currentDay.value - desiredDay.value)
+        }
+
+        val closestDate = today.plusDays(daysToAdd.toLong())
+        return closestDate.toString()
     }
 
     private fun logRunning() {

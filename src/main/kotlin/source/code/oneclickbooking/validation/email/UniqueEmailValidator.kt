@@ -1,7 +1,5 @@
 package source.code.oneclickbooking.validation.email
 
-import jakarta.persistence.EntityManager
-import jakarta.persistence.FlushModeType
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
 import source.code.oneclickbooking.repository.UserRepository

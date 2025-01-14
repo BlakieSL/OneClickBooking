@@ -13,6 +13,7 @@ import source.code.oneclickbooking.dto.response.ReviewSummaryResponseDto
 import source.code.oneclickbooking.event.ReviewEvent
 import source.code.oneclickbooking.exception.LocalizedIllegalArgument
 import source.code.oneclickbooking.exception.RecordNotFoundException
+import source.code.oneclickbooking.helper.ExceptionMessages
 import source.code.oneclickbooking.mapper.ReviewMapper
 import source.code.oneclickbooking.model.Booking
 import source.code.oneclickbooking.model.BookingStatus
@@ -25,7 +26,6 @@ import source.code.oneclickbooking.service.declaration.util.ValidationService
 import source.code.oneclickbooking.specification.ReviewSpecification
 import source.code.oneclickbooking.specification.SpecificationBuilder
 import source.code.oneclickbooking.specification.SpecificationFactory
-import java.time.LocalDateTime
 
 @Service
 class ReviewServiceImpl(
@@ -105,7 +105,7 @@ class ReviewServiceImpl(
     private fun validateReview(reviewDto: ReviewCreateDto) {
         val booking = findBooking(reviewDto.bookingId)
         if (booking.status != BookingStatus.COMPLETED) {
-            throw LocalizedIllegalArgument("Booking is not completed")
+            throw LocalizedIllegalArgument(ExceptionMessages.BOOKING_NOT_COMPLETED)
         }
     }
 }

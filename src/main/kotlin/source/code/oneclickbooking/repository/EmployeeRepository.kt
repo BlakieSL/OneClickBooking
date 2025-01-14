@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Query
-import org.springframework.data.repository.query.Param
 import source.code.oneclickbooking.model.Employee
 
 interface EmployeeRepository : JpaRepository<Employee, Int>, JpaSpecificationExecutor<Employee> {
