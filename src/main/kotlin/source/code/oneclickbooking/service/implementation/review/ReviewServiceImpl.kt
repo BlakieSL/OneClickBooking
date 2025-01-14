@@ -13,7 +13,7 @@ import source.code.oneclickbooking.dto.response.ReviewSummaryResponseDto
 import source.code.oneclickbooking.event.ReviewEvent
 import source.code.oneclickbooking.exception.LocalizedIllegalArgument
 import source.code.oneclickbooking.exception.RecordNotFoundException
-import source.code.oneclickbooking.helper.ExceptionMessages
+import source.code.oneclickbooking.utils.ExceptionMessages
 import source.code.oneclickbooking.mapper.ReviewMapper
 import source.code.oneclickbooking.model.Booking
 import source.code.oneclickbooking.model.BookingStatus

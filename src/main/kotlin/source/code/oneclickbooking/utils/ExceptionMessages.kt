@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.helper
+package source.code.oneclickbooking.utils
 
 object ExceptionMessages {
     //validations
@@ -29,6 +29,8 @@ object ExceptionMessages {
     const val DATE_IN_PAST = "IllegalArgumentException.dateInPast.message"
     const val UNSUPPORTED_DATE_VALUE_TYPE = "IllegalArgumentException.unsupportedDateValueType.message"
     const val INVALID_DATE_FORMAT = "IllegalArgumentException.invalidDateFormat.message"
+    const val BOOKING_NOT_COMPLETED = "IllegalArgumentException.bookingNotCompleted.message"
+    const val BOOKING_NOT_PENDING =  "IllegalArgumentException.bookingNotPending.message"
 
     const val JWT_INVALID_TOKEN = "JwtAuthenticationException.invalidToken.message"
     const val JWT_INVALID_TOKEN_TYPE = "JwtAuthenticationException.invalidTokenType.message"
@@ -41,6 +43,4 @@ object ExceptionMessages {
     const val REFRESH_TOKEN_NO_USER_ID = "InvalidRefreshTokenException.userIdNotProvided.message"
     const val REFRESH_TOKEN_NO_AUTHORITIES = "InvalidRefreshTokenException.authoritiesNotProvided.message"
 
-    const val BOOKING_NOT_COMPLETED = "TODO"
-    const val BOOKING_NOT_PENDING =  "TODO"
 }

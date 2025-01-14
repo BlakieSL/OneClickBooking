@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.dto.request
+package source.code.oneclickbooking.dto.request.booking
 
 import jakarta.validation.constraints.FutureOrPresent
 import java.time.LocalDateTime

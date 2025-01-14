@@ -1,6 +1,6 @@
 package source.code.oneclickbooking.exception
 
-import source.code.oneclickbooking.helper.ExceptionMessages
+import source.code.oneclickbooking.utils.ExceptionMessages
 
 class FileProcessingException(
     cause: Throwable? = null

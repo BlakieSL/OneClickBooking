@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.dto.request
+package source.code.oneclickbooking.dto.request.booking
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.validation.constraints.FutureOrPresent

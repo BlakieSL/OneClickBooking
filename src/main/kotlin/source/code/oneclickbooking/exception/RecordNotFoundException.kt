@@ -1,6 +1,6 @@
 package source.code.oneclickbooking.exception
 
-import source.code.oneclickbooking.helper.ExceptionMessages
+import source.code.oneclickbooking.utils.ExceptionMessages
 import kotlin.reflect.KClass
 
 class RecordNotFoundException(

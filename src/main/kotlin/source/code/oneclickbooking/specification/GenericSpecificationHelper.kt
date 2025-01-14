@@ -7,7 +7,7 @@ import source.code.oneclickbooking.dto.other.FilterCriteria
 import source.code.oneclickbooking.dto.other.FilterOperation
 import source.code.oneclickbooking.exception.InvalidFilterOperationException
 import source.code.oneclickbooking.exception.LocalizedIllegalArgument
-import source.code.oneclickbooking.helper.ExceptionMessages
+import source.code.oneclickbooking.utils.ExceptionMessages
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeParseException

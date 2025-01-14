@@ -12,8 +12,8 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import source.code.oneclickbooking.dto.request.BookingCreateDto
-import source.code.oneclickbooking.dto.request.BookingUpdateDto
+import source.code.oneclickbooking.dto.request.booking.BookingCreateDto
+import source.code.oneclickbooking.dto.request.booking.BookingUpdateDto
 import source.code.oneclickbooking.dto.response.booking.BookingResponseDto
 import source.code.oneclickbooking.exception.RecordNotFoundException
 import source.code.oneclickbooking.mapper.BookingMapper

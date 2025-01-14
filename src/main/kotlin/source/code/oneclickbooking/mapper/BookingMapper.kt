@@ -1,8 +1,8 @@
 package source.code.oneclickbooking.mapper
 
 import org.springframework.stereotype.Component
-import source.code.oneclickbooking.dto.request.BookingCreateDto
-import source.code.oneclickbooking.dto.request.BookingUpdateDto
+import source.code.oneclickbooking.dto.request.booking.BookingCreateDto
+import source.code.oneclickbooking.dto.request.booking.BookingUpdateDto
 import source.code.oneclickbooking.dto.response.booking.BookingDetailedResponseDto
 import source.code.oneclickbooking.dto.response.booking.BookingResponseDto
 import source.code.oneclickbooking.dto.response.innerDtos.EmployeeDetails

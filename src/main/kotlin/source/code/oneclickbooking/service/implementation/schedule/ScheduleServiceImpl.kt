@@ -7,7 +7,7 @@ import source.code.oneclickbooking.dto.request.ScheduleRequestDto
 import source.code.oneclickbooking.dto.response.ScheduleResponseDto
 import source.code.oneclickbooking.exception.LocalizedIllegalArgument
 import source.code.oneclickbooking.exception.RecordNotFoundException
-import source.code.oneclickbooking.helper.ExceptionMessages
+import source.code.oneclickbooking.utils.ExceptionMessages
 import source.code.oneclickbooking.model.Booking
 import source.code.oneclickbooking.model.Employee
 import source.code.oneclickbooking.model.ServicePoint

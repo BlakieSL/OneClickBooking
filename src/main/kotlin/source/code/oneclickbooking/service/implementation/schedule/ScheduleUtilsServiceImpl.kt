@@ -15,7 +15,15 @@ class ScheduleUtilsServiceImpl : ScheduleUtilsService {
         incrementMinutes: Int,
         treatmentDuration: Int
     ): List<LocalDateTime> {
-        val startDateTime = date.atTime(availability.startTime)
+        val now = LocalDateTime.now()
+        val startDateTime = if (date.isEqual(now.toLocalDate())) {
+            maxOf(
+                roundUpToNearestIncrement(now, incrementMinutes),
+                date.atTime(availability.startTime)
+            )
+        } else {
+            date.atTime(availability.startTime)
+        }
         val endDateTime = date.atTime(availability.endTime)
 
         val slots = mutableListOf<LocalDateTime>()
@@ -50,5 +58,22 @@ class ScheduleUtilsServiceImpl : ScheduleUtilsService {
         }
 
         return takenSlots
+    }
+
+    private fun roundUpToNearestIncrement(
+        time: LocalDateTime,
+        incrementMinutes: Int
+    ): LocalDateTime {
+        val minutes = time.minute
+        val remainder = minutes % incrementMinutes
+        val minutesToAdd = if (remainder == 0) {
+            0
+        } else {
+            incrementMinutes - remainder
+        }
+
+        return time.plusMinutes(minutesToAdd.toLong())
+            .withSecond(0)
+            .withNano(0)
     }
 }

@@ -6,7 +6,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import source.code.oneclickbooking.annotation.BookingOwnerOrAdmin
 import source.code.oneclickbooking.dto.other.FilterDto
-import source.code.oneclickbooking.dto.request.BookingCreateDto
+import source.code.oneclickbooking.dto.request.booking.BookingCreateDto
+import source.code.oneclickbooking.dto.request.booking.BookingUpdateStatusDto
 import source.code.oneclickbooking.dto.response.booking.BookingDetailedResponseDto
 import source.code.oneclickbooking.dto.response.booking.BookingResponseDto
 import source.code.oneclickbooking.service.declaration.booking.BookingService
@@ -43,5 +44,13 @@ class BookingController(
         @PathVariable id: Int,
         @RequestBody patch: JsonMergePatch
     ): ResponseEntity<BookingResponseDto> =
-        ResponseEntity.ok (bookingService.update(id, patch))
+        ResponseEntity.ok(bookingService.update(id, patch))
+
+    @BookingOwnerOrAdmin
+    @PatchMapping("/{id}/status")
+    fun updateStatus(
+        @PathVariable id: Int,
+        @RequestBody statusDto: BookingUpdateStatusDto
+    ): ResponseEntity<BookingResponseDto> =
+        ResponseEntity.ok(bookingService.updateStatus(id, statusDto))
 }

@@ -1,4 +1,4 @@
-package source.code.oneclickbooking.helper
+package source.code.oneclickbooking.utils
 
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder

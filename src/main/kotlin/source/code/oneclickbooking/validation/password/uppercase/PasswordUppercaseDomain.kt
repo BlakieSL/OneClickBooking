@@ -1,7 +1,7 @@
 package source.code.oneclickbooking.validation.password.uppercase
 
 import jakarta.validation.Constraint
-import source.code.oneclickbooking.helper.ExceptionMessages
+import source.code.oneclickbooking.utils.ExceptionMessages
 import kotlin.reflect.KClass
 
 @Constraint(validatedBy = [PasswordUppercaseValidator::class])

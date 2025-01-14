@@ -2,7 +2,7 @@ package source.code.oneclickbooking.validation.password.lowercase
 
 import jakarta.validation.Constraint
 import jakarta.validation.Payload
-import source.code.oneclickbooking.helper.ExceptionMessages
+import source.code.oneclickbooking.utils.ExceptionMessages
 import kotlin.reflect.KClass
 
 @Constraint(validatedBy = [PasswordLowercaseValidator::class])

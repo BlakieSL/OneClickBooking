@@ -4,14 +4,15 @@ import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import source.code.oneclickbooking.dto.other.FilterDto
-import source.code.oneclickbooking.dto.request.BookingCreateDto
-import source.code.oneclickbooking.dto.request.BookingUpdateDto
+import source.code.oneclickbooking.dto.request.booking.BookingCreateDto
+import source.code.oneclickbooking.dto.request.booking.BookingUpdateDto
+import source.code.oneclickbooking.dto.request.booking.BookingUpdateStatusDto
 import source.code.oneclickbooking.dto.response.booking.BookingDetailedResponseDto
 import source.code.oneclickbooking.dto.response.booking.BookingResponseDto
 import source.code.oneclickbooking.exception.LocalizedIllegalArgument
 import source.code.oneclickbooking.exception.RecordNotFoundException
-import source.code.oneclickbooking.helper.AuthorizationUtil
-import source.code.oneclickbooking.helper.ExceptionMessages
+import source.code.oneclickbooking.utils.AuthorizationUtil
+import source.code.oneclickbooking.utils.ExceptionMessages
 import source.code.oneclickbooking.mapper.BookingMapper
 import source.code.oneclickbooking.model.*
 import source.code.oneclickbooking.repository.BookingRepository
@@ -71,6 +72,13 @@ class BookingServiceImpl(
         repository.delete(booking)
     }
 
+    @Transactional
+    override fun updateStatus(id: Int, statusDto: BookingUpdateStatusDto): BookingResponseDto {
+        val booking = find(id)
+        booking.status = statusDto.status
+        val savedBooking = repository.save(booking)
+        return mapper.toResponseDto(savedBooking)
+    }
 
     override fun get(id: Int): BookingResponseDto {
         return find(id).let { mapper.toResponseDto(it) }
@@ -101,8 +109,6 @@ class BookingServiceImpl(
     }
 
     private fun validateBookingUpdateDto(existingBooking: Booking, updateDto: BookingUpdateDto) {
-        validateBookingStatus(existingBooking)
-
         val date = updateDto.date ?: existingBooking.date
         val servicePointId = updateDto.servicePointId ?: existingBooking.servicePoint.id!!
         val employeeId = updateDto.employeeId ?: existingBooking.employee!!.id!!
@@ -165,6 +171,7 @@ class BookingServiceImpl(
                     treatment.duration
                 )
             }.distinct()
+        println("ALL POTENTIAL SLOTS: $allPotentialSlots")
 
         val takenSLots = scheduleUtilsService.findTakenSlots(
             allPotentialSlots,
@@ -174,6 +181,7 @@ class BookingServiceImpl(
 
         val freeSlots = allPotentialSlots.filterNot { it in takenSLots }
 
+        println("ALL FREE SLOTS: $freeSlots")
         if(date !in freeSlots) {
             throw LocalizedIllegalArgument(
                 ExceptionMessages.EMPLOYEE_HAS_NO_AVAILABILITIES_ON_TIME

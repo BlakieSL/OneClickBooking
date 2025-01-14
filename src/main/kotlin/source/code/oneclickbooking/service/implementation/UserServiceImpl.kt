@@ -12,8 +12,8 @@ import source.code.oneclickbooking.dto.request.UserUpdateDto
 import source.code.oneclickbooking.dto.response.UserResponseDto
 import source.code.oneclickbooking.exception.LocalizedIllegalArgument
 import source.code.oneclickbooking.exception.RecordNotFoundException
-import source.code.oneclickbooking.helper.ExceptionMessages
-import source.code.oneclickbooking.helper.UserDetailsBuilder
+import source.code.oneclickbooking.utils.ExceptionMessages
+import source.code.oneclickbooking.utils.UserDetailsBuilder
 import source.code.oneclickbooking.mapper.UserMapper
 import source.code.oneclickbooking.model.RoleName
 import source.code.oneclickbooking.model.User
