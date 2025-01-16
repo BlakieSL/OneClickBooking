@@ -2,7 +2,9 @@ package source.code.oneclickbooking.service.implementation.schedule
 
 import org.springframework.stereotype.Service
 import source.code.oneclickbooking.dto.other.BookingFilterKey
+import source.code.oneclickbooking.dto.other.FilterCriteria
 import source.code.oneclickbooking.dto.other.FilterDto
+import source.code.oneclickbooking.dto.other.FilterOperation
 import source.code.oneclickbooking.dto.request.ScheduleRequestDto
 import source.code.oneclickbooking.dto.response.ScheduleResponseDto
 import source.code.oneclickbooking.exception.LocalizedIllegalArgument
@@ -67,8 +69,15 @@ class ScheduleServiceImpl(
     }
 
     private fun findFilteredBookings(filter: FilterDto): List<Booking> {
+        val filterWithOnlyPendingBookings = filter.copy(
+            filterCriteria = filter.filterCriteria + FilterCriteria(
+                filterKey = BookingFilterKey.STATUS.name,
+                value = "PENDING",
+                operation = FilterOperation.EQUAL
+            )
+        )
         val bookingFactory = SpecificationFactory { BookingSpecification(it) }
-        val specificationBuilder = SpecificationBuilder(filter, bookingFactory)
+        val specificationBuilder = SpecificationBuilder(filterWithOnlyPendingBookings, bookingFactory)
         val specification = specificationBuilder.build()
         return bookingRepository.findAll(specification)
     }
@@ -86,15 +95,14 @@ class ScheduleServiceImpl(
 
         if (availabilities.isEmpty()) return ScheduleResponseDto(emptyList())
 
-        val allPotentialSlots = availabilities
-            .flatMap {
-                utilsService.generatePotentialSlots(
-                    date,
-                    it,
-                    SLOT_INCREMENT_MINUTES,
-                    treatment.duration
-                )
-            }.distinct()
+        val allPotentialSlots = availabilities.flatMap {
+            utilsService.generatePotentialSlots(
+                date,
+                it,
+                SLOT_INCREMENT_MINUTES,
+                treatment.duration
+            )
+        }.distinct()
 
         val takenSlots = utilsService.findTakenSlots(allPotentialSlots, bookings, treatment.duration)
         val freeSlots = allPotentialSlots.filterNot { it in takenSlots }

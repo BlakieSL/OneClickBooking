@@ -137,7 +137,7 @@ class ScheduleControllerTest {
             VALUES (?, ?, ?, ?, ?, ?, ?)
         """.trimIndent()
 
-        jdbcTemplate.update(sql, 4, "$date 15:00:00", 1, 1, 1, 1,"COMPLETED")
+        jdbcTemplate.update(sql, 4, "$date 15:00:00", 1, 1, 1, 1,"PENDING")
 
         val expectedFirstSlot = "${date}T09:00:00"
         val expectedLastSlot = "${date}T17:45:00"

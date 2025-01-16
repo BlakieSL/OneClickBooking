@@ -1,5 +1,6 @@
 package source.code.oneclickbooking.repository
 
+import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.data.jpa.repository.*
 import source.code.oneclickbooking.model.Booking

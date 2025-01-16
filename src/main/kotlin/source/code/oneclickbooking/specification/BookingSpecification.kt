@@ -17,8 +17,6 @@ class BookingSpecification(private val criteria: FilterCriteria): Specification<
         query: CriteriaQuery<*>?,
         builder: CriteriaBuilder
     ): Predicate {
-        query?.orderBy(builder.desc(root.get<LocalDateTime>("date")))
-
         return when (criteria.filterKey) {
             BookingFilterKey.EMPLOYEE.name -> GenericSpecificationHelper.buildPredicateEntityProperty(
                 builder = builder,

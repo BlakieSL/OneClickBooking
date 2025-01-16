@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.test.context.support.WithMockUser
@@ -33,6 +34,8 @@ import source.code.oneclickbooking.integration.annotation.SqlSetup
 @AutoConfigureMockMvc
 @SpringBootTest
 class ReviewControllerTest {
+    @Autowired
+    private lateinit var jdbcTemplate: JdbcTemplate
     private lateinit var mockMvc: MockMvc
 
     @Autowired
@@ -326,6 +329,27 @@ class ReviewControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("Test POST /api/reviews should return 403 when booking is not completed")
+    @SqlSetup
+    fun `test create should return 400 when booking not completed`() {
+        val requestBody = """
+            {
+                "rating": 5,
+                "bookingId": 4
+            }
+        """.trimIndent()
+
+        jdbcTemplate.update(createBookingSql(), 4, "2021-10-10", 1, 1, 1, 1, "PENDING")
+
+        mockMvc.perform(
+            post("/api/reviews")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isBadRequest)
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
     @DisplayName("Test POST /api/reviews should return 400 when request is invalid")
     fun `test create should return 400 when request is invalid`() {
         LOGGER.info("RUNNING test create review should return 400 when request is invalid...")
@@ -577,6 +601,13 @@ class ReviewControllerTest {
             authorities = listOf(SimpleGrantedAuthority(role))
         )
         SecurityContextHolder.getContext().authentication = customAuth
+    }
+
+    private fun createBookingSql(): String {
+        return """
+            INSERT INTO booking (id, date, employee_id, service_point_id, treatment_id, user_id, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """.trimIndent()
     }
 
     companion object {
