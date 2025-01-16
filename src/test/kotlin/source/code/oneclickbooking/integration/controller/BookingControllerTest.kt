@@ -2,11 +2,13 @@ package source.code.oneclickbooking.integration.controller
 
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
@@ -18,9 +20,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.shaded.org.bouncycastle.jce.provider.BrokenPBE.Util
+import source.code.oneclickbooking.integration.TestConfiguration
 import source.code.oneclickbooking.integration.Utils
 import source.code.oneclickbooking.integration.annotation.SqlSetup
+import source.code.oneclickbooking.service.implementation.util.TimeProviderServiceImpl
+import source.code.oneclickbooking.specification.SpecificationBuilder
 import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ActiveProfiles("test")
 @Testcontainers
@@ -31,6 +38,7 @@ import java.time.DayOfWeek
         "classpath:testcontainers/schema/create-schema.sql"
     ]
 )
+@Import(TestConfiguration::class)
 @AutoConfigureMockMvc
 @SpringBootTest
 class BookingControllerTest {
@@ -179,6 +187,43 @@ class BookingControllerTest {
             .andExpectAll(
                 jsonPath("$.size()").value(1),
                 jsonPath("$[0].id").value(4),
+            )
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("POST /api/bookings/filtered - Should return filtered bookings by status with sort by date_closest")
+    @SqlSetup
+    fun `test get filtered should return filtered bookings by status and sorted by date_closest`() {
+        val requestBody = """
+            {
+                "filterCriteria": [
+                    {
+                        "filterKey": "STATUS",
+                        "value": "PENDING",
+                        "operation": "EQUAL"
+                    }
+                ],
+                "sortOption": "DATE_CLOSEST",
+                "dataOption": "AND"
+            }
+        """.trimIndent()
+
+        val fixedDate = LocalDate.of(2025, 1, 16)
+        jdbcTemplate.update(createBookingSql(), 4, "$fixedDate 15:00:00", 1, 1, 1, 1, "PENDING")
+        jdbcTemplate.update(createBookingSql(), 5, "$fixedDate 10:00:00", 1, 1, 1, 1, "PENDING")
+        jdbcTemplate.update(createBookingSql(), 6, "$fixedDate 12:00:00", 1, 1, 1, 1, "PENDING")
+
+        mockMvc.perform(
+            post("/api/bookings/filtered")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isOk)
+            .andExpectAll(
+                jsonPath("$.size()").value(3),
+                jsonPath("$[0].id").value(5),
+                jsonPath("$[1].id").value(6),
+                jsonPath("$[2].id").value(4),
             )
     }
 

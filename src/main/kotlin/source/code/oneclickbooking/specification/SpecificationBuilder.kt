@@ -5,12 +5,14 @@ import source.code.oneclickbooking.dto.other.FilterCriteria
 import source.code.oneclickbooking.dto.other.FilterDataOption
 import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.other.SortOption
+import source.code.oneclickbooking.service.declaration.util.TimeProviderService
 import java.time.LocalDateTime
 
 
 class SpecificationBuilder<T>(
     private val filterDto: FilterDto,
-    private val specificationFactory: SpecificationFactory<T>
+    private val specificationFactory: SpecificationFactory<T>,
+    private val timeProvider: TimeProviderService? = null
 ) {
     fun build(): Specification<T> {
         val criteriaList = filterDto.filterCriteria
@@ -58,7 +60,7 @@ class SpecificationBuilder<T>(
                                         "custom_timestampdiff",
                                         Int::class.java,
                                         root.get<LocalDateTime>("date"),
-                                        builder.currentTimestamp()
+                                        builder.literal(timeProvider?.getCurrentTime())
                                     )
                                 )
                             )

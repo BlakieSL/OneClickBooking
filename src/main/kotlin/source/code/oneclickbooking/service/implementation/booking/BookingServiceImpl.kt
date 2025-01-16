@@ -23,6 +23,7 @@ import source.code.oneclickbooking.repository.TreatmentRepository
 import source.code.oneclickbooking.service.declaration.booking.BookingService
 import source.code.oneclickbooking.service.declaration.schedule.ScheduleUtilsService
 import source.code.oneclickbooking.service.declaration.util.JsonPatchService
+import source.code.oneclickbooking.service.declaration.util.TimeProviderService
 import source.code.oneclickbooking.service.declaration.util.ValidationService
 import source.code.oneclickbooking.specification.BookingSpecification
 import source.code.oneclickbooking.specification.SpecificationBuilder
@@ -34,6 +35,7 @@ class BookingServiceImpl(
     private val validationService: ValidationService,
     private val jsonPatchService: JsonPatchService,
     private val scheduleUtilsService: ScheduleUtilsService,
+    private val timeProviderService: TimeProviderService,
     private val mapper: BookingMapper,
     private val repository: BookingRepository,
     private val servicePointRepository: ServicePointRepository,
@@ -91,7 +93,7 @@ class BookingServiceImpl(
 
     override fun getFiltered(filter: FilterDto): List<BookingDetailedResponseDto> {
         val bookingFactory = SpecificationFactory { BookingSpecification(it) }
-        val specificationBuilder = SpecificationBuilder(filter, bookingFactory)
+        val specificationBuilder = SpecificationBuilder(filter, bookingFactory, timeProviderService)
         val specification = specificationBuilder.build()
         return repository.findAll(specification).map { mapper.toDetailedResponseDto(it) }
     }
