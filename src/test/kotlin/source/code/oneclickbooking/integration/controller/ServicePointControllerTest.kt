@@ -21,8 +21,8 @@ import source.code.oneclickbooking.integration.annotation.SqlSetup
 @Testcontainers
 @Sql(
     value = [
-        "classpath:testcontainers/drop-schema.sql",
-        "classpath:testcontainers/create-schema.sql",
+        "classpath:testcontainers/schema/drop-schema.sql",
+        "classpath:testcontainers/schema/create-schema.sql",
     ]
 )
 @AutoConfigureMockMvc

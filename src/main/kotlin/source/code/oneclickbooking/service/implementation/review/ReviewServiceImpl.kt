@@ -38,7 +38,7 @@ class ReviewServiceImpl(
 ): ReviewService {
     @Transactional
     override fun create(reviewDto: ReviewCreateDto): ReviewResponseDto {
-        validateReview(reviewDto)
+        validateBookingCompleted(reviewDto)
         val review = mapper.toEntity(reviewDto)
         val savedReview = repository.save(review)
         return mapper.toResponseDto(savedReview)
@@ -102,7 +102,7 @@ class ReviewServiceImpl(
         }
     }
 
-    private fun validateReview(reviewDto: ReviewCreateDto) {
+    private fun validateBookingCompleted(reviewDto: ReviewCreateDto) {
         val booking = findBooking(reviewDto.bookingId)
         if (booking.status != BookingStatus.COMPLETED) {
             throw LocalizedIllegalArgument(ExceptionMessages.BOOKING_NOT_COMPLETED)

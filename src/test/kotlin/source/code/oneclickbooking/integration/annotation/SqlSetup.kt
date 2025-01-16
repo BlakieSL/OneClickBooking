@@ -7,11 +7,11 @@ import org.springframework.test.context.jdbc.SqlGroup
 @Retention(AnnotationRetention.RUNTIME)
 @SqlGroup(
     Sql(
-        scripts = ["classpath:testcontainers/insert-data.sql"],
+        scripts = ["classpath:testcontainers/general-data/insert-data.sql"],
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
     ),
     Sql(
-        scripts = ["classpath:testcontainers/remove-data.sql"],
+        scripts = ["classpath:testcontainers/general-data/remove-data.sql"],
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
     )
 )

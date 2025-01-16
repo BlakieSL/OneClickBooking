@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.testcontainers.junit.jupiter.Testcontainers
 import source.code.oneclickbooking.integration.annotation.SqlSetup
-import source.code.oneclickbooking.model.Booking
 import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDate
@@ -31,8 +30,8 @@ import java.time.LocalTime
 @SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
 @Sql(
     value = [
-        "classpath:testcontainers/drop-schema.sql",
-        "classpath:testcontainers/create-schema.sql",
+        "classpath:testcontainers/schema/drop-schema.sql",
+        "classpath:testcontainers/schema/create-schema.sql",
     ]
 )
 @AutoConfigureMockMvc
@@ -133,7 +132,6 @@ class ScheduleControllerTest {
                 "treatmentId": 2
             }
         """.trimIndent()
-
         val sql = """
             INSERT INTO booking (id, date, employee_id, service_point_id, treatment_id, user_id, status)
             VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -685,7 +683,7 @@ class ScheduleControllerTest {
         val today = LocalDate.now()
         val currentDay = today.dayOfWeek
 
-        val daysToAdd = if (currentDay <= desiredDay) {
+        val daysToAdd = if (currentDay < desiredDay) {
             desiredDay.value - currentDay.value
         } else {
             7 - (currentDay.value - desiredDay.value)

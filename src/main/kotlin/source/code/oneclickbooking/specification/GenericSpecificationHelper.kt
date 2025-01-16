@@ -76,10 +76,19 @@ object GenericSpecificationHelper {
         criteria: FilterCriteria,
         root: Root<T>
     ): Predicate {
-        val value = criteria.value
-
-        return when (value) {
+        return when (criteria.value) {
             "NOT_NULL" -> builder.isNotNull(root.get<Any>("text"))
+            else -> throw InvalidFilterOperationException(criteria.operation.name)
+        }
+    }
+
+    fun <T> buildPredicateStatusProperty(
+        builder: CriteriaBuilder,
+        criteria: FilterCriteria,
+        root: Root<T>
+    ): Predicate {
+        return when (criteria.operation) {
+            FilterOperation.EQUAL -> builder.equal(root.get<Any>("status"), criteria.value)
             else -> throw InvalidFilterOperationException(criteria.operation.name)
         }
     }

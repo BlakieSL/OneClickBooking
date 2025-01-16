@@ -150,13 +150,13 @@ class BookingServiceImpl(
     ) {
         val availabilities = employee.availabilities.filter { it.dayOfWeek == date.dayOfWeek }
 
-        if(availabilities.isEmpty()) {
+        if (availabilities.isEmpty()) {
             throw LocalizedIllegalArgument(
                 ExceptionMessages.EMPLOYEE_HAS_NO_AVAILABILITIES_ON_DATE
             )
         }
 
-        val bookings = bookingRepository.findByServicePointIdAndEmployeeIdAndDate(
+        val bookings = bookingRepository.findByServicePointIdAndEmployeeIdAndDateAndPending(
             servicePoint.id!!,
             employee.id!!,
             date
@@ -171,7 +171,6 @@ class BookingServiceImpl(
                     treatment.duration
                 )
             }.distinct()
-        println("ALL POTENTIAL SLOTS: $allPotentialSlots")
 
         val takenSLots = scheduleUtilsService.findTakenSlots(
             allPotentialSlots,
@@ -181,7 +180,6 @@ class BookingServiceImpl(
 
         val freeSlots = allPotentialSlots.filterNot { it in takenSLots }
 
-        println("ALL FREE SLOTS: $freeSlots")
         if(date !in freeSlots) {
             throw LocalizedIllegalArgument(
                 ExceptionMessages.EMPLOYEE_HAS_NO_AVAILABILITIES_ON_TIME

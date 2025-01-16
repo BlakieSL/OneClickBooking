@@ -21,8 +21,8 @@ import source.code.oneclickbooking.dto.request.UserCreateDto
 @SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
 @Sql(
     scripts = [
-        "classpath:testcontainers/drop-schema.sql",
-        "classpath:testcontainers/create-schema.sql"
+        "classpath:testcontainers/schema/drop-schema.sql",
+        "classpath:testcontainers/schema/create-schema.sql"
     ]
 )
 @SpringBootTest
@@ -38,11 +38,11 @@ class UserCreateDtoValidationTest {
     @DisplayName("should validate valid UserCreateDto")
     @SqlGroup(
         Sql(
-            value = ["classpath:testcontainers/insert-user.sql"],
+            value = ["classpath:testcontainers/user-data/insert-user.sql"],
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
         ),
         Sql(
-            value = ["classpath:testcontainers/remove-user.sql"],
+            value = ["classpath:testcontainers/user-data/remove-user.sql"],
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
         )
     )
@@ -61,11 +61,11 @@ class UserCreateDtoValidationTest {
     @DisplayName("should fail validation when email is not unique")
     @SqlGroup(
         Sql(
-            value = ["classpath:testcontainers/insert-user.sql"],
+            value = ["classpath:testcontainers/user-data/insert-user.sql"],
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
         ),
         Sql(
-            value = ["classpath:testcontainers/remove-user.sql"],
+            value = ["classpath:testcontainers/user-data/remove-user.sql"],
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
         )
     )

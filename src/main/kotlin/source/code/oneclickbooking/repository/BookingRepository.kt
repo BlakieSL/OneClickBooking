@@ -12,8 +12,9 @@ interface BookingRepository : JpaRepository<Booking, Int>, JpaSpecificationExecu
     WHERE b.servicePoint.id = :servicePointId 
       AND b.employee.id = :employeeId 
       AND DATE(b.date) = DATE(:date)
+      AND b.status = 'PENDING'
     """)
-    fun findByServicePointIdAndEmployeeIdAndDate (
+    fun findByServicePointIdAndEmployeeIdAndDateAndPending (
         servicePointId: Int,
         employeeId: Int,
         date: LocalDateTime

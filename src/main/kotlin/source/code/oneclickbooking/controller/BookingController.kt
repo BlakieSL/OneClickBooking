@@ -4,6 +4,7 @@ import com.github.fge.jsonpatch.mergepatch.JsonMergePatch
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import source.code.oneclickbooking.annotation.AdminOnly
 import source.code.oneclickbooking.annotation.BookingOwnerOrAdmin
 import source.code.oneclickbooking.dto.other.FilterDto
 import source.code.oneclickbooking.dto.request.booking.BookingCreateDto
@@ -33,7 +34,7 @@ class BookingController(
     fun create(@Valid @RequestBody request: BookingCreateDto): ResponseEntity<BookingResponseDto> =
         ResponseEntity.status(201).body(bookingService.create(request))
 
-    @BookingOwnerOrAdmin
+    @AdminOnly
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Int): ResponseEntity<Unit> =
         bookingService.delete(id).let { ResponseEntity.noContent().build() }

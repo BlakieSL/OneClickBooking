@@ -29,8 +29,8 @@ import source.code.oneclickbooking.model.EntityType
 @SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
 @Sql(
     scripts = [
-        "classpath:testcontainers/drop-schema.sql",
-        "classpath:testcontainers/create-schema.sql"
+        "classpath:testcontainers/schema/drop-schema.sql",
+        "classpath:testcontainers/schema/create-schema.sql"
     ]
 )
 @AutoConfigureMockMvc

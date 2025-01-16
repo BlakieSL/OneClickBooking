@@ -7,33 +7,35 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.jdbc.Sql
-import org.springframework.test.context.jdbc.SqlGroup
 import org.springframework.test.context.jdbc.SqlMergeMode
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.testcontainers.junit.jupiter.Testcontainers
-import source.code.oneclickbooking.auth.CustomAuthenticationToken
+import org.testcontainers.shaded.org.bouncycastle.jce.provider.BrokenPBE.Util
+import source.code.oneclickbooking.integration.Utils
 import source.code.oneclickbooking.integration.annotation.SqlSetup
+import java.time.DayOfWeek
 
 @ActiveProfiles("test")
 @Testcontainers
 @SqlMergeMode(SqlMergeMode.MergeMode.MERGE)
 @Sql(
     scripts = [
-        "classpath:testcontainers/drop-schema.sql",
-        "classpath:testcontainers/create-schema.sql"
+        "classpath:testcontainers/schema/drop-schema.sql",
+        "classpath:testcontainers/schema/create-schema.sql"
     ]
 )
 @AutoConfigureMockMvc
 @SpringBootTest
 class BookingControllerTest {
+    @Autowired
+    private lateinit var jdbcTemplate: JdbcTemplate
     private lateinit var mockMvc: MockMvc
 
     @Autowired
@@ -46,8 +48,6 @@ class BookingControllerTest {
     @DisplayName("GET /api/bookings/{id} - Should return booking")
     @SqlSetup
     fun `test get should return booking`() {
-        logRunning()
-
         val bookingId = 1
 
         mockMvc.perform(get("/api/bookings/$bookingId"))
@@ -60,8 +60,6 @@ class BookingControllerTest {
                 jsonPath("$.employeeId").value(1),
                 jsonPath("$.treatmentId").value(1)
             )
-
-        logPassed()
     }
 
     @Test
@@ -69,26 +67,18 @@ class BookingControllerTest {
     @DisplayName("GET /api/bookings/{id} - Should return 404 when booking not found")
     @SqlSetup
     fun `test get should return 404 when booking not found`() {
-        logRunning()
-
         val bookingId = 100
 
         mockMvc.perform(get("/api/bookings/$bookingId"))
             .andExpect(status().isNotFound)
-
-        logPassed()
     }
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
     @DisplayName("GET /api/bookings/{id} - Should return 400 when id not a number")
     fun `test get should return 400 when id not a number`() {
-        logRunning()
-
         mockMvc.perform(get("/api/bookings/abc"))
             .andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
@@ -96,8 +86,6 @@ class BookingControllerTest {
     @DisplayName("GET /api/bookings - Should return all bookings")
     @SqlSetup
     fun `test get all should return all bookings`() {
-        logRunning()
-
         mockMvc.perform(get("/api/bookings"))
             .andExpect(status().isOk)
             .andExpectAll(
@@ -109,26 +97,20 @@ class BookingControllerTest {
                 jsonPath("$[0].employeeId").value(1),
                 jsonPath("$[0].treatmentId").value(1)
             )
-
-        logPassed()
     }
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
     @DisplayName("GET /api/bookings - Should return empty list, When no bookings")
     fun `test get all should return empty list when no bookings`() {
-        logRunning()
-
         mockMvc.perform(get("/api/bookings"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.size()").value(0))
-
-        logPassed()
     }
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("GET /api/bookings/filtered - Should return filtered bookings by user")
+    @DisplayName("POST /api/bookings/filtered - Should return filtered bookings by user")
     @SqlSetup
     fun `test get filtered should return filtered bookings by user`() {
         val requestBody = """
@@ -152,25 +134,57 @@ class BookingControllerTest {
             .andExpectAll(
                 jsonPath("$.size()").value(3),
 
-                jsonPath("$[0].id").value(1),
-                jsonPath("$[0].date").value("2022-01-01T00:00:00"),
-                jsonPath("$[0].userId").value(1),
+                jsonPath("$[2].id").value(1),
+                jsonPath("$[2].date").value("2022-01-01T00:00:00"),
+                jsonPath("$[2].userId").value(1),
 
-                jsonPath("$[0].servicePoint.id").value(1),
-                jsonPath("$[0].servicePoint.location").value("test_location1"),
-                jsonPath("$[0].servicePoint.name").value("test_name1"),
+                jsonPath("$[2].servicePoint.id").value(1),
+                jsonPath("$[2].servicePoint.location").value("test_location1"),
+                jsonPath("$[2].servicePoint.name").value("test_name1"),
 
-                jsonPath("$[0].employee.id").value(1),
-                jsonPath("$[0].employee.username").value("test_username1"),
+                jsonPath("$[2].employee.id").value(1),
+                jsonPath("$[2].employee.username").value("test_username1"),
 
-                jsonPath("$[0].treatmentId").value(1),
-                jsonPath("$[0].reviewId").value(1)
+                jsonPath("$[2].treatmentId").value(1),
+                jsonPath("$[2].reviewId").value(1)
             )
     }
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("GET /api/bookings/filtered - Should return 400 when filter key is invalid")
+    @DisplayName("POST /api/bookings/filtered - Should return filtered bookings by status")
+    @SqlSetup
+    fun `test get filtered should return filtered bookings by status`() {
+        val date = Utils.getClosestDateForDay(DayOfWeek.THURSDAY)
+        val requestBody = """
+            {
+                "filterCriteria": [
+                    {
+                        "filterKey": "STATUS",
+                        "value": "PENDING",
+                        "operation": "EQUAL"
+                    }
+                ],
+                "dataOption": "AND"
+            }
+        """.trimIndent()
+
+        jdbcTemplate.update(createBookingSql(), 4, "$date 15:00:00", 1, 1, 1, 1, "PENDING")
+
+        mockMvc.perform(
+            post("/api/bookings/filtered")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isOk)
+            .andExpectAll(
+                jsonPath("$.size()").value(1),
+                jsonPath("$[0].id").value(4),
+            )
+    }
+
+    @Test
+    @WithMockUser(username = "testuser", roles = ["USER"])
+    @DisplayName("POST /api/bookings/filtered - Should return 400 when filter key is invalid")
     fun `test get filtered should return 400 when filter key is invalid`() {
         val requestBody = """
             {
@@ -192,7 +206,7 @@ class BookingControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("GET /api/bookings/filtered - Should return 400 when filter operation is invalid")
+    @DisplayName("POST /api/bookings/filtered - Should return 400 when filter operation is invalid")
     fun `test get filtered should return 400 when filter operation is invalid`() {
         val requestBody = """
             {
@@ -214,7 +228,7 @@ class BookingControllerTest {
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("GET /api/bookings/filtered - Should return 400 when request body is invalid")
+    @DisplayName("POST /api/bookings/filtered - Should return 400 when request body is invalid")
     fun `test get filtered should return 400 when request body is invalid`() {
         val requestBody = """
             {
@@ -238,12 +252,12 @@ class BookingControllerTest {
     @DisplayName("POST /api/bookings - Should create booking")
     @SqlSetup
     fun `test create should create booking`() {
-        logRunning()
-        setUserContext(userId = 1)
+        Utils.setUserContext(userId = 1)
 
+        val date = Utils.getClosestDateForDay(DayOfWeek.THURSDAY)
         val requestBody = """
             {
-                "date": "2025-01-16T10:00:00",
+                "date": "${date}T10:00:00",
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -257,60 +271,88 @@ class BookingControllerTest {
         ).andExpect(status().isCreated).andExpectAll(
             jsonPath("$.id").value(4),
             jsonPath("$.userId").value(1),
-            jsonPath("$.date").value("2025-01-16T10:00:00"),
+            jsonPath("$.date").value("${date}T10:00:00"),
             jsonPath("$.servicePointId").value(1),
             jsonPath("$.employeeId").value(1),
             jsonPath("$.treatmentId").value(1),
             jsonPath("$.status").value("PENDING")
         )
-
-        logPassed()
     }
 
     @Test
-    @DisplayName("POST /api/bookings - Should create booking, When selected employee " +
-            "have bookings on the selected date")
+    @DisplayName("POST /api/bookings - Should create booking, When selected employee has bookings on the selected date")
     @SqlSetup
     fun `test create should create booking when employee has bookings`() {
-        logRunning()
-        setUserContext(userId = 1)
+        Utils.setUserContext(userId = 1)
 
+        val date = Utils.getClosestDateForDay(DayOfWeek.MONDAY)
         val requestBody = """
             {
-                "date": "2025-01-06T14:00:00",
+                "date": "${date}T14:00:00",
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
             }
         """.trimIndent()
 
+        jdbcTemplate.update(createBookingSql(), 4, "$date 15:00:00", 1, 1, 1, 1,"PENDING")
+
         mockMvc.perform(
             post("/api/bookings")
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isCreated).andExpectAll(
-            jsonPath("$.id").value(4),
+            jsonPath("$.id").value(5),
             jsonPath("$.userId").value(1),
-            jsonPath("$.date").value("2025-01-06T14:00:00"),
+            jsonPath("$.date").value("${date}T14:00:00"),
             jsonPath("$.servicePointId").value(1),
             jsonPath("$.employeeId").value(1),
             jsonPath("$.treatmentId").value(1)
         )
-
-        logPassed()
     }
 
     @Test
-    @DisplayName("POST /api/bookings - Should create booking, When selected employee " +
-            "have splitted availability on selected date")
+    @DisplayName("POST /api/bookings - Should create booking, When selected employee has CANCELLED booking on the selected date")
     @SqlSetup
-    fun `test create should create booking when employee has splitted availability`() {
-        logRunning()
-        setUserContext(userId = 1)
+    fun `test create should create booking when employee has CANCELLED booking`() {
+        Utils.setUserContext(userId = 1)
 
+        val date = Utils.getClosestDateForDay(DayOfWeek.MONDAY)
         val requestBody = """
             {
-                "date": "2025-01-06T15:00:00",
+                "date": "${date}T14:00:00",
+                "servicePointId": 1,
+                "employeeId": 1,
+                "treatmentId": 1
+            }
+        """.trimIndent()
+
+        jdbcTemplate.update(createBookingSql(), 4, "$date 14:00:00", 1, 1, 1, 1,"CANCELLED")
+
+        mockMvc.perform(
+            post("/api/bookings")
+                .contentType("application/json")
+                .content(requestBody)
+        ).andExpect(status().isCreated).andExpectAll(
+            jsonPath("$.id").value(5),
+            jsonPath("$.userId").value(1),
+            jsonPath("$.date").value("${date}T14:00:00"),
+            jsonPath("$.servicePointId").value(1),
+            jsonPath("$.employeeId").value(1),
+            jsonPath("$.treatmentId").value(1)
+        )
+    }
+
+    @Test
+    @DisplayName("POST /api/bookings - Should create booking, When selected employee has splitted availability on selected date")
+    @SqlSetup
+    fun `test create should create booking when employee has splitted availability`() {
+        Utils.setUserContext(userId = 1)
+
+        val date = Utils.getClosestDateForDay(DayOfWeek.MONDAY)
+        val requestBody = """
+            {
+                "date": "${date}T15:00:00",
                 "servicePointId": 1,
                 "employeeId": 2,
                 "treatmentId": 2
@@ -324,56 +366,43 @@ class BookingControllerTest {
         ).andExpect(status().isCreated).andExpectAll(
             jsonPath("$.id").value(4),
             jsonPath("$.userId").value(1),
-            jsonPath("$.date").value("2025-01-06T15:00:00"),
+            jsonPath("$.date").value("${date}T15:00:00"),
             jsonPath("$.servicePointId").value(1),
             jsonPath("$.employeeId").value(2),
             jsonPath("$.treatmentId").value(2)
         )
-
-        logPassed()
     }
 
     @Test
-    @DisplayName("POST /api/bookings - Should  create booking, When selected employee " +
-            "have splitted availability on selected date and bookings")
-    @SqlGroup(
-        Sql(
-            scripts = ["classpath:testcontainers/insert-data.sql",
-                      "classpath:testcontainers/booking/insert-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            scripts = ["classpath:testcontainers/remove-data.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
+    @DisplayName("POST /api/bookings - Should  create booking, When selected employee has splitted availability on selected date and bookings")
+    @SqlSetup
     fun `test create should create booking when employee has splitted availability and bookings`() {
-        logRunning()
-        setUserContext(userId = 1)
+        Utils.setUserContext(userId = 1)
 
+        val date = Utils.getClosestDateForDay(DayOfWeek.MONDAY)
         val requestBody = """
             {
-                "date": "2025-01-06T15:15:00",
+                "date": "${date}T15:15:00",
                 "servicePointId": 1,
                 "employeeId": 2,
                 "treatmentId": 2
             }
         """.trimIndent()
 
+        jdbcTemplate.update(createBookingSql(), 4, "$date 15:00:00", 2, 1, 2, 1,"PENDING")
+
         mockMvc.perform(
             post("/api/bookings")
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isCreated).andExpectAll(
-            jsonPath("$.id").value(6),
+            jsonPath("$.id").value(5),
             jsonPath("$.userId").value(1),
-            jsonPath("$.date").value("2025-01-06T15:15:00"),
+            jsonPath("$.date").value("${date}T15:15:00"),
             jsonPath("$.servicePointId").value(1),
             jsonPath("$.employeeId").value(2),
             jsonPath("$.treatmentId").value(2)
         )
-
-        logPassed()
     }
 
     @Test
@@ -381,11 +410,10 @@ class BookingControllerTest {
     @DisplayName("POST /api/bookings - Should return 400, When employee does not provide treatment")
     @SqlSetup
     fun `test create should return 400 when employee does not provide treatment`() {
-        logRunning()
-
+        val date = Utils.getClosestDateForDay(DayOfWeek.THURSDAY)
         val requestBody = """
             {
-                "date": "2025-01-02T10:00:00",
+                "date": "${date}T10:00:00",
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 3
@@ -397,21 +425,17 @@ class BookingControllerTest {
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("POST /api/bookings - Should return 400, When employee is not associated " +
-            "with service point")
+    @DisplayName("POST /api/bookings - Should return 400, When employee is not associated with service point")
     @SqlSetup
     fun `test create should return 400 when employee is not associated with service point`() {
-        logRunning()
-
+        val date = Utils.getClosestDateForDay(DayOfWeek.THURSDAY)
         val requestBody = """
             {
-                "date": "2025-01-02T10:00:00",
+                "date": "${date}T10:00:00",
                 "servicePointId": 2,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -423,21 +447,17 @@ class BookingControllerTest {
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("POST /api/bookings - Should return 400, When employee is not available " +
-            "at the specified date")
+    @DisplayName("POST /api/bookings - Should return 400, When employee is not available at the specified date")
     @SqlSetup
     fun `test create should return 400 when employee is not available at the specified date`() {
-        logRunning()
-
+        val date = Utils.getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
-                "date": "2025-01-05T15:15:00",
+                "date": "${date}T15:15:00",
                 "servicePointId": 1,
                 "employeeId": 2,
                 "treatmentId": 2
@@ -449,21 +469,17 @@ class BookingControllerTest {
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("POST /api/bookings - Should return 400, When employee is not available " +
-            "at specified time slot due to different availability")
+    @DisplayName("POST /api/bookings - Should return 400, When employee is not available at specified time slot due to different availability")
     @SqlSetup
     fun `test create should return 400 when employee is not available at specified time slot`() {
-        logRunning()
-
+        val date = Utils.getClosestDateForDay(DayOfWeek.MONDAY)
         val requestBody = """
             {
-                "date": "2025-01-06T14:00:00",
+                "date": "${date}T14:00:00",
                 "servicePointId": 1,
                 "employeeId": 2,
                 "treatmentId": 2
@@ -475,42 +491,36 @@ class BookingControllerTest {
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
-    @DisplayName("POST /api/bookings - Should return 400, When employee is not available " +
-            "at specified time slot due bookings")
+    @DisplayName("POST /api/bookings - Should return 400, When employee is not available at specified time slot due bookings")
     @SqlSetup
     fun `test create should return 400 when employee is not available at specified time slot due bookings`() {
-        logRunning()
-
+        val date = Utils.getClosestDateForDay(DayOfWeek.MONDAY)
         val requestBody = """
             {
-                "date": "2025-01-06T15:00:00",
+                "date": "${date}T15:00:00",
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
             }
         """.trimIndent()
 
+        jdbcTemplate.update(createBookingSql(), 4, "$date 15:00:00", 1, 1, 1, 1, "PENDING")
+
         mockMvc.perform(
             post("/api/bookings")
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
     @WithMockUser(username = "testuser", roles = ["USER"])
     @DisplayName("POST /api/bookings - Should return 400, When date is in the past")
     fun `test create should return 400 when date is in the past`() {
-         logRunning()
-
         val requestBody = """
             {
                 "date": "2020-01-01T00:00:00",
@@ -525,8 +535,6 @@ class BookingControllerTest {
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
@@ -534,11 +542,10 @@ class BookingControllerTest {
     @DisplayName("POST /api/bookings - Should return 404, When provided service point not found")
     @SqlSetup
     fun `test create should return 404 when provided service point not found`() {
-        logRunning()
-
+        val date = Utils.getClosestDateForDay(DayOfWeek.THURSDAY)
         val requestBody = """
             {
-                "date": "2025-01-16T10:00:00",
+                "date": "${date}T10:00:00",
                 "servicePointId": 100,
                 "employeeId": 1,
                 "treatmentId": 1
@@ -550,38 +557,14 @@ class BookingControllerTest {
                 .contentType("application/json")
                 .content(requestBody)
         ).andExpect(status().isNotFound)
-
-        logPassed()
     }
 
-    @Test
-    @DisplayName("DELETE /api/bookings/{id} - Should delete booking - When user is author")
-    @SqlSetup
-    fun `test delete should delete booking when user is author`() {
-        logRunning()
-
-        setUserContext(userId = 1)
-        val bookingId = 1
-
-        mockMvc.perform(get("/api/bookings/$bookingId"))
-            .andExpect(status().isOk)
-
-        mockMvc.perform(delete("/api/bookings/$bookingId"))
-            .andExpect(status().isNoContent)
-
-        mockMvc.perform(get("/api/bookings/$bookingId"))
-            .andExpect(status().isNotFound)
-
-        logPassed()
-    }
 
     @Test
     @DisplayName("DELETE /api/bookings/{id} - Should delete booking, When user is admin")
     @SqlSetup
     fun `test delete should delete booking when user is admin`() {
-        logRunning()
-
-        setAdminContext(userId = 3)
+        Utils.setAdminContext(userId = 3)
         val bookingId = 1
 
         mockMvc.perform(get("/api/bookings/$bookingId"))
@@ -592,115 +575,167 @@ class BookingControllerTest {
 
         mockMvc.perform(get("/api/bookings/$bookingId"))
             .andExpect(status().isNotFound)
+    }
 
-        logPassed()
+    @Test
+    @DisplayName("DELETE /api/bookings/{id} - Should return 403, When user is not admin")
+    @SqlSetup
+    fun `test delete should return 403 when user is not admin`() {
+        Utils.setUserContext(userId = 2)
+        val bookingId = 1
+
+        mockMvc.perform(delete("/api/bookings/$bookingId"))
+            .andExpect(status().isForbidden)
     }
 
     @Test
     @DisplayName("DELETE /api/bookings/{id} - Should return 404, When booking not found")
     @SqlSetup
     fun `test delete should return 404 when booking not found`() {
-        logRunning()
-
-        setUserContext(userId = 1)
+        Utils.setAdminContext(userId = 3)
         val bookingId = 100
 
         mockMvc.perform(delete("/api/bookings/$bookingId"))
             .andExpect(status().isNotFound)
-
-        logPassed()
     }
 
-    @Test
-    @DisplayName("DELETE /api/bookings/{id} - Should return 403, When user is not author")
-    @SqlSetup
-    fun `test delete should return 403 when user is not author`() {
-        logRunning()
-
-        setUserContext(userId = 2)
-        val bookingId = 1
-
-        mockMvc.perform(delete("/api/bookings/$bookingId"))
-            .andExpect(status().isForbidden)
-
-        logPassed()
-    }
 
     @Test
-    @DisplayName("PATCH /api/bookings/{id} - Should update booking, When user is author")
+    @DisplayName("PATCH /api/bookings/{id} - Should update booking, When user is author, And Booking is Pending")
     @SqlSetup
-    fun `test update should update booking when user is author`() {
-        logRunning()
+    fun `test update should update booking when user is author and pending`() {
+        Utils.setUserContext(userId = 1)
 
-        setUserContext(userId = 1)
-        val bookingId = 3
-
+        val bookingId = 4
+        val date = Utils.getClosestDateForDay(DayOfWeek.THURSDAY)
         val requestBody = """
             {
-                "date": "2025-01-16T10:00:00",
+                "date": "${date}T10:00:00",
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
             }
         """.trimIndent()
 
+        jdbcTemplate.update(createBookingSql(), bookingId, "$date 15:00:00", 1, 1, 1, 1,"PENDING")
+
         mockMvc.perform(
             patch("/api/bookings/$bookingId")
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
         ).andExpect(status().isOk).andExpectAll(
-            jsonPath("$.id").value(3),
-            jsonPath("$.date").value("2025-01-16T10:00:00"),
+            jsonPath("$.id").value(bookingId),
+            jsonPath("$.date").value("${date}T10:00:00"),
             jsonPath("$.userId").value(1),
             jsonPath("$.servicePointId").value(1),
             jsonPath("$.employeeId").value(1),
             jsonPath("$.treatmentId").value(1)
         )
-
-        logPassed()
     }
 
     @Test
-    @DisplayName("PATCH /api/bookings/{id} - Should update, When user is admin")
+    @DisplayName("PATCH /api/bookings/{id} - Should update, When user is admin, And Booking is Pending")
     @SqlSetup
     fun `test update should update when user is admin`() {
-        logRunning()
-
-        setAdminContext(userId = 3)
-        val bookingId = 3
-
+        Utils.setAdminContext(userId = 3)
+        val bookingId = 4
+        val date = Utils.getClosestDateForDay(DayOfWeek.THURSDAY)
         val requestBody = """
             {
-                "date": "2025-01-16T10:00:00",
+                "date": "${date}T10:00:00",
                 "servicePointId": 1,
                 "employeeId": 1,
                 "treatmentId": 1
             }
         """.trimIndent()
 
+        jdbcTemplate.update(createBookingSql(), 4, "$date 15:00:00", 1, 1, 1, 1,"PENDING")
+
         mockMvc.perform(
             patch("/api/bookings/$bookingId")
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
         ).andExpect(status().isOk).andExpectAll(
-            jsonPath("$.id").value(3),
-            jsonPath("$.date").value("2025-01-16T10:00:00"),
+            jsonPath("$.id").value(4),
+            jsonPath("$.date").value("${date}T10:00:00"),
             jsonPath("$.userId").value(1),
             jsonPath("$.servicePointId").value(1),
             jsonPath("$.employeeId").value(1),
             jsonPath("$.treatmentId").value(1)
         )
+    }
 
-        logPassed()
+    @Test
+    @DisplayName("PATCH /api/bookings/{id} - Should update booking, When user is author, employee has CANCELLED booking on selected date")
+    @SqlSetup
+    fun `test update should update when employee has CANCELLED booking`() {
+        Utils.setAdminContext(userId = 3)
+        val bookingId = 4
+        val date = Utils.getClosestDateForDay(DayOfWeek.THURSDAY)
+        val requestBody = """
+            {
+                "date": "${date}T10:00:00",
+                "servicePointId": 1,
+                "employeeId": 1,
+                "treatmentId": 1
+            }
+        """.trimIndent()
+
+        jdbcTemplate.update(createBookingSql(), 4, "$date 15:00:00", 1, 1, 1, 1,"PENDING")
+        jdbcTemplate.update(createBookingSql(), 5, "$date 10:00:00", 1, 1, 1, 1,"CANCELLED")
+
+        mockMvc.perform(
+            patch("/api/bookings/$bookingId")
+                .contentType("application/merge-patch+json")
+                .content(requestBody)
+        ).andExpect(status().isOk).andExpectAll(
+            jsonPath("$.id").value(4),
+            jsonPath("$.date").value("${date}T10:00:00"),
+            jsonPath("$.userId").value(1),
+            jsonPath("$.servicePointId").value(1),
+            jsonPath("$.employeeId").value(1),
+            jsonPath("$.treatmentId").value(1)
+        )
+    }
+
+    @Test
+    @DisplayName("PATCH /api/bookings/{id} - Should ignore illegal field")
+    @SqlSetup
+    fun `test update should ignore illegal field`() {
+        Utils.setUserContext(userId = 2)
+
+        val bookingId = 4
+        val date = Utils.getClosestDateForDay(DayOfWeek.THURSDAY)
+        val requestBody = """
+            {
+                "date": "${date}T10:00:00",
+                "servicePointId": 1,
+                "employeeId": 1,
+                "treatmentId": 1
+            }
+        """.trimIndent()
+
+        jdbcTemplate.update(createBookingSql(), bookingId, "$date 15:00:00", 1, 1, 1, 2,"PENDING")
+
+        mockMvc.perform(
+            patch("/api/bookings/$bookingId")
+                .contentType("application/merge-patch+json")
+                .content(requestBody)
+        ).andExpect(status().isOk).andExpectAll(
+            jsonPath("$.id").value(bookingId),
+            jsonPath("$.date").value("${date}T10:00:00"),
+            jsonPath("$.userId").value(2),
+            jsonPath("$.servicePointId").value(1),
+            jsonPath("$.employeeId").value(1),
+            jsonPath("$.treatmentId").value(1)
+        )
     }
 
     @Test
     @DisplayName("PATCH /api/bookings/{id} - Should return 404, When booking not found")
     @SqlSetup
     fun `test update should return 404 when booking not found`() {
-        logRunning()
-
-        setUserContext(userId = 1)
+        Utils.setUserContext(userId = 1)
         val bookingId = 100
 
         val requestBody = """
@@ -717,17 +752,13 @@ class BookingControllerTest {
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
         ).andExpect(status().isNotFound)
-
-        logPassed()
     }
 
     @Test
     @DisplayName("PATCH /api/bookings/{id} - Should return 403, When user is not author")
     @SqlSetup
     fun `test update should return 403 when user is not author`() {
-        logRunning()
-
-        setUserContext(userId = 2)
+        Utils.setUserContext(userId = 2)
         val bookingId = 1
 
         val requestBody = """
@@ -744,17 +775,13 @@ class BookingControllerTest {
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
         ).andExpect(status().isForbidden)
-
-        logPassed()
     }
 
     @Test
     @DisplayName("PATCH /api/bookings/{id} - Should return 400, When date is in the past")
     @SqlSetup
     fun `test update should return 400 when date is in the past`() {
-        logRunning()
-
-        setUserContext(userId = 1)
+        Utils.setUserContext(userId = 1)
         val bookingId = 1
 
         val requestBody = """
@@ -771,50 +798,13 @@ class BookingControllerTest {
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
-    @DisplayName("PATCH /api/bookings/{id} - Should ignore illegal field")
+    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updating COMPLETED Booking")
     @SqlSetup
-    fun `test update should ignore illegal field`() {
-        logRunning()
-
-        setUserContext(userId = 1)
-        val bookingId = 3
-
-        val requestBody = """
-            {
-                "date": "2025-01-09T10:00:00",
-                "illegalField": "illegalValue",
-                "treatmentId": 2
-            }
-        """.trimIndent()
-
-        mockMvc.perform(
-            patch("/api/bookings/$bookingId")
-                .contentType("application/merge-patch+json")
-                .content(requestBody)
-        ).andExpect(status().isOk).andExpectAll(
-            jsonPath("$.id").value(3),
-            jsonPath("$.date").value("2025-01-09T10:00:00"),
-            jsonPath("$.userId").value(1),
-            jsonPath("$.servicePointId").value(1),
-            jsonPath("$.employeeId").value(1),
-            jsonPath("$.treatmentId").value(2)
-        )
-
-        logPassed()
-    }
-
-    @Test
-    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updating past booking")
-    @SqlSetup
-    fun `test update should return 400 when updating past booking`() {
-        logRunning()
-
-        setUserContext(userId = 1)
+    fun `test update should return 400 when updating completed booking`() {
+        Utils.setUserContext(userId = 1)
         val bookingId = 1
 
         val requestBody = """
@@ -828,18 +818,36 @@ class BookingControllerTest {
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
-    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updated employee does " +
-            "not provide treatment")
+    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updating CANCELLED Booking")
+    @SqlSetup
+    fun `test update should return 400 when updating cancelled booking`() {
+        Utils.setUserContext(userId = 1)
+
+        val bookingId = 4
+        val date = Utils.getClosestDateForDay(DayOfWeek.MONDAY)
+        val requestBody = """
+            {
+                "treatmentId": 2
+            }
+        """.trimIndent()
+
+        jdbcTemplate.update(createBookingSql(), bookingId, "$date 15:00:00", 1, 1, 1, 1,"CANCELLED")
+
+        mockMvc.perform(
+            patch("/api/bookings/$bookingId")
+                .contentType("application/merge-patch+json")
+                .content(requestBody)
+        ).andExpect(status().isBadRequest)
+    }
+
+    @Test
+    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updated employee does not provide treatment")
     @SqlSetup
     fun `test update should return 400 when updated employee does not provide treatment`() {
-        logRunning()
-
-        setUserContext(userId = 1)
+        Utils.setUserContext(userId = 1)
         val bookingId = 3
 
         val requestBody = """
@@ -853,18 +861,13 @@ class BookingControllerTest {
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
-    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updated employee is not " +
-            "associated with service point")
+    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updated employee is not associated with service point")
     @SqlSetup
     fun `test update should return 400 when updated employee is not associated with service point`() {
-        logRunning()
-
-        setUserContext(userId = 1)
+        Utils.setUserContext(userId = 1)
         val bookingId = 3
 
         val requestBody = """
@@ -879,18 +882,13 @@ class BookingControllerTest {
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
-    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updated employee is not " +
-            "available at the specified date")
+    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updated employee is not available at the specified date")
     @SqlSetup
     fun `test update should return 400 when updated employee is not available at the specified date`() {
-        logRunning()
-
-        setUserContext(userId = 1)
+        Utils.setUserContext(userId = 1)
         val bookingId = 3
 
         val requestBody = """
@@ -904,18 +902,13 @@ class BookingControllerTest {
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
-    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updated employee is not " +
-            "available at specified time slot")
+    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updated employee is not available at specified time slot")
     @SqlSetup
     fun `test update should return 400 when updated employee is not available at specified time slot`() {
-        logRunning()
-
-        setUserContext(userId = 1)
+        Utils.setUserContext(userId = 1)
         val bookingId = 3
 
         val requestBody = """
@@ -929,69 +922,37 @@ class BookingControllerTest {
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
-    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updated employee is not " +
-            "available at specified time slot due to bookings")
-    @SqlGroup(
-        Sql(
-            scripts = ["classpath:testcontainers/insert-data.sql",
-                      "classpath:testcontainers/booking/insert-booking.sql"],
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
-        ),
-        Sql(
-            scripts = ["classpath:testcontainers/remove-data.sql"],
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-        )
-    )
+    @DisplayName("PATCH /api/bookings/{id} - Should return 400, When updated employee is not available at specified time slot due to bookings")
+    @SqlSetup
     fun `test update should return 400 when updated employee is not available at specified time slot due to bookings`() {
-        logRunning()
+        Utils.setUserContext(userId = 1)
 
-        setUserContext(userId = 1)
-        val bookingId = 3
-
+        val bookingId = 4
+        val date = Utils.getClosestDateForDay(DayOfWeek.THURSDAY)
         val requestBody = """
             {
-                "date": "2025-01-02T15:00:00",
+                "date": "${date}T15:00:00",
             }
         """.trimIndent()
+
+        jdbcTemplate.update(createBookingSql(), bookingId, "$date 09:00:00", 1, 1, 1, 1,"PENDING")
+        jdbcTemplate.update(createBookingSql(), 5, "$date 15:00:00", 1, 1, 1, 1,"PENDING")
 
         mockMvc.perform(
             patch("/api/bookings/$bookingId")
                 .contentType("application/merge-patch+json")
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
-    private fun setUserContext(userId: Int) {
-        setContext(userId, "ROLE_USER")
-    }
-
-    private fun setAdminContext(userId: Int) {
-        setContext(userId, "ROLE_ADMIN")
-    }
-
-    private fun setContext(userId: Int, role: String) {
-        val customAuth = CustomAuthenticationToken(
-            principal = "testuser",
-            userId = userId,
-            credentials = null,
-            authorities = listOf(SimpleGrantedAuthority(role))
-        )
-        SecurityContextHolder.getContext().authentication = customAuth
-    }
-
-    private fun logRunning() {
-        LOGGER.info("RUNNING...")
-    }
-
-    private fun logPassed() {
-        LOGGER.info("PASSED!")
+    private fun createBookingSql(): String {
+        return """
+            INSERT INTO booking (id, date, employee_id, service_point_id, treatment_id, user_id, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """.trimIndent()
     }
 
     companion object {

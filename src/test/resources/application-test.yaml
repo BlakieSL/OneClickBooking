@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:tc:mysql:8.0.30:///testdb?TC_INITSCRIPT=testcontainers/create-schema.sql
+    url: jdbc:tc:mysql:8.0.30:///testdb?TC_INITSCRIPT=testcontainers/schema/create-schema.sql
 
   jpa:
     properties:

@@ -43,6 +43,11 @@ class BookingSpecification(private val criteria: FilterCriteria): Specification<
                 root = root,
                 joinProperty = "user"
             )
+            BookingFilterKey.STATUS.name -> GenericSpecificationHelper.buildPredicateStatusProperty(
+                builder = builder,
+                criteria = criteria,
+                root = root
+            )
             else -> throw InvalidFilterKeyException(criteria.filterKey)
         }
     }
