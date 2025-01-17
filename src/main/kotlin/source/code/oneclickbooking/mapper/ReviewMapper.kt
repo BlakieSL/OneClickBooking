@@ -9,10 +9,12 @@ import source.code.oneclickbooking.dto.response.innerDtos.UserDetails
 
 import source.code.oneclickbooking.model.Review
 import source.code.oneclickbooking.service.declaration.review.ReviewMappingResolver
+import source.code.oneclickbooking.service.declaration.util.TimeProviderService
 
 @Component
 class ReviewMapper(
-    private val resolver: ReviewMappingResolver
+    private val resolver: ReviewMappingResolver,
+    private val timeProviderService: TimeProviderService,
 ) {
     fun toResponseDto(review: Review): ReviewResponseDto {
         return ReviewResponseDto(
@@ -38,7 +40,8 @@ class ReviewMapper(
         return Review.of(
             rating = dto.rating,
             text = dto.text,
-            booking = resolver.resolveBooking(dto.bookingId)
+            booking = resolver.resolveBooking(dto.bookingId),
+            date = timeProviderService.getCurrentTime().toLocalDate()
         )
     }
 

@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.testcontainers.junit.jupiter.Testcontainers
 import source.code.oneclickbooking.integration.annotation.SqlSetup
+import source.code.oneclickbooking.integration.controller.booking.BookingControllerDeleteTest
 
 @ActiveProfiles("test")
 @Testcontainers
@@ -40,8 +41,6 @@ class ServicePointControllerTest {
     @DisplayName("GET /api/service-points/{id} - Should return service point")
     @SqlSetup
     fun `test get service point`() {
-        logRunning()
-
         mockMvc.perform(get("/api/service-points/1"))
             .andExpect(status().isOk)
             .andExpectAll(
@@ -51,19 +50,13 @@ class ServicePointControllerTest {
                 jsonPath("$.name").value("test_name1"),
                 jsonPath("$.phone").value("test_phone1")
             )
-
-        logPassed()
     }
 
     @Test
     @WithMockUser(username = "user", roles = ["USER"])
     @DisplayName("GET /api/service-points/{id} - Should return 404, When not found")
     fun `test get service point not found`() {
-        logRunning()
-
         mockMvc.perform(get("/api/service-points/999")).andExpect(status().isNotFound)
-
-        logPassed()
     }
 
     @Test
@@ -71,8 +64,6 @@ class ServicePointControllerTest {
     @SqlSetup
     @DisplayName("GET /api/service-points - Should return all service points")
     fun `test get all service points`() {
-        logRunning()
-
         mockMvc.perform(get("/api/service-points"))
             .andExpect(status().isOk)
             .andExpectAll(
@@ -80,32 +71,18 @@ class ServicePointControllerTest {
                 jsonPath("$[0].id").value(1),
                 jsonPath("$[1].id").value(2)
             )
-
-        logPassed()
     }
 
     @Test
     @WithMockUser(username = "user", roles = ["USER"])
     @DisplayName("GET /api/service-points - Should return empty list")
     fun `test get all service points empty`() {
-        logRunning()
-
         mockMvc.perform(get("/api/service-points"))
             .andExpect(status().isOk)
             .andExpectAll(jsonPath("$.size()").value(0))
-
-        logPassed()
-    }
-
-    private fun logRunning() {
-        LOGGER.info("RUNNING...")
-    }
-
-    private fun logPassed() {
-        LOGGER.info("PASSED!")
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(BookingControllerTest::class.java)
+        private val LOGGER: Logger = LoggerFactory.getLogger(BookingControllerDeleteTest::class.java)
     }
 }

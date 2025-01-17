@@ -15,16 +15,6 @@ object Utils {
         setContext(userId, "ROLE_ADMIN")
     }
 
-    private fun setContext(userId: Int, role: String) {
-        val customAuth = CustomAuthenticationToken(
-            principal = "testuser",
-            userId = userId,
-            credentials = null,
-            authorities = listOf(SimpleGrantedAuthority(role))
-        )
-        SecurityContextHolder.getContext().authentication = customAuth
-    }
-
     fun getClosestDateForDay(desiredDay: DayOfWeek): String {
         val today = LocalDate.now()
         val currentDay = today.dayOfWeek
@@ -37,5 +27,22 @@ object Utils {
 
         val closestDate = today.plusDays(daysToAdd.toLong())
         return closestDate.toString()
+    }
+
+    fun createBookingSql(): String {
+        return """
+            INSERT INTO booking (id, date, employee_id, service_point_id, treatment_id, user_id, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """.trimIndent()
+    }
+
+    private fun setContext(userId: Int, role: String) {
+        val customAuth = CustomAuthenticationToken(
+            principal = "testuser",
+            userId = userId,
+            credentials = null,
+            authorities = listOf(SimpleGrantedAuthority(role))
+        )
+        SecurityContextHolder.getContext().authentication = customAuth
     }
 }

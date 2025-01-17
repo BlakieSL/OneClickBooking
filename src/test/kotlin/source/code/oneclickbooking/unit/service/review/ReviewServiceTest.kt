@@ -32,6 +32,7 @@ import source.code.oneclickbooking.service.declaration.util.ValidationService
 import source.code.oneclickbooking.service.implementation.review.ReviewServiceImpl
 import source.code.oneclickbooking.service.implementation.util.MessageResolver
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 @ExtendWith(MockitoExtension::class)
@@ -78,7 +79,8 @@ class ReviewServiceTest {
             id = 1,
             rating = 5,
             text = "Great service!",
-            booking = booking
+            booking = booking,
+            LocalDate.now()
         )
 
         reviewCreateDto = ReviewCreateDto(
@@ -117,7 +119,8 @@ class ReviewServiceTest {
             id = 1,
             rating = review.rating,
             text = review.text,
-            booking = review.booking
+            booking = review.booking,
+            date = review.date
         )
         booking.status = BookingStatus.COMPLETED
 

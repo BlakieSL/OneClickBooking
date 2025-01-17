@@ -20,6 +20,7 @@ import source.code.oneclickbooking.repository.ServicePointRepository
 import source.code.oneclickbooking.repository.TreatmentRepository
 import source.code.oneclickbooking.service.declaration.schedule.ScheduleService
 import source.code.oneclickbooking.service.declaration.schedule.ScheduleUtilsService
+import source.code.oneclickbooking.service.declaration.util.TimeProviderService
 import source.code.oneclickbooking.specification.BookingSpecification
 import source.code.oneclickbooking.specification.SpecificationBuilder
 import source.code.oneclickbooking.specification.SpecificationFactory
@@ -29,6 +30,7 @@ import java.time.LocalDateTime
 @Service
 class ScheduleServiceImpl(
     private val utilsService: ScheduleUtilsService,
+    private val timeProviderService: TimeProviderService,
     private val bookingRepository: BookingRepository,
     private val employeeRepository: EmployeeRepository,
     private val servicePointRepository: ServicePointRepository,
@@ -192,7 +194,7 @@ class ScheduleServiceImpl(
             ?.let { LocalDate.parse(it) }
             ?: throw LocalizedIllegalArgument(ExceptionMessages.DATE_REQUIRED)
 
-        if (date.isBefore(LocalDate.now())) {
+        if (date.isBefore(timeProviderService.getCurrentTime().toLocalDate())) {
             throw LocalizedIllegalArgument(ExceptionMessages.DATE_IN_PAST)
         }
 

@@ -24,9 +24,11 @@ import source.code.oneclickbooking.repository.BookingRepository
 import source.code.oneclickbooking.repository.EmployeeRepository
 import source.code.oneclickbooking.repository.ServicePointRepository
 import source.code.oneclickbooking.repository.TreatmentRepository
+import source.code.oneclickbooking.service.declaration.util.TimeProviderService
 import source.code.oneclickbooking.service.implementation.schedule.ScheduleServiceImpl
 import source.code.oneclickbooking.service.implementation.schedule.ScheduleUtilsServiceImpl
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeParseException
 import java.util.*
@@ -47,6 +49,9 @@ class ScheduleServiceTest {
 
     @Mock
     private lateinit var scheduleUtilsService: ScheduleUtilsServiceImpl
+
+    @Mock
+    private lateinit var timeProviderService: TimeProviderService
 
     @InjectMocks
     private lateinit var scheduleService: ScheduleServiceImpl
@@ -145,6 +150,7 @@ class ScheduleServiceTest {
 
         whenever(treatmentRepository.findById(100))
             .thenReturn(Optional.of(Treatment.createDefault(id = 100)))
+        whenever(timeProviderService.getCurrentTime()).thenReturn(LocalDateTime.now())
         whenever(servicePointRepository.findByIdWithAssociations(999)).thenReturn(null)
 
         assertThrows<RecordNotFoundException> {
@@ -164,7 +170,7 @@ class ScheduleServiceTest {
 
         whenever(treatmentRepository.findById(999))
             .thenReturn(Optional.empty())
-
+        whenever(timeProviderService.getCurrentTime()).thenReturn(LocalDateTime.now())
         assertThrows<RecordNotFoundException> {
             scheduleService.getSchedule(request)
         }
@@ -187,6 +193,7 @@ class ScheduleServiceTest {
 
         whenever(servicePointRepository.findByIdWithAssociations(1)).thenReturn(servicePoint)
         whenever(employeeRepository.findByIdWithAvailabilities(10)).thenReturn(employee1)
+        whenever(timeProviderService.getCurrentTime()).thenReturn(LocalDateTime.now())
         whenever(treatmentRepository.findById(100)).thenReturn(Optional.of(treatment))
         whenever(bookingRepository.findAll(any<Specification<Booking>>())).thenReturn(emptyList())
         whenever(scheduleUtilsService.generatePotentialSlots(
@@ -237,6 +244,7 @@ class ScheduleServiceTest {
         val expectedSlots = allPotentialSlots.filterNot { it in overlappingSlots }
 
         whenever(servicePointRepository.findByIdWithAssociations(1)).thenReturn(servicePoint)
+        whenever(timeProviderService.getCurrentTime()).thenReturn(LocalDateTime.now())
         whenever(employeeRepository.findByIdWithAvailabilities(10)).thenReturn(employee1)
         whenever(treatmentRepository.findById(100)).thenReturn(Optional.of(treatment))
         whenever(bookingRepository.findAll(any<Specification<Booking>>())).thenReturn(listOf(booking))
@@ -277,6 +285,7 @@ class ScheduleServiceTest {
         val expectedSlots = (employee1Slots + employee2Slots).distinct().sorted()
 
         whenever(servicePointRepository.findByIdWithAssociations(1)).thenReturn(servicePoint)
+        whenever(timeProviderService.getCurrentTime()).thenReturn(LocalDateTime.now())
         whenever(treatmentRepository.findById(100)).thenReturn(Optional.of(treatment))
         whenever(bookingRepository.findAll(any<Specification<Booking>>())).thenReturn(emptyList())
         whenever(employeeRepository.findAllByServicePointIdAndTreatmentId(1, 100))
@@ -333,6 +342,7 @@ class ScheduleServiceTest {
         val expectedSlots = (employee1Slots + employee2Slots).distinct().sorted()
 
         whenever(servicePointRepository.findByIdWithAssociations(1)).thenReturn(servicePoint)
+        whenever(timeProviderService.getCurrentTime()).thenReturn(LocalDateTime.now())
         whenever(treatmentRepository.findById(100)).thenReturn(Optional.of(treatment))
         whenever(bookingRepository.findAll(any<Specification<Booking>>())).thenReturn(listOf(booking))
         whenever(employeeRepository.findAllByServicePointIdAndTreatmentId(1, 100))

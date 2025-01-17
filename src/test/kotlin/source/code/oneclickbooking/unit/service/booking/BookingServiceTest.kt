@@ -20,10 +20,12 @@ import source.code.oneclickbooking.mapper.BookingMapper
 import source.code.oneclickbooking.model.*
 import source.code.oneclickbooking.repository.*
 import source.code.oneclickbooking.service.declaration.util.JsonPatchService
+import source.code.oneclickbooking.service.declaration.util.TimeProviderService
 import source.code.oneclickbooking.service.declaration.util.ValidationService
 import source.code.oneclickbooking.service.implementation.booking.BookingMappingResolverImpl
 import source.code.oneclickbooking.service.implementation.booking.BookingServiceImpl
 import source.code.oneclickbooking.service.implementation.schedule.ScheduleUtilsServiceImpl
+import source.code.oneclickbooking.service.implementation.util.TimeProviderServiceImpl
 import java.time.LocalDateTime
 import java.util.*
 
@@ -59,6 +61,9 @@ class BookingServiceTest {
 
     @Mock
     private lateinit var treatmentRepository: TreatmentRepository
+
+    @Mock
+    private lateinit var timeProviderService: TimeProviderServiceImpl
 
     @InjectMocks
     private lateinit var bookingService: BookingServiceImpl

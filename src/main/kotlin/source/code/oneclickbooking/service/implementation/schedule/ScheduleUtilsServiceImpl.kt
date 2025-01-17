@@ -4,18 +4,21 @@ import org.springframework.stereotype.Component
 import source.code.oneclickbooking.model.Booking
 import source.code.oneclickbooking.model.EmployeeAvailability
 import source.code.oneclickbooking.service.declaration.schedule.ScheduleUtilsService
+import source.code.oneclickbooking.service.declaration.util.TimeProviderService
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Component
-class ScheduleUtilsServiceImpl : ScheduleUtilsService {
+class ScheduleUtilsServiceImpl(
+    private val timeProviderService: TimeProviderService,
+) : ScheduleUtilsService {
     override fun generatePotentialSlots(
         date: LocalDate,
         availability: EmployeeAvailability,
         incrementMinutes: Int,
         treatmentDuration: Int
     ): List<LocalDateTime> {
-        val now = LocalDateTime.now()
+        val now = timeProviderService.getCurrentTime()
         val startDateTime = if (date.isEqual(now.toLocalDate())) {
             maxOf(
                 roundUpToNearestIncrement(now, incrementMinutes),

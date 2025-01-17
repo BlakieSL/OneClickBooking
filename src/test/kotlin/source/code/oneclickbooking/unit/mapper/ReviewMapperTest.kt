@@ -14,13 +14,18 @@ import source.code.oneclickbooking.mapper.ReviewMapper
 import source.code.oneclickbooking.model.Booking
 import source.code.oneclickbooking.model.Review
 import source.code.oneclickbooking.service.declaration.review.ReviewMappingResolver
+import source.code.oneclickbooking.service.declaration.util.TimeProviderService
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ExtendWith(MockitoExtension::class)
 class ReviewMapperTest {
 
     @Mock
     private lateinit var resolver: ReviewMappingResolver
+
+    @Mock
+    private lateinit var timeProviderService: TimeProviderService
 
     @InjectMocks
     private lateinit var reviewMapper: ReviewMapper
@@ -34,7 +39,7 @@ class ReviewMapperTest {
     @BeforeEach
     fun setUp() {
         booking = Booking.createDefault(id = 1)
-        review = Review.of(id = 1, rating = 5, text = "Great service!", booking = booking)
+        review = Review.of(id = 1, rating = 5, text = "Great service!", booking = booking, LocalDate.now())
         createDto = ReviewCreateDto(rating = 5, text = "Great service!", bookingId = 1)
         updateDto = ReviewUpdateDto(rating = 4, text = "Updated review")
     }
@@ -42,6 +47,7 @@ class ReviewMapperTest {
     @Test
     fun `should map ReviewCreateDto to Review`() {
         whenever(resolver.resolveBooking(1)).thenReturn(booking)
+        whenever(timeProviderService.getCurrentTime()).thenReturn(LocalDateTime.now())
 
         val result = reviewMapper.toEntity(createDto)
 

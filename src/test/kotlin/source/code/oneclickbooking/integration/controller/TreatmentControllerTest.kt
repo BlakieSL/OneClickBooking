@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.testcontainers.junit.jupiter.Testcontainers
 import source.code.oneclickbooking.integration.annotation.SqlSetup
+import source.code.oneclickbooking.integration.controller.booking.BookingControllerDeleteTest
 
 @ActiveProfiles("test")
 @Testcontainers
@@ -40,8 +41,6 @@ class TreatmentControllerTest {
     @SqlSetup
     @DisplayName("GET /api/treatments/{id} - Should return treatment")
     fun `test get treatment`() {
-        logRunning()
-
         mockMvc.perform(get("/api/treatments/1"))
             .andExpect(status().isOk)
             .andExpectAll(
@@ -51,19 +50,13 @@ class TreatmentControllerTest {
                 jsonPath("$.duration").value(1),
                 jsonPath("$.price").value(1.0)
             )
-
-        logPassed()
     }
 
     @Test
     @WithMockUser(username = "user", roles = ["USER"])
     @DisplayName("GET /api/treatments/{id} - Should return 404, When not found")
     fun `test get treatment not found`() {
-        logRunning()
-
         mockMvc.perform(get("/api/treatments/999")).andExpect(status().isNotFound)
-
-        logPassed()
     }
 
     @Test
@@ -71,8 +64,6 @@ class TreatmentControllerTest {
     @SqlSetup
     @DisplayName("GET /api/treatments - Should return all treatments")
     fun `test get all treatments`() {
-        logRunning()
-
         mockMvc.perform(get("/api/treatments"))
             .andExpect(status().isOk)
             .andExpectAll(
@@ -81,21 +72,15 @@ class TreatmentControllerTest {
                 jsonPath("$[1].id").value(2),
                 jsonPath("$[2].id").value(3)
             )
-
-        logPassed()
     }
 
     @Test
     @WithMockUser(username = "user", roles = ["USER"])
     @DisplayName("GET /api/treatments - Should return empty list")
     fun `test get all treatments empty`() {
-        logRunning()
-
         mockMvc.perform(get("/api/treatments"))
             .andExpect(status().isOk)
             .andExpectAll(jsonPath("$.size()").value(0))
-
-        logPassed()
     }
 
     @Test
@@ -104,8 +89,6 @@ class TreatmentControllerTest {
     @DisplayName("GET /api/treatments/service-point/{servicePointId} - Should return all treatments " +
             "by service point")
     fun `test get all treatments by service point`() {
-        logRunning()
-
         mockMvc.perform(get("/api/treatments/service-point/1"))
             .andExpect(status().isOk)
             .andExpectAll(
@@ -113,33 +96,19 @@ class TreatmentControllerTest {
                 jsonPath("$[0].id").value(1),
                 jsonPath("$[1].id").value(2)
             )
-
-        logPassed()
     }
 
     @Test
     @WithMockUser(username = "user", roles = ["USER"])
     @DisplayName("GET /api/treatments/service-point/{servicePointId} - Should return empty list")
     fun `test get all treatments by service point empty`() {
-        logRunning()
-
         mockMvc.perform(get("/api/treatments/service-point/999"))
             .andExpect(status().isOk)
             .andExpectAll(jsonPath("$.size()").value(0))
-
-        logPassed()
-    }
-
-    private fun logRunning() {
-        LOGGER.info("RUNNING...")
-    }
-
-    private fun logPassed() {
-        LOGGER.info("PASSED!")
     }
 
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(BookingControllerTest::class.java)
+        private val LOGGER: Logger = LoggerFactory.getLogger(BookingControllerDeleteTest::class.java)
     }
 }
 

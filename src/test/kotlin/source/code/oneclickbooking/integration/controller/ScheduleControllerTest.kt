@@ -19,10 +19,12 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.testcontainers.junit.jupiter.Testcontainers
+import source.code.oneclickbooking.integration.Utils.createBookingSql
+import source.code.oneclickbooking.integration.Utils.getClosestDateForDay
 import source.code.oneclickbooking.integration.annotation.SqlSetup
+import source.code.oneclickbooking.integration.controller.booking.BookingControllerDeleteTest
 import java.time.DayOfWeek
 import java.time.Duration
-import java.time.LocalDate
 import java.time.LocalTime
 
 @ActiveProfiles("test")
@@ -51,8 +53,6 @@ class ScheduleControllerTest {
     @DisplayName("POST /api/schedule - Should return schedule, When request with employee")
     @SqlSetup
     fun `test get schedule with employee`() {
-        logRunning()
-
         val date = getClosestDateForDay(DayOfWeek.MONDAY)
         val requestBody = """
             {
@@ -94,8 +94,6 @@ class ScheduleControllerTest {
             jsonPath("$.freeSlots[0]").value(expectedFirstSlot),
             jsonPath("$.freeSlots[-1]").value(expectedLastSlot)
         )
-
-        logPassed()
     }
 
     @Test
@@ -104,8 +102,6 @@ class ScheduleControllerTest {
             "that has bookings")
     @SqlSetup
     fun `test get schedule with employee that has bookings`() {
-        logRunning()
-
         val date = getClosestDateForDay(DayOfWeek.MONDAY)
         val request = """
             {
@@ -132,12 +128,8 @@ class ScheduleControllerTest {
                 "treatmentId": 2
             }
         """.trimIndent()
-        val sql = """
-            INSERT INTO booking (id, date, employee_id, service_point_id, treatment_id, user_id, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        """.trimIndent()
 
-        jdbcTemplate.update(sql, 4, "$date 15:00:00", 1, 1, 1, 1,"PENDING")
+        jdbcTemplate.update(createBookingSql(), 4, "$date 15:00:00", 1, 1, 1, 1,"PENDING")
 
         val expectedFirstSlot = "${date}T09:00:00"
         val expectedLastSlot = "${date}T17:45:00"
@@ -164,8 +156,6 @@ class ScheduleControllerTest {
             "no availabilities found")
     @SqlSetup
     fun `test get schedule with employee and no availabilities`() {
-        logRunning()
-
         val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
@@ -201,8 +191,6 @@ class ScheduleControllerTest {
             jsonPath("$.freeSlots").isArray,
             jsonPath("$.freeSlots").isEmpty
         )
-
-        logPassed()
     }
 
     @Test
@@ -211,8 +199,6 @@ class ScheduleControllerTest {
             "no availabilities found")
     @SqlSetup
     fun `test get schedule without employee and no availabilities`() {
-        logRunning()
-
         val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
@@ -243,8 +229,6 @@ class ScheduleControllerTest {
             jsonPath("$.freeSlots").isArray,
             jsonPath("$.freeSlots").isEmpty
         )
-
-        logPassed()
     }
 
     @Test
@@ -252,8 +236,6 @@ class ScheduleControllerTest {
     @DisplayName("POST /api/schedule - Should return schedule, When request without employee")
     @SqlSetup
     fun `test get schedule without employee`() {
-        logRunning()
-
         val date = getClosestDateForDay(DayOfWeek.THURSDAY)
         val requestBody = """
             {
@@ -290,8 +272,6 @@ class ScheduleControllerTest {
             jsonPath("$.freeSlots[0]").value(expectedFirstSlot),
             jsonPath("$.freeSlots[-1]").value(expectedLastSlot)
         )
-
-        logPassed()
     }
 
     @Test
@@ -299,8 +279,6 @@ class ScheduleControllerTest {
     @DisplayName("POST /api/schedule - Should return 400, When treatment not provided")
     @SqlSetup
     fun `test get schedule without treatment`() {
-        logRunning()
-
         val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
@@ -327,8 +305,6 @@ class ScheduleControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
@@ -336,8 +312,6 @@ class ScheduleControllerTest {
     @DisplayName("POST /api/schedule - Should return 400, When service point not provided")
     @SqlSetup
     fun `test get schedule without service point`() {
-        logRunning()
-
         val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
@@ -367,8 +341,6 @@ class ScheduleControllerTest {
     @DisplayName("POST /api/schedule - Should return 400, When date not provided")
     @SqlSetup
     fun `test get schedule without date`() {
-        logRunning()
-
         val requestBody = """
             {
                 "filter": {
@@ -390,8 +362,6 @@ class ScheduleControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
@@ -399,8 +369,6 @@ class ScheduleControllerTest {
     @DisplayName("POST /api/schedule - Should return 400, When invalid key provided")
     @SqlSetup
     fun `test get schedule with invalid key`() {
-        logRunning()
-
         val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
@@ -428,8 +396,6 @@ class ScheduleControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
@@ -437,8 +403,6 @@ class ScheduleControllerTest {
     @DisplayName("POST /api/schedule - Should return 400, When invalid operation provided for date")
     @SqlSetup
     fun `test get schedule with invalid operation for date`() {
-        logRunning()
-
         val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
@@ -467,8 +431,6 @@ class ScheduleControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
@@ -477,8 +439,6 @@ class ScheduleControllerTest {
             "for employee")
     @SqlSetup
     fun `test get schedule with invalid operation for employee`() {
-        logRunning()
-
         val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
@@ -511,8 +471,6 @@ class ScheduleControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
@@ -521,8 +479,6 @@ class ScheduleControllerTest {
             " for service point")
     @SqlSetup
     fun `test get schedule with invalid operation for service point`() {
-        logRunning()
-
         val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
@@ -550,8 +506,6 @@ class ScheduleControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
         ).andExpect(status().isBadRequest)
-
-        logPassed()
     }
 
     @Test
@@ -559,8 +513,6 @@ class ScheduleControllerTest {
     @DisplayName("POST /api/schedule - Should return 404, When treatment not found")
     @SqlSetup
     fun `test get schedule with treatment not found`() {
-        logRunning()
-
         val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
@@ -588,8 +540,6 @@ class ScheduleControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
         ).andExpect(status().isNotFound)
-
-        logPassed()
     }
 
     @Test
@@ -597,8 +547,6 @@ class ScheduleControllerTest {
     @DisplayName("POST /api/schedule - Should return 404, When service point not found")
     @SqlSetup
     fun `test get schedule with service point not found`() {
-        logRunning()
-
         val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
@@ -626,8 +574,6 @@ class ScheduleControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
         ).andExpect(status().isNotFound)
-
-        logPassed()
     }
 
     @Test
@@ -635,8 +581,6 @@ class ScheduleControllerTest {
     @DisplayName("POST /api/schedule - Should return 404, When employee was provided and not found")
     @SqlSetup
     fun `test get schedule with employee not found`() {
-        logRunning()
-
         val date = getClosestDateForDay(DayOfWeek.SUNDAY)
         val requestBody = """
             {
@@ -669,8 +613,6 @@ class ScheduleControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
         ).andExpect(status().isNotFound)
-
-        logPassed()
     }
 
     private fun calculateExpectedSlotCount(startTime: String, endTime: String): Int {
@@ -679,29 +621,7 @@ class ScheduleControllerTest {
         return (Duration.between(start, end).toMinutes() / 15).toInt()
     }
 
-    private fun getClosestDateForDay(desiredDay: DayOfWeek): String {
-        val today = LocalDate.now()
-        val currentDay = today.dayOfWeek
-
-        val daysToAdd = if (currentDay < desiredDay) {
-            desiredDay.value - currentDay.value
-        } else {
-            7 - (currentDay.value - desiredDay.value)
-        }
-
-        val closestDate = today.plusDays(daysToAdd.toLong())
-        return closestDate.toString()
-    }
-
-    private fun logRunning() {
-        LOGGER.info("RUNNING...")
-    }
-
-    private fun logPassed() {
-        LOGGER.info("PASSED!")
-    }
-
     companion object {
-        private val LOGGER: Logger = LoggerFactory.getLogger(BookingControllerTest::class.java)
+        private val LOGGER: Logger = LoggerFactory.getLogger(BookingControllerDeleteTest::class.java)
     }
 }

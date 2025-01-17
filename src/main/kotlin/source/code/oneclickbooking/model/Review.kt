@@ -18,7 +18,7 @@ class Review (
 
     @field:NotNull
     @Column(nullable = false)
-    var date: LocalDate = LocalDate.now(),
+    var date: LocalDate,
 
     var text: String? = null,
 ) {
@@ -34,18 +34,20 @@ class Review (
             id: Int? = null,
             rating: Int = 5,
             text: String? = "Default Review Text",
-            booking: Booking = Booking.createDefault()
+            booking: Booking = Booking.createDefault(),
+            date: LocalDate = LocalDate.now()
         ): Review {
-            return of(id = id, rating = rating, text = text, booking = booking);
+            return of(id = id, rating = rating, text = text, booking = booking, date);
         }
 
         fun of(
             id: Int? = null,
             rating: Int,
             text: String? = null,
-            booking: Booking
+            booking: Booking,
+            date: LocalDate
         ): Review {
-            return Review(id = id, rating = rating, text = text,).apply {
+            return Review(id = id, rating = rating, text = text, date = date).apply {
                 this.booking = booking
             }
         }
